@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
+<script src="./image-slot.js"></script>
+<script src="./events.js"></script>
+<style>
+  html, body { margin:0; padding:0; background:#08070a; color:#EFE6D3; overflow-x:hidden; }
+  body { -webkit-font-smoothing:antialiased; scroll-behavior:smooth; }
+  a { color:#C9A867; text-decoration:none; }
+  a:hover { color:#EFDCAF; }
+  @keyframes kpIn { from { opacity:0; } to { opacity:1; } }
+  @keyframes kpRise { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:none; } }
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:#08070a;display:flex;flex-direction:column;position:relative;overflow:hidden">
+  <img src="./el-palm.png" alt="" style="position:absolute;left:-60px;bottom:-30px;width:clamp(180px,20vw,300px);opacity:.2;pointer-events:none;z-index:0;transform:rotate(18deg)" />
+  <header style="position:fixed;top:0;left:0;right:0;z-index:40;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 22px;background:linear-gradient(to bottom, rgba(8,7,10,.86), rgba(8,7,10,0))">
+    <a href="index.html" style="display:flex;align-items:center;gap:9px;min-height:40px;padding:0 16px;border:1px solid rgba(201,168,103,.4);border-radius:999px;background:rgba(201,168,103,.05);font-family:'Jost',sans-serif;font-weight:300;font-size:10px;letter-spacing:.4em;color:rgba(239,220,175,.9);transition:all 500ms ease" style-hover="border-color:rgba(201,168,103,.95);background:rgba(201,168,103,.13);color:#F3E3BC;box-shadow:0 0 32px rgba(201,168,103,.2)"><span style="width:16px;height:16px;border:1px solid rgba(201,168,103,.7);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:7px;letter-spacing:0">KP</span>HOME</a>
+    <div style="display:flex;align-items:center;gap:18px"><span style="font-family:'Jost',sans-serif;font-weight:400;font-size:11px;letter-spacing:.28em;color:rgba(201,168,103,.85)">EVENTS</span><a href="Contact.html" style="font-family:'Jost',sans-serif;font-weight:300;font-size:10px;letter-spacing:.34em;color:rgba(239,230,211,.55)" style-hover="color:#D9BC7E">CONTACT</a><a href="Location.html" style="font-family:'Jost',sans-serif;font-weight:300;font-size:10px;letter-spacing:.34em;color:rgba(239,230,211,.55)" style-hover="color:#D9BC7E">LOCATION</a></div>
+  </header>
+
+  <section style="position:relative;z-index:1;flex:1;animation:kpIn 900ms ease both;padding:96px clamp(12px,3.5vw,22px) 80px;max-width:1240px;margin:0 auto;width:100%;box-sizing:border-box">
+    <div style="text-align:center;margin-bottom:clamp(28px,6vw,72px);display:grid;gap:clamp(10px,2vw,20px);justify-items:center">
+      <div style="font-family:'Jost',sans-serif;font-weight:300;font-size:9px;letter-spacing:.56em;color:rgba(201,168,103,.7)">THE CALENDAR</div>
+      <h1 style="margin:0;font-family:'Cormorant Garamond',serif;font-weight:300;font-style:italic;font-size:clamp(30px,7.5vw,76px);letter-spacing:.04em;color:#F7EEDA">Upcoming</h1>
+      <div style="width:70px;height:1px;background:linear-gradient(to right, rgba(201,168,103,0), rgba(201,168,103,.8), rgba(201,168,103,0))"></div>
+    </div>
+
+    <div style="display:grid;gap:12px;justify-items:center;margin:0 0 clamp(26px,5vw,52px)">
+      <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:10px">
+        <sc-for list="{{ dayFilters }}" as="f" hint-placeholder-count="4">
+          <div onClick="{{ f.pick }}" style="{{ f.style }}">{{ f.label }}</div>
+        </sc-for>
+      </div>
+      <div style="width:34px;height:1px;background:rgba(201,168,103,.28)"></div>
+      <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:10px">
+        <sc-for list="{{ catFilters }}" as="f" hint-placeholder-count="4">
+          <div onClick="{{ f.pick }}" style="{{ f.style }}">{{ f.label }}</div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="{{ gridStyle }}">
+      <sc-for list="{{ upcoming }}" as="ev" hint-placeholder-count="3">
+        <a href="{{ ev.url }}" style="{{ ev.wrapStyle }}">
+          <div style="position:relative;padding:clamp(6px,2vw,14px);border:1px solid rgba(201,168,103,.2);background:linear-gradient(160deg, rgba(201,168,103,.07), rgba(8,7,10,0) 60%);transition:all 800ms cubic-bezier(.2,.7,.3,1)" style-hover="border-color:rgba(201,168,103,.6);box-shadow:0 30px 90px rgba(0,0,0,.6), 0 0 60px rgba(201,168,103,.12);transform:translateY(-8px)">
+            <img src="{{ ev.posterSrc }}" alt="" style="{{ ev.imgStyle }}" />
+            <div style="position:absolute;inset:clamp(6px,2vw,14px);pointer-events:none;box-shadow:inset 0 0 60px rgba(8,7,10,.5)"></div>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 12px;padding:0 4px">
+            <div style="font-family:'Jost',sans-serif;font-weight:300;font-size:9px;letter-spacing:.24em;color:rgba(239,230,211,.62)">{{ ev.short }}</div>
+            <div style="font-family:'Jost',sans-serif;font-weight:300;font-size:9px;letter-spacing:.22em;color:rgba(201,168,103,.85)">{{ ev.viewLabel }}</div>
+          </div>
+        </a>
+      </sc-for>
+    </div>
+
+    <sc-if value="{{ noEvents }}" hint-placeholder-val="{{ false }}">
+      <p style="text-align:center;font-family:'Jost',sans-serif;font-weight:300;font-size:12px;letter-spacing:.28em;color:rgba(239,230,211,.4)">NOTHING MATCHES THAT SELECTION</p>
+    </sc-if>
+  </section>
+
+  <footer style="padding:52px 22px 44px;text-align:center;border-top:1px solid rgba(201,168,103,.12);background:#08070a;display:grid;gap:14px;justify-items:center">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:15px;letter-spacing:.36em;color:rgba(201,168,103,.72)">KING PENTHOUSE</div>
+    <div style="font-family:'Jost',sans-serif;font-weight:300;font-size:9.5px;letter-spacing:.24em;color:rgba(239,230,211,.28)">© 2026 — ALL RIGHTS RESERVED</div>
+  </footer>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;posterColumns&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;one&quot;,&quot;two&quot;,&quot;three&quot;],&quot;default&quot;:&quot;two&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Layout&quot;}}">
+class Component extends DCLogic {
+  state = { tick: 0, day: "ALL", cat: "ALL", w: typeof window !== "undefined" ? window.innerWidth : 1280 };
+
+  chipStyle(on) {
+    return on
+      ? "cursor:pointer;min-height:34px;display:flex;align-items:center;padding:0 14px;border:1px solid rgba(201,168,103,.85);background:rgba(201,168,103,.14);font-family:'Jost',sans-serif;font-weight:300;font-size:9px;letter-spacing:.2em;color:#F3E3BC;transition:all 500ms ease"
+      : "cursor:pointer;min-height:34px;display:flex;align-items:center;padding:0 14px;border:1px solid rgba(201,168,103,.24);background:transparent;font-family:'Jost',sans-serif;font-weight:300;font-size:9px;letter-spacing:.2em;color:rgba(239,230,211,.6);transition:all 500ms ease";
+  }
+  componentDidMount() {
+    if (!window.KP_EVENTS) this.poll = setInterval(() => {
+      if (window.KP_EVENTS) { clearInterval(this.poll); this.setState({ tick: 1 }); }
+    }, 60);
+    this.onResize = () => this.setState({ w: window.innerWidth });
+    window.addEventListener("resize", this.onResize);
+  }
+  componentWillUnmount() { clearInterval(this.poll); window.removeEventListener("resize", this.onResize); }
+
+  upcoming() {
+    const all = window.KP_EVENTS || [];
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    return all
+      .filter(e => (e.status ?? "active") === "active")
+      .filter(e => {
+        if (!e.date || isNaN(Date.parse(e.date))) return true;
+        const end = new Date(e.date + "T23:59:59");
+        const hide = new Date(end.getTime() + 7 * 864e5);
+        return hide >= today;
+      })
+      .sort((a, b) => {
+        const isPast = e => e.date && !isNaN(Date.parse(e.date)) && new Date(e.date + "T23:59:59") < today;
+        const p = (isPast(a) ? 1 : 0) - (isPast(b) ? 1 : 0);
+        if (p) return p;
+        return (Date.parse(a.date) || Infinity) - (Date.parse(b.date) || Infinity);
+      });
+  }
+
+  renderVals() {
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const cols = this.props.posterColumns ?? "two";
+    const w = this.state.w;
+    const n = cols === "one" ? 1 : cols === "two" ? 2 : w >= 820 ? 3 : 2;
+    const capPx = n === 1 ? 300 : n === 2 ? 620 : 900;
+    const all = this.upcoming();
+    const dayOf = e => e.date && !isNaN(Date.parse(e.date))
+      ? new Date(e.date + "T12:00:00").toLocaleDateString("en-US", { weekday: "long" }).toUpperCase()
+      : "";
+    const days = ["ALL", ...Array.from(new Set(all.map(dayOf).filter(Boolean)))];
+    const cats = ["ALL", ...Array.from(new Set(all.map(e => e.category).filter(Boolean)))];
+    const list = all.filter(e =>
+      (this.state.day === "ALL" || dayOf(e) === this.state.day) &&
+      (this.state.cat === "ALL" || e.category === this.state.cat));
+    return {
+      dayFilters: days.map(d => ({
+        label: d, style: this.chipStyle(this.state.day === d),
+        pick: () => this.setState({ day: d })
+      })),
+      catFilters: cats.map(c => ({
+        label: c.toUpperCase(), style: this.chipStyle(this.state.cat === c),
+        pick: () => this.setState({ cat: c })
+      })),
+      gridStyle: `display:grid;width:100%;max-width:${capPx}px;margin:0 auto;box-sizing:border-box;gap:${w < 640 ? "14px" : "clamp(24px,3vw,40px)"};grid-template-columns:repeat(${n},minmax(0,1fr))`,
+      noEvents: list.length === 0,
+      upcoming: list.map((e, i) => {
+        const dated = e.date && !isNaN(Date.parse(e.date));
+        const past = dated && new Date(e.date + "T23:59:59") < today;
+        return {
+        past,
+        imgStyle: "display:block;width:100%;height:auto;background:#0a0810" + (past ? ";opacity:.34;filter:grayscale(.55)" : ""),
+        viewLabel: past ? "PAST" : "VIEW →",
+        wrapStyle: "display:grid;gap:clamp(10px,2.5vw,22px);animation:kpRise 1100ms cubic-bezier(.22,.61,.36,1) both" + (past ? ";pointer-events:none;cursor:default" : ""),
+        url: e.url || "#",
+        ratio: e.ratio || "2/3",
+        poster: e.poster || `kp-poster-${i + 1}`,
+        posterSrc: e.posterSrc || "",
+        short: (e.dateLabel || "").replace(/,? \d{4}$/, ""),
+        placeholder: (e.name && e.name.trim()) ? e.name.toLowerCase() + " — poster" : "event poster"
+      }; })
+    };
+  }
+}
+
+</script>
+</body>
+</html>
