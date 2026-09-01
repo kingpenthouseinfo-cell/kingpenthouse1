@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&amp;family=Jost:wght@300;400;500&amp;display=swap" rel="stylesheet">
+<script src="./image-slot.js"></script>
+<script src="./events.js"></script>
+<style>
+  html, body { margin:0; padding:0; background:#08070a; color:#EFE6D3; overflow-x:hidden; }
+  body { -webkit-font-smoothing:antialiased; scroll-behavior:smooth; }
+  a { color:#C9A867; text-decoration:none; }
+  a:hover { color:#EFDCAF; }
+  @keyframes kpLogo {
+    0%   { opacity:.05; letter-spacing:.62em; text-shadow:none; }
+    55%  { opacity:.75; }
+    100% { opacity:1; letter-spacing:.38em; text-shadow:0 0 46px rgba(201,168,103,.42), 0 0 120px rgba(201,168,103,.16); }
+  }
+  @keyframes kpVeil { 0% { opacity:.05; } 60% { opacity:.5; } 100% { opacity:.9; } }
+  @keyframes kpOut { to { opacity:0; } }
+  @keyframes kpRise { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:none; } }
+  @keyframes kpTicker { from { transform:translateX(0); } to { transform:translateX(-50%); } }
+  @keyframes kpAccent { from { opacity:0; } }
+</style>
+</helmet>
+
+<sc-if value="{{ splash }}" hint-placeholder-val="{{ true }}">
+  <div style="position:fixed;inset:0;z-index:90;background:#08070a;display:flex;align-items:center;justify-content:center;animation:kpOut 900ms ease 2400ms forwards;pointer-events:none">
+    <div style="position:absolute;width:min(80vw,700px);height:min(80vw,700px);border-radius:50%;background:radial-gradient(circle, rgba(201,168,103,.16), rgba(201,168,103,0) 68%);animation:kpVeil 2600ms ease forwards"></div>
+    <div style="position:relative;text-align:center;animation:kpLogo 2600ms cubic-bezier(.22,.61,.36,1) forwards">
+      <div style="font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(30px,8.5vw,64px);color:#F3E7CC;line-height:1">KING</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(30px,8.5vw,64px);color:#F3E7CC;line-height:1.15">PENTHOUSE</div>
+    </div>
+  </div>
+</sc-if>
+
+<div style="height:100svh;overflow:hidden;background:#08070a;display:flex;flex-direction:column">
+  <section style="position:relative;flex:1;min-height:0;overflow:hidden">
+    <div style="position:absolute;inset:0">
+      <img src="./index-hero.png" alt="" style="width:100%;height:100%;object-fit:cover;object-position:center 42%;filter:brightness(1.18) contrast(.97) saturate(1.04);animation:kpAccent 2400ms ease both" />
+    </div>
+    <div style="position:absolute;inset:0;pointer-events:none;background:radial-gradient(120% 90% at 50% 40%, rgba(8,7,10,.14), rgba(8,7,10,.72) 82%), linear-gradient(to bottom, rgba(8,7,10,.62), rgba(8,7,10,.2) 40%, rgba(8,7,10,.85)), linear-gradient(to right, rgba(8,7,10,.55), rgba(8,7,10,.22) 26%, rgba(8,7,10,0) 48%)"></div>
+    <div style="position:relative;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:64px 24px 20px;box-sizing:border-box;gap:clamp(10px,2.2svh,24px)">
+      <img src="./el-crown.png" alt="" style="width:clamp(72px,min(15vw,11svh),150px);height:auto;flex:none;animation:kpRise 1600ms cubic-bezier(.22,.61,.36,1) 150ms both" />
+      <h1 style="margin:0;animation:kpRise 1400ms cubic-bezier(.22,.61,.36,1) 300ms both;font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(30px,min(10vw,8.5svh),96px);line-height:1.04;letter-spacing:.16em;color:#F5EBD5;text-shadow:0 0 60px rgba(201,168,103,.22)">KING<br>PENTHOUSE</h1>
+
+      <a href="Events.html" style="animation:kpRise 1400ms cubic-bezier(.22,.61,.36,1) 1100ms both;margin-top:clamp(4px,1.5svh,14px);flex:none;min-height:52px;display:flex;align-items:center;justify-content:center;padding:0 42px;border:1px solid rgba(201,168,103,.5);border-radius:2px;background:rgba(201,168,103,.04);font-family:'Jost',sans-serif;font-weight:400;font-size:12px;letter-spacing:.36em;color:#D9BC7E;transition:all 600ms ease" style-hover="border-color:rgba(201,168,103,.95);color:#F3E3BC;background:rgba(201,168,103,.1);box-shadow:0 0 44px rgba(201,168,103,.22)">EVENTS</a>
+      <div style="display:flex;align-items:center;gap:18px;justify-content:center"><a href="Contact.html" style="animation:kpRise 1400ms cubic-bezier(.22,.61,.36,1) 1400ms both;flex:none;min-height:44px;display:flex;align-items:center;font-family:'Jost',sans-serif;font-weight:300;font-size:10px;letter-spacing:.4em;color:rgba(239,230,211,.5)" style-hover="color:#D9BC7E">CONTACT</a><span style="width:4px;height:4px;border:1px solid rgba(201,168,103,.5);transform:rotate(45deg);flex:none"></span><a href="Location.html" style="animation:kpRise 1400ms cubic-bezier(.22,.61,.36,1) 1550ms both;flex:none;min-height:44px;display:flex;align-items:center;font-family:'Jost',sans-serif;font-weight:300;font-size:10px;letter-spacing:.4em;color:rgba(239,230,211,.5)" style-hover="color:#D9BC7E">LOCATION</a></div>
+    </div>
+  </section>
+
+  <div style="position:relative;flex:none;overflow:hidden;border-top:1px solid rgba(201,168,103,.2);padding:13px 0;background:rgba(8,7,10,.85)">
+    <div style="display:flex;width:max-content;animation:kpTicker 26s linear infinite">
+      <div style="display:flex;gap:44px;padding-right:44px;font-family:'Jost',sans-serif;font-weight:300;font-size:11px;letter-spacing:.34em;color:rgba(239,230,211,.55);white-space:nowrap">
+        <sc-for list="{{ ticker }}" as="t" hint-placeholder-count="6"><span>{{ t.text }}</span></sc-for>
+      </div>
+      <div style="display:flex;gap:44px;padding-right:44px;font-family:'Jost',sans-serif;font-weight:300;font-size:11px;letter-spacing:.34em;color:rgba(239,230,211,.55);white-space:nowrap">
+        <sc-for list="{{ ticker }}" as="t" hint-placeholder-count="6"><span>{{ t.text }}</span></sc-for>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;showSplash&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Intro&quot;},&quot;splashSeconds&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;default&quot;:2.6,&quot;min&quot;:1.5,&quot;max&quot;:5,&quot;step&quot;:0.1,&quot;unit&quot;:&quot;s&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Intro&quot;},&quot;replaySplash&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Intro&quot;}}">
+class Component extends DCLogic {
+  state = { splash: true, tick: 0 };
+  componentDidMount() {
+    if (!window.KP_EVENTS) this.poll = setInterval(() => {
+      if (window.KP_EVENTS) { clearInterval(this.poll); this.setState({ tick: 1 }); }
+    }, 60);
+    const seen = (() => { try { return sessionStorage.getItem("kp-splash-seen"); } catch (e) { return null; } })();
+    if (this.props.showSplash === false || (seen && this.props.replaySplash !== true)) {
+      this.setState({ splash: false });
+      return;
+    }
+    const ms = (this.props.splashSeconds ?? 2.6) * 1000 + 900;
+    this.timer = setTimeout(() => {
+      try { sessionStorage.setItem("kp-splash-seen", "1"); } catch (e) {}
+      this.setState({ splash: false });
+    }, ms);
+  }
+  componentWillUnmount() { clearTimeout(this.timer); clearInterval(this.poll); }
+  renderVals() {
+    const list = (window.KP_EVENTS || [])
+      .filter(e => (e.status ?? "active") === "active")
+      .sort((a, b) => (Date.parse(a.date) || Infinity) - (Date.parse(b.date) || Infinity));
+    return {
+      splash: this.state.splash,
+      ticker: list.map(e => ({
+        text: `${e.name} — ${(e.dateLabel || "").replace(/^\w+, /, "").replace(/, \d{4}$/, "")}   ✦`
+      }))
+    };
+  }
+}
+
+</script>
+</body>
+</html>

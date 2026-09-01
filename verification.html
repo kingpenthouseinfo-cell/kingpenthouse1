@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&amp;family=Jost:wght@200;300;400&amp;display=swap" rel="stylesheet">
+<style>
+  html, body { margin:0; padding:0; background:#08070a; color:#EFE6D3; overflow-x:hidden; }
+  body { -webkit-font-smoothing:antialiased; }
+  a { color:#C9A867; text-decoration:none; }
+  a:hover { color:#F1E0B8; }
+  input, select, textarea, button { font-family:'Jost',sans-serif; }
+  input::placeholder, textarea::placeholder { color:rgba(239,230,211,.32); }
+  input:focus, textarea:focus { outline:none; border-color:rgba(201,168,103,.85) !important; box-shadow:0 0 0 1px rgba(201,168,103,.25); }
+  @keyframes vRise { from { opacity:0; transform:translateY(22px) } to { opacity:1; transform:none } }
+  @keyframes vFade { from { opacity:0 } to { opacity:1 } }
+  @keyframes vLine { from { transform:scaleX(0) } to { transform:scaleX(1) } }
+  @keyframes vBreathe { 0%,100% { opacity:.28; transform:scale(1) } 50% { opacity:.55; transform:scale(1.06) } }
+  @keyframes vSpin { to { transform:rotate(360deg) } }
+</style>
+</helmet>
+
+<div style="min-height:100svh;position:relative;background:#08070a;display:flex;flex-direction:column">
+
+  <div style="position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0">
+    <div style="position:absolute;left:50%;top:0;width:min(150vw,1100px);height:min(150vw,1100px);transform:translate(-50%,-55%);border-radius:50%;background:radial-gradient(circle, rgba(201,168,103,.14), rgba(201,168,103,.035) 42%, rgba(8,7,10,0) 70%);animation:vBreathe 10000ms ease-in-out infinite"></div>
+  </div>
+
+  <header style="position:relative;z-index:40;display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;padding:14px 20px;animation:vFade 1200ms ease both">
+    <a href="index.html" style="display:flex;align-items:center;gap:9px;min-height:44px;padding:0 16px;border:1px solid rgba(201,168,103,.4);border-radius:999px;background:rgba(201,168,103,.05);font-family:'Jost',sans-serif;font-weight:300;font-size:10px;letter-spacing:.4em;color:rgba(241,224,184,.9);transition:all 500ms ease" style-hover="border-color:rgba(201,168,103,.95);background:rgba(201,168,103,.13);color:#F7ECD3"><span style="width:16px;height:16px;border:1px solid rgba(201,168,103,.7);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:7px;letter-spacing:0">KP</span>HOME</a>
+    <div style="width:5px;height:5px;border:1px solid rgba(201,168,103,.6);transform:rotate(45deg)"></div>
+    <a href="Events.html" style="min-height:44px;display:flex;align-items:center;font-family:'Jost',sans-serif;font-weight:300;font-size:10px;letter-spacing:.4em;color:rgba(201,168,103,.92)" style-hover="color:#F1E0B8">EVENTS</a>
+    <div style="width:5px;height:5px;border:1px solid rgba(201,168,103,.6);transform:rotate(45deg)"></div>
+    <a href="Location.html" style="min-height:44px;display:flex;align-items:center;font-family:'Jost',sans-serif;font-weight:300;font-size:10px;letter-spacing:.4em;color:rgba(201,168,103,.92)" style-hover="color:#F1E0B8">LOCATION</a>
+    <div style="width:5px;height:5px;border:1px solid rgba(201,168,103,.6);transform:rotate(45deg)"></div>
+    <a href="Contact.html" style="min-height:44px;display:flex;align-items:center;font-family:'Jost',sans-serif;font-weight:300;font-size:10px;letter-spacing:.4em;color:rgba(201,168,103,.92)" style-hover="color:#F1E0B8">CONTACT</a>
+  </header>
+
+  <main style="position:relative;z-index:10;flex:1;width:100%;max-width:640px;margin:0 auto;box-sizing:border-box;padding:clamp(10px,3svh,36px) 20px 60px">
+
+    <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px">
+      <img src="./el-crown.png" alt="" style="width:clamp(38px,9vw,64px);height:auto;animation:vRise 1400ms cubic-bezier(.22,.61,.36,1) 100ms both" />
+      <h1 style="margin:0;font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(30px,8.4vw,54px);line-height:1.04;letter-spacing:.1em;color:#F6EEDC;text-wrap:balance;animation:vRise 1300ms cubic-bezier(.22,.61,.36,1) 240ms both">King Penthouse<br>Verification</h1>
+      <div style="width:clamp(80px,20vw,170px);height:1px;background:linear-gradient(to right, rgba(201,168,103,0), rgba(201,168,103,.85), rgba(201,168,103,0));animation:vLine 1500ms cubic-bezier(.22,.61,.36,1) 560ms both"></div>
+      <p style="margin:6px 0 0;max-width:44ch;font-family:'Jost',sans-serif;font-weight:300;font-size:clamp(13px,3.4vw,15px);line-height:1.65;color:rgba(239,230,211,.82);text-wrap:pretty;animation:vRise 1300ms cubic-bezier(.22,.61,.36,1) 640ms both">Request verification for an upcoming event or private WhatsApp group.</p>
+      <p style="margin:0;max-width:46ch;font-family:'Jost',sans-serif;font-weight:300;font-size:clamp(12px,3.1vw,13.5px);line-height:1.7;color:rgba(239,230,211,.6);text-wrap:pretty;animation:vRise 1300ms cubic-bezier(.22,.61,.36,1) 720ms both">Please complete the form below and provide at least one way for our admin team to contact you. A recent photo is required before verification can be completed.</p>
+    </div>
+
+    <sc-if value="{{ showForm }}" hint-placeholder-val="{{ true }}">
+    <form name="verification" method="POST" data-netlify="true" enctype="multipart/form-data" action="/Verification.html" noValidate="{{ true }}" onSubmit="{{ onSubmit }}" style="margin-top:clamp(26px,5svh,48px);display:grid;gap:34px;animation:vRise 1300ms cubic-bezier(.22,.61,.36,1) 820ms both">
+      <input type="hidden" name="form-name" value="verification" />
+      <p style="display:none"><label>Do not fill: <input name="bot-field" /></label></p>
+
+      <div style="display:grid;gap:10px">
+        <label for="v-name" style="font-family:'Jost',sans-serif;font-weight:400;font-size:10px;letter-spacing:.34em;color:rgba(217,188,126,.95)">NAME OR USERNAME <span style="letter-spacing:.16em;color:rgba(224,105,88,.95);font-weight:400">&mdash; required</span></label>
+        <input id="v-name" name="name" type="text" autocomplete="name" placeholder="Name, nickname, or username" style="width:100%;box-sizing:border-box;min-height:54px;padding:0 16px;background:rgba(255,255,255,.028);border:1px solid rgba(201,168,103,.28);color:#F6EEDC;font-family:'Jost',sans-serif;font-weight:300;font-size:16px;letter-spacing:.02em;transition:border-color 400ms ease" />
+      </div>
+
+      <div style="display:grid;gap:12px">
+        <div style="font-family:'Jost',sans-serif;font-weight:400;font-size:10px;letter-spacing:.34em;color:rgba(217,188,126,.95);line-height:1.9">WHICH TICKET TYPE ARE YOU REQUESTING VERIFICATION FOR? <span style="letter-spacing:.16em;color:rgba(224,105,88,.95);font-weight:400">&mdash; required</span></div>
+        <input type="hidden" name="ticket-type" value="{{ ticket }}" />
+        <div style="display:grid;gap:8px">
+          <sc-for list="{{ ticketOptions }}" as="opt" hint-placeholder-count="4">
+            <button type="button" data-value="{{ opt.value }}" onClick="{{ pickTicket }}" style="{{ opt.rowStyle }}">
+              <span style="{{ opt.dotStyle }}"></span>
+              <span style="font-family:'Jost',sans-serif;font-weight:300;font-size:15px;letter-spacing:.02em;color:rgba(246,238,220,.92)">{{ opt.label }}</span>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="display:grid;gap:10px">
+        <label for="v-identity" style="font-family:'Jost',sans-serif;font-weight:400;font-size:10px;letter-spacing:.34em;color:rgba(217,188,126,.95)">HOW YOU IDENTIFY <span style="letter-spacing:.16em;color:rgba(239,230,211,.42);font-weight:300">&mdash; optional</span></label>
+        <input id="v-identity" name="identity" type="text" placeholder="In your own words, if you'd like" style="width:100%;box-sizing:border-box;min-height:54px;padding:0 16px;background:rgba(255,255,255,.028);border:1px solid rgba(201,168,103,.28);color:#F6EEDC;font-family:'Jost',sans-serif;font-weight:300;font-size:16px;letter-spacing:.02em;transition:border-color 400ms ease" />
+      </div>
+
+      <div style="display:grid;gap:12px">
+        <div style="font-family:'Jost',sans-serif;font-weight:400;font-size:10px;letter-spacing:.34em;color:rgba(217,188,126,.95);line-height:1.9">WHAT ARE YOU REQUESTING VERIFICATION FOR? <span style="letter-spacing:.16em;color:rgba(224,105,88,.95);font-weight:400">&mdash; required</span></div>
+        <div style="font-family:'Jost',sans-serif;font-weight:300;font-size:12px;letter-spacing:.04em;color:rgba(239,230,211,.5)">Select all that apply.</div>
+        <input type="hidden" name="verification-for" value="{{ requestsJoined }}" />
+        <div style="display:grid;gap:8px">
+          <sc-for list="{{ requestOptions }}" as="opt" hint-placeholder-count="6">
+            <button type="button" data-value="{{ opt.value }}" onClick="{{ toggleRequest }}" style="{{ opt.rowStyle }}">
+              <span style="{{ opt.boxStyle }}">{{ opt.mark }}</span>
+              <span style="font-family:'Jost',sans-serif;font-weight:300;font-size:15px;letter-spacing:.02em;color:rgba(246,238,220,.92)">{{ opt.label }}</span>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="height:1px;background:linear-gradient(to right, rgba(201,168,103,0), rgba(201,168,103,.32), rgba(201,168,103,0))"></div>
+
+      <div style="display:grid;gap:18px">
+        <div style="display:grid;gap:6px">
+          <h2 style="margin:0;font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(23px,6vw,32px);letter-spacing:.04em;color:#F6EEDC">How can we contact you?</h2>
+          <div style="font-family:'Jost',sans-serif;font-weight:300;font-size:13px;letter-spacing:.03em;color:rgba(224,105,88,.95);font-size:14px;line-height:1.65">Only one contact method is required &mdash; email, WhatsApp, or FetLife.</div>
+        </div>
+
+        <div style="display:grid;gap:10px">
+          <label for="v-email" style="font-family:'Jost',sans-serif;font-weight:400;font-size:10px;letter-spacing:.34em;color:rgba(217,188,126,.95)">EMAIL ADDRESS</label>
+          <input id="v-email" name="email" type="email" inputmode="email" autocomplete="email" onChange="{{ onEmail }}" placeholder="you@example.com" style="width:100%;box-sizing:border-box;min-height:54px;padding:0 16px;background:rgba(255,255,255,.028);border:1px solid rgba(201,168,103,.28);color:#F6EEDC;font-family:'Jost',sans-serif;font-weight:300;font-size:16px;letter-spacing:.02em;transition:border-color 400ms ease" />
+        </div>
+
+        <div style="display:grid;gap:10px">
+          <label for="v-whatsapp" style="font-family:'Jost',sans-serif;font-weight:400;font-size:10px;letter-spacing:.34em;color:rgba(217,188,126,.95)">WHATSAPP NUMBER</label>
+          <input id="v-whatsapp" name="whatsapp" type="tel" inputmode="tel" autocomplete="tel" onChange="{{ onWhatsapp }}" placeholder="+1 416 555 1234" style="width:100%;box-sizing:border-box;min-height:54px;padding:0 16px;background:rgba(255,255,255,.028);border:1px solid rgba(201,168,103,.28);color:#F6EEDC;font-family:'Jost',sans-serif;font-weight:300;font-size:16px;letter-spacing:.02em;transition:border-color 400ms ease" />
+        </div>
+
+        <div style="display:grid;gap:10px">
+          <label for="v-fetlife" style="font-family:'Jost',sans-serif;font-weight:400;font-size:10px;letter-spacing:.34em;color:rgba(217,188,126,.95)">FETLIFE PROFILE LINK</label>
+          <input id="v-fetlife" name="fetlife" type="url" inputmode="url" onChange="{{ onFetlife }}" placeholder="https://fetlife.com/users/..." style="width:100%;box-sizing:border-box;min-height:54px;padding:0 16px;background:rgba(255,255,255,.028);border:1px solid rgba(201,168,103,.28);color:#F6EEDC;font-family:'Jost',sans-serif;font-weight:300;font-size:16px;letter-spacing:.02em;transition:border-color 400ms ease" />
+        </div>
+
+        <sc-if value="{{ showPreferred }}" hint-placeholder-val="{{ false }}">
+          <div style="display:grid;gap:12px">
+            <div style="font-family:'Jost',sans-serif;font-weight:400;font-size:10px;letter-spacing:.34em;color:rgba(217,188,126,.95)">PREFERRED CONTACT METHOD <span style="letter-spacing:.16em;color:rgba(239,230,211,.42);font-weight:300">&mdash; optional</span></div>
+            <input type="hidden" name="preferred-contact" value="{{ preferred }}" />
+            <div style="display:flex;flex-wrap:wrap;gap:8px">
+              <sc-for list="{{ preferredOptions }}" as="opt" hint-placeholder-count="2">
+                <button type="button" data-value="{{ opt.value }}" onClick="{{ pickPreferred }}" style="{{ opt.chipStyle }}">{{ opt.label }}</button>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+
+      <div style="height:1px;background:linear-gradient(to right, rgba(201,168,103,0), rgba(201,168,103,.32), rgba(201,168,103,0))"></div>
+
+      <div style="display:grid;gap:16px;padding:clamp(18px,4.5vw,26px);box-sizing:border-box;border:1px solid rgba(201,168,103,.34);background:linear-gradient(165deg, rgba(48,38,24,.5), rgba(12,10,7,.62));box-shadow:inset 0 1px 0 rgba(240,221,178,.1)">
+        <div style="display:grid;gap:6px">
+          <h2 style="margin:0;font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(23px,6vw,32px);letter-spacing:.04em;color:#F1E0B8">Verification photo</h2>
+          <div style="font-family:'Jost',sans-serif;font-weight:300;font-size:13px;letter-spacing:.03em;line-height:1.65;color:rgba(239,230,211,.72);text-wrap:pretty">Upload a recent photo here, or let us know if you already sent one or plan to send it separately. <span style="color:rgba(233,206,146,.95)">You will not be verified without a photo.</span> Your request will remain pending until we receive one. Photos are used for verification only.</div>
+        </div>
+        <div style="display:grid;gap:10px;margin-top:4px">
+          <div style="font-family:'Jost',sans-serif;font-weight:400;font-size:10px;letter-spacing:.34em;color:rgba(217,188,126,.95);line-height:1.9">HAVE YOU ALREADY SENT US A VERIFICATION PHOTO? <span style="letter-spacing:.16em;color:rgba(239,230,211,.42);font-weight:300">&mdash; optional</span></div>
+          <div style="display:grid;gap:8px">
+            <sc-for list="{{ photoPathOptions }}" as="opt" hint-placeholder-count="3">
+              <button type="button" data-value="{{ opt.value }}" onClick="{{ pickPhotoPath }}" style="{{ opt.rowStyle }}">
+                <span style="{{ opt.dotStyle }}"></span>
+                <span style="font-family:'Jost',sans-serif;font-weight:300;font-size:15px;letter-spacing:.02em;color:rgba(246,238,220,.92)">{{ opt.label }}</span>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+
+        <sc-if value="{{ showUpload }}" hint-placeholder-val="{{ true }}">
+          <label style="{{ dropStyle }}">
+            <input name="photo" type="file" accept="image/jpeg,image/png,image/heic,image/heif,image/*" onChange="{{ onPhoto }}" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer" />
+            <sc-if value="{{ hasPhoto }}" hint-placeholder-val="{{ false }}">
+              <div style="{{ photoPreviewStyle }}"></div>
+            </sc-if>
+            <div style="display:grid;gap:6px;text-align:left">
+              <div style="font-family:'Jost',sans-serif;font-weight:400;font-size:11px;letter-spacing:.3em;color:rgba(241,224,184,.92)">{{ photoTitle }}</div>
+              <div style="font-family:'Jost',sans-serif;font-weight:300;font-size:12px;letter-spacing:.03em;color:rgba(239,230,211,.55);word-break:break-word">{{ photoSub }}</div>
+            </div>
+          </label>
+        </sc-if>
+
+        <sc-if value="{{ showAlreadySent }}" hint-placeholder-val="{{ false }}">
+          <div style="display:grid;gap:16px;padding:18px;box-sizing:border-box;border:1px solid rgba(201,168,103,.22);background:rgba(255,255,255,.018)">
+            <div style="display:grid;gap:10px">
+              <label for="v-sent-to" style="font-family:'Jost',sans-serif;font-weight:300;font-size:12px;letter-spacing:.06em;color:rgba(239,230,211,.62)">Who did you send it to? <span style="color:rgba(224,105,88,.95)">&mdash; required</span></label>
+              <input id="v-sent-to" type="text" value="{{ sentTo }}" onChange="{{ onSentTo }}" placeholder="Name or username of the person/admin" style="width:100%;box-sizing:border-box;min-height:54px;padding:0 16px;background:rgba(255,255,255,.028);border:1px solid rgba(201,168,103,.28);color:#F6EEDC;font-family:'Jost',sans-serif;font-weight:300;font-size:16px;letter-spacing:.02em;transition:border-color 400ms ease" />
+            </div>
+            <div style="display:grid;gap:10px">
+              <div style="font-family:'Jost',sans-serif;font-weight:300;font-size:12px;letter-spacing:.06em;color:rgba(239,230,211,.62)">Where did you send it? <span style="color:rgba(224,105,88,.95)">&mdash; required</span></div>
+              <div style="display:flex;flex-wrap:wrap;gap:10px">
+                <sc-for list="{{ sentViaOptions }}" as="opt" hint-placeholder-count="2">
+                  <button type="button" data-value="{{ opt.value }}" onClick="{{ pickSentVia }}" style="{{ opt.chipStyle }}">{{ opt.label }}</button>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ showWillSend }}" hint-placeholder-val="{{ false }}">
+          <div style="display:grid;gap:10px;padding:18px;box-sizing:border-box;border:1px solid rgba(201,168,103,.22);background:rgba(255,255,255,.018)">
+            <div style="font-family:'Jost',sans-serif;font-weight:300;font-size:12px;letter-spacing:.06em;color:rgba(239,230,211,.62)">Where will you send it? <span style="color:rgba(224,105,88,.95)">&mdash; required</span></div>
+            <div style="display:flex;flex-wrap:wrap;gap:10px">
+              <sc-for list="{{ willSendViaOptions }}" as="opt" hint-placeholder-count="2">
+                <button type="button" data-value="{{ opt.value }}" onClick="{{ pickWillSendVia }}" style="{{ opt.chipStyle }}">{{ opt.label }}</button>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <input type="hidden" name="photo-provided" value="{{ photoProvided }}" />
+        <input type="hidden" name="photo-status" value="{{ photoStatus }}" />
+        <input type="hidden" name="photo-sent-to" value="{{ sentToValue }}" />
+        <input type="hidden" name="photo-sent-via" value="{{ sentViaValue }}" />
+        <input type="hidden" name="photo-will-send-via" value="{{ willSendViaValue }}" />
+      </div>
+
+      <div style="height:1px;background:linear-gradient(to right, rgba(201,168,103,0), rgba(201,168,103,.32), rgba(201,168,103,0))"></div>
+
+      <div style="display:grid;gap:12px">
+        <div style="font-family:'Jost',sans-serif;font-weight:400;font-size:10px;letter-spacing:.34em;color:rgba(217,188,126,.95);line-height:1.9">HOW DID YOU HEAR ABOUT US? <span style="letter-spacing:.16em;color:rgba(239,230,211,.42);font-weight:300">&mdash; optional</span></div>
+        <input type="hidden" name="heard-from" value="{{ source }}" />
+        <div style="display:grid;gap:8px">
+          <sc-for list="{{ sourceOptions }}" as="opt" hint-placeholder-count="6">
+            <button type="button" data-value="{{ opt.value }}" onClick="{{ pickSource }}" style="{{ opt.rowStyle }}">
+              <span style="{{ opt.dotStyle }}"></span>
+              <span style="font-family:'Jost',sans-serif;font-weight:300;font-size:15px;letter-spacing:.02em;color:rgba(246,238,220,.92)">{{ opt.label }}</span>
+            </button>
+          </sc-for>
+        </div>
+        <sc-if value="{{ showOther }}" hint-placeholder-val="{{ false }}">
+          <div style="display:grid;gap:10px;margin-top:2px">
+            <label for="v-other" style="font-family:'Jost',sans-serif;font-weight:300;font-size:12px;letter-spacing:.06em;color:rgba(239,230,211,.62)">Please tell us where you found us</label>
+            <input id="v-other" name="heard-from-other" type="text" placeholder="Where you found us" style="width:100%;box-sizing:border-box;min-height:54px;padding:0 16px;background:rgba(255,255,255,.028);border:1px solid rgba(201,168,103,.28);color:#F6EEDC;font-family:'Jost',sans-serif;font-weight:300;font-size:16px;letter-spacing:.02em;transition:border-color 400ms ease" />
+          </div>
+        </sc-if>
+      </div>
+
+      <div style="display:grid;gap:10px">
+        <label for="v-known" style="font-family:'Jost',sans-serif;font-weight:400;font-size:10px;letter-spacing:.34em;color:rgba(217,188,126,.95);line-height:1.9">DOES ANYONE FROM THE KING PENTHOUSE COMMUNITY KNOW YOU IN REAL LIFE? IF YES, PLEASE BE SPECIFIC. <span style="letter-spacing:.16em;color:rgba(239,230,211,.42);font-weight:300">&mdash; optional</span></label>
+        <input id="v-known" name="known-by" type="text" placeholder="Name, username, or how they know you" style="width:100%;box-sizing:border-box;min-height:54px;padding:0 16px;background:rgba(255,255,255,.028);border:1px solid rgba(201,168,103,.28);color:#F6EEDC;font-family:'Jost',sans-serif;font-weight:300;font-size:16px;letter-spacing:.02em;transition:border-color 400ms ease" />
+      </div>
+
+      <div style="display:grid;gap:10px">
+        <label for="v-notes" style="font-family:'Jost',sans-serif;font-weight:400;font-size:10px;letter-spacing:.34em;color:rgba(217,188,126,.95)">ANYTHING ELSE YOU'D LIKE US TO KNOW? <span style="letter-spacing:.16em;color:rgba(239,230,211,.42);font-weight:300">&mdash; optional</span></label>
+        <textarea id="v-notes" name="notes" rows="3" placeholder="Optional" style="width:100%;box-sizing:border-box;padding:14px 16px;background:rgba(255,255,255,.028);border:1px solid rgba(201,168,103,.28);color:#F6EEDC;font-family:'Jost',sans-serif;font-weight:300;font-size:16px;line-height:1.6;letter-spacing:.02em;resize:vertical;transition:border-color 400ms ease"></textarea>
+      </div>
+
+      <div style="display:grid;gap:16px;justify-items:center">
+        <sc-if value="{{ hasError }}" hint-placeholder-val="{{ false }}">
+          <div style="width:100%;box-sizing:border-box;padding:14px 16px;border:1px solid rgba(196,86,72,.6);background:rgba(196,86,72,.1);font-family:'Jost',sans-serif;font-weight:300;font-size:13.5px;line-height:1.6;letter-spacing:.02em;color:#F0D6CE;text-align:center">{{ error }}</div>
+        </sc-if>
+        <button type="submit" disabled="{{ busy }}" style="{{ submitStyle }}">
+          <sc-if value="{{ busy }}" hint-placeholder-val="{{ false }}">
+            <span style="width:14px;height:14px;border:1px solid rgba(246,238,220,.35);border-top-color:#F6EEDC;border-radius:50%;animation:vSpin 800ms linear infinite;flex:none"></span>
+          </sc-if>
+          {{ submitLabel }}
+        </button>
+        <p style="margin:0;max-width:48ch;font-family:'Jost',sans-serif;font-weight:300;font-size:11px;line-height:1.7;letter-spacing:.04em;color:rgba(239,230,211,.42);text-align:center;text-wrap:pretty">Information submitted through this form is used for King Penthouse verification and event/group access review.</p>
+      </div>
+    </form>
+    </sc-if>
+
+    <sc-if value="{{ submitted }}" hint-placeholder-val="{{ false }}">
+      <div style="margin-top:clamp(30px,7svh,60px);display:grid;gap:22px;justify-items:center;text-align:center;padding:clamp(28px,6vw,44px) clamp(20px,5vw,36px);border:1px solid rgba(201,168,103,.45);background:linear-gradient(165deg, rgba(42,34,22,.55), rgba(14,11,8,.75));box-shadow:0 20px 70px rgba(0,0,0,.6), inset 0 1px 0 rgba(240,221,178,.12);animation:vRise 900ms cubic-bezier(.22,.61,.36,1) both">
+        <div style="width:46px;height:46px;border:1px solid rgba(201,168,103,.7);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:22px;color:#F1E0B8">&#10003;</div>
+        <h2 style="margin:0;font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(25px,6.6vw,38px);letter-spacing:.06em;color:#F6EEDC;text-wrap:balance">Verification request received</h2>
+        <p style="margin:0;max-width:44ch;font-family:'Jost',sans-serif;font-weight:300;font-size:clamp(13px,3.3vw,14.5px);line-height:1.7;color:rgba(239,230,211,.75);text-wrap:pretty">Your information has been submitted to the King Penthouse admin team. If additional information is needed, we will contact you using the method you provided.</p>
+        <sc-if value="{{ pendingPhoto }}" hint-placeholder-val="{{ false }}">
+          <div style="width:100%;box-sizing:border-box;padding:16px 18px;border:1px solid rgba(201,168,103,.5);background:rgba(201,168,103,.08);display:grid;gap:8px;justify-items:center">
+            <div style="font-family:'Jost',sans-serif;font-weight:400;font-size:10px;letter-spacing:.34em;color:rgba(233,206,146,.95)">PENDING &middot; PHOTO REQUIRED</div>
+            <p style="margin:0;max-width:42ch;font-family:'Jost',sans-serif;font-weight:300;font-size:13px;line-height:1.7;color:rgba(239,230,211,.72);text-wrap:pretty">You submitted without a verification photo, so your request is incomplete and cannot be reviewed yet. Send a recent photo to <a href="mailto:verification@kingpenthouse.com">verification@kingpenthouse.com</a> or reply to us on the contact method you provided.</p>
+          </div>
+        </sc-if>
+        <a href="index.html" style="display:flex;align-items:center;justify-content:center;min-height:54px;padding:0 30px;border:1px solid rgba(201,168,103,.6);background:rgba(201,168,103,.08);font-family:'Jost',sans-serif;font-weight:300;font-size:11px;letter-spacing:.34em;color:rgba(246,238,220,.95);transition:all 500ms ease" style-hover="border-color:rgba(201,168,103,.95);background:rgba(201,168,103,.15);color:#FBF3E1">BACK TO KING PENTHOUSE</a>
+      </div>
+    </sc-if>
+
+  </main>
+
+  <footer style="position:relative;z-index:10;padding:0 22px 26px;text-align:center;animation:vFade 1600ms ease 1200ms both">
+    <div style="font-family:'Cormorant Garamond',serif;font-weight:300;font-size:12px;letter-spacing:.5em;color:rgba(214,184,122,.78)">KING PENTHOUSE</div>
+  </footer>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const TICKETS = ["Single Female Ticket", "Couple Ticket", "Single Male Ticket", "Everyone Ticket (Other / No Label)"];
+const REQUESTS = ["Saturday King Penthouse Party", "All-Girl Event \u2014 August 29", "Fluid After Dark \u2014 August 30", "King Penthouse WhatsApp Group", "All-Girl WhatsApp Group", "Fluid / No Label WhatsApp Group"];
+const SOURCES = ["FetLife", "WhatsApp", "A Friend", "King Penthouse Community Member", "Social Media", "Other"];
+const MAX_BYTES = 6 * 1024 * 1024;
+const PHOTO_PATHS = ["Yes — I was told to skip this part", "No — I haven't sent my photo to anyone", "I will send my photo separately"];
+const YES_PATH = PHOTO_PATHS[0];
+const NO_PATH = PHOTO_PATHS[1];
+const CHANNELS = ["WhatsApp", "FetLife"];
+
+class Component extends DCLogic {
+  state = { ticket: "", requests: [], email: "", whatsapp: "", fetlife: "", preferred: "", source: "", photoName: "", photoUrl: "", photoPath: "", sentTo: "", sentVia: "", willSendVia: "", busy: false, error: "", submitted: false, pendingPhoto: false };
+
+  photoStatus() {
+    const s = this.state;
+    if (s.photoName) return "Uploaded with form";
+    if (s.photoPath === YES_PATH) return "Already sent";
+    if (s.photoPath === "I will send my photo separately") return "Will send later";
+    return "Not provided";
+  }
+
+  componentWillUnmount() { clearTimeout(this.timer); if (this.state.photoUrl) URL.revokeObjectURL(this.state.photoUrl); }
+
+  row(a) { return `position:relative;display:flex;align-items:center;gap:14px;width:100%;min-height:54px;padding:12px 16px;box-sizing:border-box;text-align:left;cursor:pointer;appearance:none;-webkit-appearance:none;border:1px solid ${a ? "rgba(201,168,103,.75)" : "rgba(201,168,103,.2)"};background:${a ? "rgba(201,168,103,.09)" : "rgba(255,255,255,.02)"};transition:all 350ms ease`; }
+  dot(a) { return `flex:none;width:18px;height:18px;border-radius:50%;border:1px solid ${a ? "rgba(201,168,103,.95)" : "rgba(201,168,103,.42)"};box-shadow:${a ? "inset 0 0 0 4px #08070a, inset 0 0 0 20px rgba(224,197,140,.95)" : "none"};transition:all 300ms ease`; }
+
+  pickTicket = (e) => this.setState({ ticket: e.currentTarget.dataset.value, error: "" });
+  pickSource = (e) => this.setState({ source: e.currentTarget.dataset.value, error: "" });
+  pickPreferred = (e) => this.setState({ preferred: e.currentTarget.dataset.value });
+  toggleRequest = (e) => {
+    const label = e.currentTarget.dataset.value;
+    this.setState(s => ({ requests: s.requests.includes(label) ? s.requests.filter(r => r !== label) : s.requests.concat(label), error: "" }));
+  };
+  pickPhotoPath = (e) => {
+    const v = e.currentTarget.dataset.value;
+    this.setState(s => ({ photoPath: s.photoPath === v ? "" : v, error: "" }));
+  };
+  pickSentVia = (e) => this.setState({ sentVia: e.currentTarget.dataset.value, error: "" });
+  pickWillSendVia = (e) => this.setState({ willSendVia: e.currentTarget.dataset.value, error: "" });
+  onSentTo = (e) => this.setState({ sentTo: e.target.value, error: "" });
+  onEmail = (e) => this.setState({ email: e.target.value, error: "" });
+  onWhatsapp = (e) => this.setState({ whatsapp: e.target.value, error: "" });
+  onFetlife = (e) => this.setState({ fetlife: e.target.value, error: "" });
+
+  onPhoto = (e) => {
+    const f = e.target.files && e.target.files[0];
+    if (this.state.photoUrl) URL.revokeObjectURL(this.state.photoUrl);
+    if (!f) { this.setState({ photoName: "", photoUrl: "" }); return; }
+    if (f.size > MAX_BYTES) {
+      e.target.value = "";
+      this.setState({ photoName: "", photoUrl: "", error: "That image is larger than 6 MB. Please choose a smaller photo." });
+      return;
+    }
+    let url = "";
+    try { url = URL.createObjectURL(f); } catch (err) {}
+    this.setState({ photoName: f.name, photoUrl: url, error: "" });
+  };
+
+  onSubmit = (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const s = this.state;
+    const nameEl = form.querySelector('input[name="name"]');
+    if (!nameEl || !nameEl.value.trim()) return this.setState({ error: "Please enter a name or username." });
+    if (!s.ticket) return this.setState({ error: "Please choose the ticket type you are requesting verification for." });
+    if (!s.requests.length) return this.setState({ error: "Please select at least one event or group you are requesting verification for." });
+    if (!s.email.trim() && !s.whatsapp.trim() && !s.fetlife.trim()) return this.setState({ error: "Please provide at least one contact method: email, WhatsApp, or FetLife." });
+
+    if (!s.photoName && s.photoPath === YES_PATH) {
+      if (!s.sentTo.trim()) return this.setState({ error: "Please tell us who you sent your verification photo to." });
+      if (!s.sentVia) return this.setState({ error: "Please tell us where you sent your photo: WhatsApp or FetLife." });
+    }
+    if (!s.photoName && s.photoPath === "I will send my photo separately" && !s.willSendVia) {
+      return this.setState({ error: "Please tell us where you will send your photo: WhatsApp or FetLife." });
+    }
+
+    const status = this.photoStatus();
+    const noPhoto = status !== "Uploaded with form" && status !== "Already sent";
+    this.setState({ busy: true, error: "" });
+    const data = new FormData(form);
+    const ctrl = typeof AbortController !== "undefined" ? new AbortController() : null;
+    clearTimeout(this.timer);
+    this.timer = setTimeout(() => { if (ctrl) ctrl.abort(); }, 20000);
+    fetch(form.getAttribute("action") || window.location.pathname, { method: "POST", body: data, signal: ctrl ? ctrl.signal : undefined })
+      .then(res => {
+        clearTimeout(this.timer);
+        if (!res.ok) throw new Error("bad status");
+        if (this.state.photoUrl) URL.revokeObjectURL(this.state.photoUrl);
+        this.setState({ busy: false, submitted: true, photoUrl: "", pendingPhoto: noPhoto });
+        window.scrollTo(0, 0);
+      })
+      .catch(() => {
+        clearTimeout(this.timer);
+        this.setState({ busy: false, error: "We could not submit the form just now. Please check your connection and try again, or email verification@kingpenthouse.com." });
+      });
+  };
+
+  renderVals() {
+    const s = this.state;
+    const status = this.photoStatus();
+    const chip = (on) => `position:relative;display:flex;align-items:center;justify-content:center;min-height:50px;padding:0 26px;cursor:pointer;appearance:none;-webkit-appearance:none;border:1px solid ${on ? "rgba(201,168,103,.85)" : "rgba(201,168,103,.24)"};background:${on ? "rgba(201,168,103,.13)" : "rgba(255,255,255,.02)"};font-family:'Jost',sans-serif;font-weight:300;font-size:13px;letter-spacing:.14em;color:rgba(246,238,220,.92);transition:all 350ms ease`;
+    const pref = [];
+    if (s.email.trim()) pref.push("Email");
+    if (s.whatsapp.trim()) pref.push("WhatsApp");
+    if (s.fetlife.trim()) pref.push("FetLife");
+
+    return {
+      showForm: !s.submitted,
+      submitted: s.submitted,
+      onSubmit: this.onSubmit,
+      onEmail: this.onEmail, onWhatsapp: this.onWhatsapp, onFetlife: this.onFetlife, onPhoto: this.onPhoto,
+      pickTicket: this.pickTicket, pickSource: this.pickSource, pickPreferred: this.pickPreferred, toggleRequest: this.toggleRequest,
+      ticket: s.ticket, source: s.source, preferred: s.preferred, requestsJoined: s.requests.join(", "),
+      ticketOptions: TICKETS.map(label => ({ label, value: label, rowStyle: this.row(s.ticket === label), dotStyle: this.dot(s.ticket === label) })),
+      requestOptions: REQUESTS.map(label => {
+        const on = s.requests.includes(label);
+        return { label, value: label, rowStyle: this.row(on), mark: on ? "\u2713" : "", boxStyle: `flex:none;width:20px;height:20px;display:flex;align-items:center;justify-content:center;border:1px solid ${on ? "rgba(201,168,103,.95)" : "rgba(201,168,103,.42)"};background:${on ? "rgba(224,197,140,.92)" : "transparent"};color:#08070a;font-family:'Jost',sans-serif;font-size:12px;line-height:1;transition:all 300ms ease` };
+      }),
+      sourceOptions: SOURCES.map(label => ({ label, value: label, rowStyle: this.row(s.source === label), dotStyle: this.dot(s.source === label) })),
+      showOther: s.source === "Other",
+      showPreferred: pref.length > 1,
+      preferredOptions: pref.map(label => ({ label, value: label, chipStyle: `position:relative;display:flex;align-items:center;justify-content:center;min-height:46px;padding:0 22px;cursor:pointer;appearance:none;-webkit-appearance:none;border:1px solid ${s.preferred === label ? "rgba(201,168,103,.85)" : "rgba(201,168,103,.24)"};background:${s.preferred === label ? "rgba(201,168,103,.13)" : "rgba(255,255,255,.02)"};font-family:'Jost',sans-serif;font-weight:300;font-size:13px;letter-spacing:.14em;color:rgba(246,238,220,.92);transition:all 350ms ease` })),
+      hasPhoto: !!s.photoUrl,
+      photoPreviewStyle: s.photoUrl ? `width:88px;height:88px;flex:none;border:1px solid rgba(201,168,103,.45);background-image:url("${s.photoUrl}");background-size:cover;background-position:center` : "display:none",
+      photoTitle: s.photoName ? "PHOTO SELECTED" : "TAP TO UPLOAD A PHOTO",
+      photoSub: s.photoName ? s.photoName + " \u00b7 tap to replace" : "JPG, PNG or HEIC \u00b7 up to 6 MB",
+      photoStatus: status,
+      photoProvided: status === "Uploaded with form" || status === "Already sent" ? "Yes" : "No",
+      photoPathOptions: PHOTO_PATHS.map(label => ({ label, value: label, rowStyle: this.row(s.photoPath === label), dotStyle: this.dot(s.photoPath === label) })),
+      showAlreadySent: s.photoPath === YES_PATH,
+      showUpload: s.photoPath === NO_PATH || !!s.photoName,
+      showWillSend: s.photoPath === "I will send my photo separately",
+      sentTo: s.sentTo,
+      sentToValue: s.photoPath === YES_PATH ? s.sentTo : "",
+      sentViaValue: s.photoPath === YES_PATH ? s.sentVia : "",
+      willSendViaValue: s.photoPath === "I will send my photo separately" ? s.willSendVia : "",
+      sentViaOptions: CHANNELS.map(label => ({ label, value: label, chipStyle: chip(s.sentVia === label) })),
+      willSendViaOptions: CHANNELS.map(label => ({ label, value: label, chipStyle: chip(s.willSendVia === label) })),
+      onSentTo: this.onSentTo, pickPhotoPath: this.pickPhotoPath, pickSentVia: this.pickSentVia, pickWillSendVia: this.pickWillSendVia,
+      pendingPhoto: s.pendingPhoto,
+      dropStyle: `position:relative;display:flex;align-items:center;gap:16px;padding:20px;box-sizing:border-box;cursor:pointer;border:1px dashed ${s.photoName ? "rgba(201,168,103,.7)" : "rgba(201,168,103,.34)"};background:${s.photoName ? "rgba(201,168,103,.07)" : "rgba(255,255,255,.02)"};transition:all 350ms ease`,
+      hasError: !!s.error,
+      error: s.error,
+      busy: s.busy,
+      submitLabel: s.busy ? "SUBMITTING\u2026" : "SUBMIT VERIFICATION REQUEST",
+      submitStyle: `width:100%;display:flex;align-items:center;justify-content:center;gap:12px;min-height:60px;padding:0 24px;box-sizing:border-box;cursor:${s.busy ? "default" : "pointer"};opacity:${s.busy ? ".6" : "1"};appearance:none;-webkit-appearance:none;border:1px solid rgba(201,168,103,.65);background:linear-gradient(165deg, rgba(42,34,22,.92), rgba(14,11,8,.94));box-shadow:0 16px 50px rgba(0,0,0,.55), inset 0 1px 0 rgba(240,221,178,.14);font-family:'Jost',sans-serif;font-weight:300;font-size:12px;letter-spacing:.3em;color:#F8EFD9;transition:all 500ms ease`
+    };
+  }
+}
+</script>
+</body>
+</html>
