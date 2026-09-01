@@ -63,5 +63,37 @@ window.KP_EVENTS = [
     posterSrc: "./Aug30-Genderfluid.webp",
     poster: "kp-poster-aug30-genderfluid",
     status: "active"
+  },
+  {
+    slug: "sep5-labor-day-bbc",
+    category: "BBC",
+    url: "Sep5-Labor-Day-BBC.html",
+    name: "LABOUR DAY BBC ORGY",
+    tagline: "GOING LATE FOR THE LONG WEEKEND",
+    intro: "Labour Day weekend is one of the biggest party weekends of the year, so we\u2019re keeping King Penthouse open late Saturday night.",
+    date: "2026-09-05",
+    dateLabel: "Saturday, September 5, 2026",
+    time: "10:30 PM \u2013 4:00 AM",
+    prices: ["Single Males \u2014 $60", "Couples \u2014 $40", "Single Females \u2014 Free"],
+    location: "Minutes from Pearson Airport",
+    city: "Mississauga, Ontario",
+    note: "Exact address is provided to confirmed guests.",
+    fetlife: "https://fetlife.com/events/2026/09/05/labour-day-bbc-orgy-kbjk1l",
+    doublelist: "",
+    ratio: "2/3",
+    details: [
+      { title: "What to expect", body: "King Penthouse is a private warehouse event space located minutes from Pearson Airport.\n\nThe night starts at 10:30 PM and runs until 4 AM.\n\nIf you\u2019ve been to lifestyle parties before, you already know the room usually changes as the night gets later. Come early to socialize and get comfortable, or come later when things are in full swing.\n\nYou are welcome to come to meet people, dance, have drinks, flirt, explore, play, or just enjoy the atmosphere. There is never any obligation to participate in anything." },
+      { title: "Single men", body: "Single men are welcome at this event, but attendance is approved.\n\nWe try to keep the guest mix balanced and comfortable for everyone, so simply marking yourself as \u201cgoing\u201d does not automatically guarantee entry.\n\nIf you are attending as a single male, please message us for verification and wait for confirmation." },
+      { title: "Couples & single women", body: "Couples are welcome.\n\nSingle women attend free and are given priority parking directly in front of the entrance so they do not have to walk farther alone at night." },
+      { title: "Consent", body: "Consent is mandatory at King Penthouse.\n\nAlways ask before touching someone, joining play, or assuming interest. Being at a play party does not mean someone is available to you.\n\nA yes to one thing is not a yes to everything, and anyone can change their mind at any time. Respect a no the first time.\n\nAnyone who repeatedly pushes boundaries or makes other guests uncomfortable will be removed." },
+      { title: "Privacy", body: "No photos or videos of guests without their explicit permission.\n\nWe take guest privacy seriously and expect the same from everyone who attends." },
+      { title: "The space", body: "There are areas for socializing as well as separate play areas.\n\nLockers/storage are available for personal belongings, but they do not lock, so please leave valuables at home or secured in your vehicle.\n\nFeel free to bring anything you may personally need for the night, including a change of clothes or towel." },
+      { title: "Drinks", body: "Drinks will be available at the event. Please drink responsibly." },
+      { title: "Verification & address", body: "King Penthouse events are private and the exact address is not posted publicly.\n\nGuests must complete our verification process before receiving event information. Once confirmed, the address and arrival instructions will be sent directly to you." },
+      { title: "House rules", body: "Consent first.\nNo pressure.\nNo photos or videos without permission.\nRespect other guests.\nRespect the venue.\nMaintain good hygiene.\nClean up after yourself.\nDrink responsibly.\nPlay is never guaranteed." }
+    ],
+    posterSrc: "./Sep5-Labor-Day-BBC.jpeg",
+    poster: "kp-poster-sep5-labor-day-bbc",
+    status: "active"
   }
 ];
