@@ -52,7 +52,7 @@ window.KP_EVENTS = [
     ratio: "2/3",
     posterSrc: "./Aug29-BBC-Orgy.webp",
     poster: "kp-poster-aug29-bbc-orgy",
-    status: "active"
+    status: "hidden"
   },
   {
     slug: "aug30-genderfluid",
@@ -72,7 +72,7 @@ window.KP_EVENTS = [
     ratio: "2/3",
     posterSrc: "./Aug30-Genderfluid.webp",
     poster: "kp-poster-aug30-genderfluid",
-    status: "active"
+    status: "hidden"
   },
   {
     slug: "sep5-labor-day-bbc",
@@ -101,7 +101,7 @@ window.KP_EVENTS = [
           { title: "Verification & address", body: "King Penthouse events are private and the exact address is not posted publicly.\n\nGuests must complete our verification process before receiving event information. Once confirmed, the address and arrival instructions will be sent directly to you." },
       { title: "House rules", body: "Consent first.\nNo pressure.\nNo photos or videos without permission.\nRespect other guests.\nRespect the venue.\nMaintain good hygiene.\nClean up after yourself.\nPlay is never guaranteed." }
     ],
-    posterSrc: "./Sep5-Labor-Day-BBC.jpeg",
+    posterSrc: "./Sep5-Labor-Day-BBC.webp",
     poster: "kp-poster-sep5-labor-day-bbc",
     status: "active"
   },
@@ -119,11 +119,11 @@ window.KP_EVENTS = [
     location: "Minutes from Pearson Airport",
     city: "Mississauga, Ontario",
     note: "Exact address is provided to confirmed guests.",
-    fetlife: "",
+    fetlife: "https://fetlife.com/events/2026/09/12/king-penthouse-saturday-night-orgy-vzolo5",
     doublelist: "",
     ratio: "2/3",
     details: window.KP_STD_DETAILS,
-    posterSrc: "./Sep12-Saturday-Orgy.jpeg",
+    posterSrc: "./Sep12-Saturday-Orgy.webp",
     poster: "kp-poster-sep12-saturday-orgy",
     status: "active"
   },
@@ -141,11 +141,11 @@ window.KP_EVENTS = [
     location: "Minutes from Pearson Airport",
     city: "Mississauga, Ontario",
     note: "Exact address is provided to confirmed guests.",
-    fetlife: "",
+    fetlife: "https://fetlife.com/events/2026/09/19/king-penthouse-caribbean-orgy-eayobf",
     doublelist: "",
-    ratio: "2/3",
+    ratio: "1100/1454",
     details: window.KP_STD_DETAILS,
-    posterSrc: "./Sep19-Caribbean-Orgy.jpeg",
+    posterSrc: "./Sep19-Caribbean-Orgy.webp",
     poster: "kp-poster-sep19-caribbean-orgy",
     status: "active"
   },
@@ -163,11 +163,11 @@ window.KP_EVENTS = [
     location: "Minutes from Pearson Airport",
     city: "Mississauga, Ontario",
     note: "Exact address is provided to confirmed guests.",
-    fetlife: "",
+    fetlife: "https://fetlife.com/events/2026/09/26/king-penthouse-save-a-horse-ride-a-cowboy-bbc-orgy-ivmqcn",
     doublelist: "",
     ratio: "2/3",
     details: window.KP_STD_DETAILS,
-    posterSrc: "./Sep26-Cowboy-BBC.jpeg",
+    posterSrc: "./Sep26-Cowboy-BBC.webp",
     poster: "kp-poster-sep26-cowboy-bbc-orgy",
     status: "active"
   }

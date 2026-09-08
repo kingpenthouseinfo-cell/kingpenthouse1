@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&amp;family=Jost:wght@200;300;400&amp;display=swap" rel="stylesheet">
+<style>
+  html, body { margin:0; padding:0; background:#050406; color:#EFE6D3; overflow-x:hidden; }
+  body { -webkit-font-smoothing:antialiased; }
+  a { color:#C9A867; text-decoration:none; }
+  a:hover { color:#F1E0B8; }
+</style>
+</helmet>
+
+<nav style="position:fixed;top:0;left:0;right:0;z-index:80;display:flex;align-items:center;justify-content:center;gap:clamp(12px,3vw,30px);padding:12px clamp(12px,4vw,26px);box-sizing:border-box;background:rgba(5,4,6,.86);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(201,168,103,.18);overflow-x:auto;white-space:nowrap;scrollbar-width:none">
+  <a href="index.html" style="flex:none;display:flex;align-items:center;justify-content:center;width:26px;height:26px;border:1px solid rgba(201,168,103,.6);border-radius:50%;font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:.02em;color:rgba(228,198,138,.95)">KP</a>
+  <a href="index.html" style="flex:none;min-height:34px;display:flex;align-items:center;font-family:'Jost',sans-serif;font-weight:300;font-size:clamp(8.5px,2.2vw,10px);letter-spacing:.3em;color:rgba(239,230,211,.62);transition:color 400ms ease" style-hover="color:#F1E0B8">HOME</a>
+  <a href="Events.html" style="flex:none;min-height:34px;display:flex;align-items:center;font-family:'Jost',sans-serif;font-weight:300;font-size:clamp(8.5px,2.2vw,10px);letter-spacing:.3em;color:rgba(239,230,211,.62);transition:color 400ms ease" style-hover="color:#F1E0B8">EVENTS</a>
+  <a href="Reviews.html" style="flex:none;min-height:34px;display:flex;align-items:center;font-family:'Jost',sans-serif;font-weight:300;font-size:clamp(8.5px,2.2vw,10px);letter-spacing:.3em;color:#E4C68A;border-bottom:1px solid rgba(201,168,103,.8);transition:color 400ms ease" style-hover="color:#F1E0B8">REVIEWS</a>
+  <a href="Location.html" style="flex:none;min-height:34px;display:flex;align-items:center;font-family:'Jost',sans-serif;font-weight:300;font-size:clamp(8.5px,2.2vw,10px);letter-spacing:.3em;color:rgba(239,230,211,.62);transition:color 400ms ease" style-hover="color:#F1E0B8">LOCATION</a>
+  <a href="Contact.html" style="flex:none;min-height:34px;display:flex;align-items:center;font-family:'Jost',sans-serif;font-weight:300;font-size:clamp(8.5px,2.2vw,10px);letter-spacing:.3em;color:rgba(239,230,211,.62);transition:color 400ms ease" style-hover="color:#F1E0B8">CONTACT</a>
+  <a href="Verification.html" style="flex:none;min-height:34px;display:flex;align-items:center;font-family:'Jost',sans-serif;font-weight:300;font-size:clamp(8.5px,2.2vw,10px);letter-spacing:.3em;color:rgba(239,230,211,.62);transition:color 400ms ease" style-hover="color:#F1E0B8">GET VERIFIED</a>
+</nav>
+
+<div style="min-height:100vh;background:#050406;padding-top:62px;box-sizing:border-box">
+
+  <sc-if value="{{ wide }}" hint-placeholder-val="{{ true }}">
+    <img src="./reviews-board.webp" alt="King Penthouse — what our guests are saying. Real guest reviews." style="display:block;width:100%;height:auto" />
+  </sc-if>
+
+  <sc-if value="{{ narrow }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:22px;padding:36px 24px 8px">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;padding-bottom:14px">
+        <div style="font-family:'Jost',sans-serif;font-weight:300;font-size:9px;letter-spacing:.44em;color:rgba(217,188,126,.9)">REAL GUEST REVIEWS</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-weight:300;font-size:26px;line-height:1.15;color:#F7EFDD">What our guests are <em style="font-style:italic;color:#E4C68A">saying</em></div>
+        <div style="width:70px;height:1px;background:linear-gradient(to right, rgba(201,168,103,0), rgba(201,168,103,.8), rgba(201,168,103,0))"></div>
+      </div>
+      <figure style="position:relative;margin:0;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center">
+        <div style="font-family:'Cormorant Garamond',serif;font-weight:400;font-size:64px;line-height:.5;color:rgba(201,168,103,.28);pointer-events:none">&ldquo;</div>
+        <blockquote style="margin:0;max-width:30ch;font-family:'Cormorant Garamond',serif;font-weight:300;font-size:21px;line-height:1.55;color:#F3E9D6;text-wrap:pretty">Thank you guys for a fun night. Was one for the books for sure. Can’t wait to come back.</blockquote>
+        <figcaption style="display:flex;align-items:center;gap:10px;font-family:'Jost',sans-serif;font-weight:300;font-size:9px;letter-spacing:.3em;color:rgba(217,188,126,.9)">FANGME<span style="width:3px;height:3px;border:1px solid rgba(201,168,103,.6);transform:rotate(45deg)"></span><span style="color:rgba(239,230,211,.72)">AUG 22, 2026</span></figcaption>
+      </figure>
+      <figure style="position:relative;margin:0;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;padding-top:38px;border-top:1px solid rgba(201,168,103,.2)">
+        <div style="font-family:'Cormorant Garamond',serif;font-weight:400;font-size:64px;line-height:.5;color:rgba(201,168,103,.28);pointer-events:none">&ldquo;</div>
+        <blockquote style="margin:0;max-width:30ch;font-family:'Cormorant Garamond',serif;font-weight:300;font-size:21px;line-height:1.55;color:#F3E9D6;text-wrap:pretty">Had such a great time. I can’t wait till next time. Next time I’ll bring a change of clothes — my outfit was soaked.</blockquote>
+        <figcaption style="display:flex;align-items:center;gap:10px;font-family:'Jost',sans-serif;font-weight:300;font-size:9px;letter-spacing:.3em;color:rgba(217,188,126,.9)">QUINNQOSRYAN<span style="width:3px;height:3px;border:1px solid rgba(201,168,103,.6);transform:rotate(45deg)"></span><span style="color:rgba(239,230,211,.72)">AUG 22, 2026</span></figcaption>
+      </figure>
+      <figure style="position:relative;margin:0;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;padding-top:38px;border-top:1px solid rgba(201,168,103,.2)">
+        <div style="font-family:'Cormorant Garamond',serif;font-weight:400;font-size:64px;line-height:.5;color:rgba(201,168,103,.28);pointer-events:none">&ldquo;</div>
+        <blockquote style="margin:0;max-width:30ch;font-family:'Cormorant Garamond',serif;font-weight:300;font-size:21px;line-height:1.55;color:#F3E9D6;text-wrap:pretty">Party was a success, didn’t wanna leave lol</blockquote>
+        <figcaption style="display:flex;align-items:center;gap:10px;font-family:'Jost',sans-serif;font-weight:300;font-size:9px;letter-spacing:.3em;color:rgba(217,188,126,.9)">JOSH<span style="width:3px;height:3px;border:1px solid rgba(201,168,103,.6);transform:rotate(45deg)"></span><span style="color:rgba(239,230,211,.72)">AUG 29, 2026</span></figcaption>
+      </figure>
+      <figure style="position:relative;margin:0;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;padding-top:38px;border-top:1px solid rgba(201,168,103,.2)">
+        <div style="font-family:'Cormorant Garamond',serif;font-weight:400;font-size:64px;line-height:.5;color:rgba(201,168,103,.28);pointer-events:none">&ldquo;</div>
+        <blockquote style="margin:0;max-width:30ch;font-family:'Cormorant Garamond',serif;font-weight:300;font-size:21px;line-height:1.55;color:#F3E9D6;text-wrap:pretty">The last party of summer was fire. A good night was definitely had.</blockquote>
+        <figcaption style="display:flex;align-items:center;gap:10px;font-family:'Jost',sans-serif;font-weight:300;font-size:9px;letter-spacing:.3em;color:rgba(217,188,126,.9)">SHOWOFFPRINCESS<span style="width:3px;height:3px;border:1px solid rgba(201,168,103,.6);transform:rotate(45deg)"></span><span style="color:rgba(239,230,211,.72)">SEP 5, 2026</span></figcaption>
+      </figure>
+      <figure style="position:relative;margin:0;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;padding-top:38px;border-top:1px solid rgba(201,168,103,.2)">
+        <div style="font-family:'Cormorant Garamond',serif;font-weight:400;font-size:64px;line-height:.5;color:rgba(201,168,103,.28);pointer-events:none">&ldquo;</div>
+        <blockquote style="margin:0;max-width:30ch;font-family:'Cormorant Garamond',serif;font-weight:300;font-size:21px;line-height:1.55;color:#F3E9D6;text-wrap:pretty">Had a great time at my first event. Thank you to everyone who made the 2 hour drive worthwhile.</blockquote>
+        <figcaption style="display:flex;align-items:center;gap:10px;font-family:'Jost',sans-serif;font-weight:300;font-size:9px;letter-spacing:.3em;color:rgba(217,188,126,.9)">TONI<span style="width:3px;height:3px;border:1px solid rgba(201,168,103,.6);transform:rotate(45deg)"></span><span style="color:rgba(239,230,211,.72)">SEP 5, 2026</span></figcaption>
+      </figure>
+      <figure style="position:relative;margin:0;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;padding-top:38px;border-top:1px solid rgba(201,168,103,.2)">
+        <div style="font-family:'Cormorant Garamond',serif;font-weight:400;font-size:64px;line-height:.5;color:rgba(201,168,103,.28);pointer-events:none">&ldquo;</div>
+        <blockquote style="margin:0;max-width:30ch;font-family:'Cormorant Garamond',serif;font-weight:300;font-size:21px;line-height:1.55;color:#F3E9D6;text-wrap:pretty">Home safe!!! Had a blast!</blockquote>
+        <figcaption style="display:flex;align-items:center;gap:10px;font-family:'Jost',sans-serif;font-weight:300;font-size:9px;letter-spacing:.3em;color:rgba(217,188,126,.9)">NICKEY JUNE<span style="width:3px;height:3px;border:1px solid rgba(201,168,103,.6);transform:rotate(45deg)"></span><span style="color:rgba(239,230,211,.72)">SEP 5, 2026</span></figcaption>
+      </figure>
+      <figure style="position:relative;margin:0;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;padding-top:38px;border-top:1px solid rgba(201,168,103,.2)">
+        <div style="font-family:'Cormorant Garamond',serif;font-weight:400;font-size:64px;line-height:.5;color:rgba(201,168,103,.28);pointer-events:none">&ldquo;</div>
+        <blockquote style="margin:0;max-width:30ch;font-family:'Cormorant Garamond',serif;font-weight:300;font-size:21px;line-height:1.55;color:#F3E9D6;text-wrap:pretty">Had a great time last night. It was like a private party.</blockquote>
+        <figcaption style="display:flex;align-items:center;gap:10px;font-family:'Jost',sans-serif;font-weight:300;font-size:9px;letter-spacing:.3em;color:rgba(217,188,126,.9)">RAN<span style="width:3px;height:3px;border:1px solid rgba(201,168,103,.6);transform:rotate(45deg)"></span><span style="color:rgba(239,230,211,.72)">SEP 5, 2026</span></figcaption>
+      </figure>
+      <figure style="position:relative;margin:0;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;padding-top:38px;border-top:1px solid rgba(201,168,103,.2)">
+        <div style="font-family:'Cormorant Garamond',serif;font-weight:400;font-size:64px;line-height:.5;color:rgba(201,168,103,.28);pointer-events:none">&ldquo;</div>
+        <blockquote style="margin:0;max-width:30ch;font-family:'Cormorant Garamond',serif;font-weight:300;font-size:21px;line-height:1.55;color:#F3E9D6;text-wrap:pretty">Thank you for putting on the event and making it so welcoming.</blockquote>
+        <figcaption style="display:flex;align-items:center;gap:10px;font-family:'Jost',sans-serif;font-weight:300;font-size:9px;letter-spacing:.3em;color:rgba(217,188,126,.9)">NAME WITHHELD<span style="width:3px;height:3px;border:1px solid rgba(201,168,103,.6);transform:rotate(45deg)"></span><span style="color:rgba(239,230,211,.72)">SEP 5, 2026</span></figcaption>
+      </figure>
+    </div>
+  </sc-if>
+
+  <div style="display:flex;flex-direction:column;align-items:center;gap:clamp(14px,2.4vh,22px);text-align:center;padding:clamp(48px,9vh,100px) clamp(22px,6vw,60px) clamp(52px,9vh,110px)">
+    <div style="width:5px;height:5px;border:1px solid rgba(201,168,103,.7);transform:rotate(45deg)"></div>
+    <h2 style="margin:0;font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(24px,4.4vw,44px);line-height:1.1;color:#F9F2E3">Be the next one <em style="font-style:italic;color:#E4C68A">to say it</em></h2>
+    <a href="Verification.html" style="margin-top:6px;display:flex;align-items:center;justify-content:center;min-height:56px;padding:0 clamp(26px,6vw,46px);border:1px solid rgba(201,168,103,.5);background:rgba(6,5,8,.5);font-family:'Jost',sans-serif;font-weight:300;font-size:10px;letter-spacing:.4em;color:#E4C68A;transition:all 600ms ease" style-hover="border-color:rgba(201,168,103,.95);background:rgba(201,168,103,.12);color:#F7ECD3;box-shadow:0 0 54px rgba(201,168,103,.2)">GET VERIFIED</a>
+    <div style="margin-top:clamp(26px,5vh,54px);font-family:'Cormorant Garamond',serif;font-weight:300;font-size:11px;letter-spacing:.5em;color:rgba(214,184,122,.7)">KING PENTHOUSE</div>
+  </div>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { w: typeof window !== "undefined" ? window.innerWidth : 1280 };
+  componentDidMount() {
+    this.onResize = () => this.setState({ w: window.innerWidth });
+    window.addEventListener("resize", this.onResize);
+  }
+  componentWillUnmount() { window.removeEventListener("resize", this.onResize); }
+  renderVals() {
+    const wide = this.state.w >= 820;
+    return { wide, narrow: !wide };
+  }
+}
+</script>
+</body>
+</html>

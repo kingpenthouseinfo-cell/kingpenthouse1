@@ -21,19 +21,20 @@
 </style>
 </helmet>
 
+<nav style="position:fixed;top:0;left:0;right:0;z-index:80;display:flex;align-items:center;justify-content:center;gap:clamp(12px,3vw,30px);padding:12px clamp(12px,4vw,26px);box-sizing:border-box;background:rgba(5,4,6,.86);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(201,168,103,.18);overflow-x:auto;white-space:nowrap;scrollbar-width:none">
+  <a href="index.html" style="flex:none;display:flex;align-items:center;justify-content:center;width:26px;height:26px;border:1px solid rgba(201,168,103,.6);border-radius:50%;font-family:'Cormorant Garamond',serif;font-size:9px;letter-spacing:.02em;color:rgba(228,198,138,.95)">KP</a>
+  <a href="index.html" style="flex:none;min-height:34px;display:flex;align-items:center;font-family:'Jost',sans-serif;font-weight:300;font-size:clamp(8.5px,2.2vw,10px);letter-spacing:.3em;color:rgba(239,230,211,.62);transition:color 400ms ease" style-hover="color:#F1E0B8">HOME</a>
+  <a href="Events.html" style="flex:none;min-height:34px;display:flex;align-items:center;font-family:'Jost',sans-serif;font-weight:300;font-size:clamp(8.5px,2.2vw,10px);letter-spacing:.3em;color:rgba(239,230,211,.62);transition:color 400ms ease" style-hover="color:#F1E0B8">EVENTS</a>
+  <a href="Reviews.html" style="flex:none;min-height:34px;display:flex;align-items:center;font-family:'Jost',sans-serif;font-weight:300;font-size:clamp(8.5px,2.2vw,10px);letter-spacing:.3em;color:rgba(239,230,211,.62);transition:color 400ms ease" style-hover="color:#F1E0B8">REVIEWS</a>
+  <a href="Location.html" style="flex:none;min-height:34px;display:flex;align-items:center;font-family:'Jost',sans-serif;font-weight:300;font-size:clamp(8.5px,2.2vw,10px);letter-spacing:.3em;color:rgba(239,230,211,.62);transition:color 400ms ease" style-hover="color:#F1E0B8">LOCATION</a>
+  <a href="Contact.html" style="flex:none;min-height:34px;display:flex;align-items:center;font-family:'Jost',sans-serif;font-weight:300;font-size:clamp(8.5px,2.2vw,10px);letter-spacing:.3em;color:rgba(239,230,211,.62);transition:color 400ms ease" style-hover="color:#F1E0B8">CONTACT</a>
+  <a href="Verification.html" style="flex:none;min-height:34px;display:flex;align-items:center;font-family:'Jost',sans-serif;font-weight:300;font-size:clamp(8.5px,2.2vw,10px);letter-spacing:.3em;color:rgba(239,230,211,.62);transition:color 400ms ease" style-hover="color:#F1E0B8">GET VERIFIED</a>
+</nav>
+
 <div style="min-height:100vh;background:#07060a;position:relative;overflow:hidden">
   <div style="{{ spotStyle }}"></div>
   <img src="./el-palm.png" alt="" style="position:absolute;right:-90px;top:40px;width:clamp(220px,26vw,400px);opacity:.26;pointer-events:none;z-index:0;transform:scaleX(-1) rotate(8deg)" />
 
-  <header style="position:fixed;top:0;left:0;right:0;z-index:40;display:flex;align-items:center;justify-content:center;gap:26px;padding:20px 22px;background:linear-gradient(to bottom, rgba(7,6,10,.86), rgba(7,6,10,0))">
-    <a href="index.html" style="display:flex;align-items:center;gap:9px;min-height:40px;padding:0 16px;border:1px solid rgba(207,174,114,.4);border-radius:999px;background:rgba(207,174,114,.05);font-family:'Outfit',sans-serif;font-weight:300;font-size:10px;letter-spacing:.4em;color:rgba(240,222,182,.9);transition:all 500ms ease" style-hover="border-color:rgba(207,174,114,.95);background:rgba(207,174,114,.13);color:#F7ECD3;box-shadow:0 0 32px rgba(207,174,114,.2)"><span style="width:16px;height:16px;border:1px solid rgba(207,174,114,.7);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:7px;letter-spacing:0">KP</span>HOME</a>
-    <div style="width:5px;height:5px;border:1px solid rgba(207,174,114,.6);transform:rotate(45deg)"></div>
-    <a href="Events.html" style="font-family:'Outfit',sans-serif;font-weight:300;font-size:10px;letter-spacing:.4em;color:rgba(207,174,114,.92)" style-hover="color:#F0DEB6">EVENTS</a>
-    <div style="width:5px;height:5px;border:1px solid rgba(207,174,114,.6);transform:rotate(45deg)"></div>
-    <a href="Contact.html" style="font-family:'Outfit',sans-serif;font-weight:300;font-size:10px;letter-spacing:.4em;color:rgba(237,228,214,.6)" style-hover="color:#F0DEB6">CONTACT</a>
-    <div style="width:5px;height:5px;border:1px solid rgba(207,174,114,.6);transform:rotate(45deg)"></div>
-    <a href="Location.html" style="font-family:'Outfit',sans-serif;font-weight:300;font-size:10px;letter-spacing:.4em;color:rgba(237,228,214,.6)" style-hover="color:#F0DEB6">LOCATION</a>
-  </header>
 
   <section style="position:relative;z-index:1;animation:iFade 900ms ease both;padding:108px 22px 110px">
     <div style="max-width:1180px;margin:0 auto">

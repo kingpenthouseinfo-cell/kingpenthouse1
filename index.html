@@ -31,6 +31,7 @@
 </style>
 </helmet>
 
+
 <sc-if value="{{ splash }}" hint-placeholder-val="{{ true }}">
   <div style="position:fixed;inset:0;z-index:90;background:#08070a;display:flex;align-items:center;justify-content:center;animation:kpOut 900ms ease 2400ms forwards;pointer-events:none">
     <div style="position:absolute;width:min(80vw,700px);height:min(80vw,700px);border-radius:50%;background:radial-gradient(circle, rgba(201,168,103,.16), rgba(201,168,103,0) 68%);animation:kpVeil 2600ms ease forwards"></div>
@@ -52,7 +53,7 @@
       <h1 style="margin:0;animation:kpRise 1400ms cubic-bezier(.22,.61,.36,1) 300ms both;font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(30px,min(10vw,8.5svh),96px);line-height:1.04;letter-spacing:.16em;color:#F5EBD5;text-shadow:0 0 60px rgba(201,168,103,.22)">KING<br>PENTHOUSE</h1>
 
       <a href="Events.html" style="animation:kpRise 1400ms cubic-bezier(.22,.61,.36,1) 1100ms both;margin-top:clamp(4px,1.5svh,14px);flex:none;min-height:52px;display:flex;align-items:center;justify-content:center;padding:0 42px;border:1px solid rgba(201,168,103,.5);border-radius:2px;background:rgba(201,168,103,.04);font-family:'Jost',sans-serif;font-weight:400;font-size:12px;letter-spacing:.36em;color:#D9BC7E;transition:all 600ms ease" style-hover="border-color:rgba(201,168,103,.95);color:#F3E3BC;background:rgba(201,168,103,.1);box-shadow:0 0 44px rgba(201,168,103,.22)">EVENTS</a>
-      <div style="display:flex;align-items:center;gap:18px;justify-content:center"><a href="Contact.html" style="animation:kpRise 1400ms cubic-bezier(.22,.61,.36,1) 1400ms both;flex:none;min-height:44px;display:flex;align-items:center;font-family:'Jost',sans-serif;font-weight:300;font-size:10px;letter-spacing:.4em;color:rgba(239,230,211,.5)" style-hover="color:#D9BC7E">CONTACT</a><span style="width:4px;height:4px;border:1px solid rgba(201,168,103,.5);transform:rotate(45deg);flex:none"></span><a href="Location.html" style="animation:kpRise 1400ms cubic-bezier(.22,.61,.36,1) 1550ms both;flex:none;min-height:44px;display:flex;align-items:center;font-family:'Jost',sans-serif;font-weight:300;font-size:10px;letter-spacing:.4em;color:rgba(239,230,211,.5)" style-hover="color:#D9BC7E">LOCATION</a></div>
+      <div style="display:flex;align-items:center;gap:18px;justify-content:center"><a href="Contact.html" style="animation:kpRise 1400ms cubic-bezier(.22,.61,.36,1) 1400ms both;flex:none;min-height:44px;display:flex;align-items:center;font-family:'Jost',sans-serif;font-weight:300;font-size:10px;letter-spacing:.4em;color:rgba(239,230,211,.5)" style-hover="color:#D9BC7E">CONTACT</a><span style="width:4px;height:4px;border:1px solid rgba(201,168,103,.5);transform:rotate(45deg);flex:none"></span><a href="Location.html" style="animation:kpRise 1400ms cubic-bezier(.22,.61,.36,1) 1550ms both;flex:none;min-height:44px;display:flex;align-items:center;font-family:'Jost',sans-serif;font-weight:300;font-size:10px;letter-spacing:.4em;color:rgba(239,230,211,.5)" style-hover="color:#D9BC7E">LOCATION</a><span style="width:4px;height:4px;border:1px solid rgba(201,168,103,.5);transform:rotate(45deg);flex:none"></span><a href="Reviews.html" style="animation:kpRise 1400ms cubic-bezier(.22,.61,.36,1) 1550ms both;flex:none;min-height:44px;display:flex;align-items:center;font-family:'Jost',sans-serif;font-weight:300;font-size:10px;letter-spacing:.4em;color:rgba(239,230,211,.5)" style-hover="color:#D9BC7E">REVIEWS</a></div>
     </div>
   </section>
 
@@ -90,8 +91,10 @@ class Component extends DCLogic {
   }
   componentWillUnmount() { clearTimeout(this.timer); clearInterval(this.poll); }
   renderVals() {
+    const today = new Date(); today.setHours(0,0,0,0);
     const list = (window.KP_EVENTS || [])
       .filter(e => (e.status ?? "active") === "active")
+      .filter(e => !e.date || isNaN(Date.parse(e.date)) || new Date(e.date + "T23:59:59") >= today)
       .sort((a, b) => (Date.parse(a.date) || Infinity) - (Date.parse(b.date) || Infinity));
     return {
       splash: this.state.splash,
