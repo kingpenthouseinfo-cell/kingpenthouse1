@@ -55,7 +55,7 @@
       <sc-for list="{{ upcoming }}" as="ev" hint-placeholder-count="3">
         <a href="{{ ev.url }}" style="{{ ev.wrapStyle }}">
           <div style="position:relative;padding:clamp(6px,2vw,14px);border:1px solid rgba(201,168,103,.2);background:linear-gradient(160deg, rgba(201,168,103,.07), rgba(8,7,10,0) 60%);transition:all 800ms cubic-bezier(.2,.7,.3,1)" style-hover="border-color:rgba(201,168,103,.6);box-shadow:0 30px 90px rgba(0,0,0,.6), 0 0 60px rgba(201,168,103,.12);transform:translateY(-8px)">
-            <div style="{{ ev.imgStyle }}"></div>
+            <img src="{{ ev.posterSrc }}" alt="" style="{{ ev.imgStyle }}" />
             <div style="position:absolute;inset:clamp(6px,2vw,14px);pointer-events:none;box-shadow:inset 0 0 60px rgba(8,7,10,.5)"></div>
           </div>
           <div style="display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 12px;padding:0 4px">
@@ -146,14 +146,13 @@ class Component extends DCLogic {
         const past = dated && new Date(e.date + "T23:59:59") < today;
         return {
         past,
-        imgStyle: `display:block;width:100%;aspect-ratio:${e.ratio || "2/3"};background-color:#0a0810;background-image:url("${e.posterSrc || ""}");background-size:cover;background-position:center` + (past ? ";opacity:.34;filter:grayscale(.55)" : ""),
+        imgStyle: "display:block;width:100%;height:auto;background:#0a0810" + (past ? ";opacity:.34;filter:grayscale(.55)" : ""),
         viewLabel: past ? "PAST" : "VIEW →",
         wrapStyle: "display:grid;gap:clamp(10px,2.5vw,22px);animation:kpRise 1100ms cubic-bezier(.22,.61,.36,1) both" + (past ? ";pointer-events:none;cursor:default" : ""),
         url: e.url || "#",
         ratio: e.ratio || "2/3",
         poster: e.poster || `kp-poster-${i + 1}`,
         posterSrc: e.posterSrc || "",
-        hasPoster: !!(e.posterSrc || "").trim(),
         short: (e.dateLabel || "").replace(/,? \d{4}$/, ""),
         placeholder: (e.name && e.name.trim()) ? e.name.toLowerCase() + " — poster" : "event poster"
       }; })
