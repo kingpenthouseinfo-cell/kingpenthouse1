@@ -170,5 +170,35 @@ window.KP_EVENTS = [
     posterSrc: "./Sep26-Cowboy-BBC.webp",
     poster: "kp-poster-sep26-cowboy-bbc-orgy",
     status: "active"
+  },
+  {
+    slug: "oct3-king-of-spades",
+    category: "BBC",
+    url: "Oct3-King-Of-Spades.html",
+    name: "BBC KING OF SPADES",
+    tagline: "CALLING ALL QUEENS OF SPADES",
+    intro: "It\u2019s time to appreciate the Kings. This Saturday, King Penthouse is flipping the spotlight onto the men for King of Spades \u2014 a BBC-focused night for the Queens who know exactly what they came for. If BBC is your thing, this is your Saturday.",
+    date: "2026-10-03",
+    dateLabel: "Saturday, October 3, 2026",
+    time: "10:00 PM \u2013 4:00 AM",
+    prices: ["Single Males \u2014 $60", "Couples \u2014 $40", "Single Females \u2014 Free"],
+    location: "Minutes from Pearson Airport",
+    city: "Mississauga, Ontario",
+    note: "Address given to approved guests. Cash or e-transfer at the door.",
+    fetlife: "",
+    doublelist: "",
+    ratio: "2/3",
+    details: [
+      { title: "Calling all Queens", body: "Queens of Spades, BBC admirers, curious women, couples, and approved single men are invited to join us for a night where the Kings take center stage.\n\nYou\u2019ve seen the Queen of Spades. This time, we\u2019re crowning the King.\n\nCome meet the men, socialize, flirt, watch, explore, and show some appreciation for the Kings of KP.\n\nAlready a proud Queen of Spades? Come represent. Curious about the BBC/QoS scene but haven\u2019t explored it before? You\u2019re welcome too. Nobody needs to identify as a Queen of Spades to attend or participate.\n\nThe theme might be bold, but the same KP rule always applies: chemistry decides what happens next." },
+      { title: "BBC night at King Penthouse", body: "Expect a sexually open, adults-only environment with BBC at the center of the night\u2019s theme.\n\nCome to socialize, meet people, watch, flirt, explore, or play where there is mutual interest.\n\nParticipation is always optional. Admission never guarantees play or access to another guest." },
+      { title: "Admission", body: "Single Men: $60\nCouples: $40\nSingle Women: FREE\n\nCash or e-transfer at the door.\n\nSingle men must be verified and approved before attending. No unverified walk-ins." },
+      { title: "Verification required", body: "New to King Penthouse? Message us before attending.\n\nPlease include your age, whether you\u2019re attending as a single man, single woman, or couple, a clear recent photo, and your FetLife profile/name if available.\n\nCouples should verify together." },
+      { title: "Consent is everything", body: "The theme does not imply consent.\n\nNo one owes anyone attention, touching, play, or participation because of how they identify, what they\u2019re wearing, or why they came.\n\nAsk first. Respect boundaries. Take rejection gracefully.\n\nIf someone says no, hesitates, or changes their mind, stop." },
+      { title: "Privacy", body: "No photos or videos in the main party area.\n\nGeneral phone use should remain in the designated entrance area. Anyone photographing or recording another guest without permission may be removed and banned.\n\nWhat happens at KP stays at KP." },
+      { title: "Parking", body: "Single women: Parking directly in front of the venue.\n\nCouples & single men: Designated parking across the street.\n\nFull arrival information is provided after verification." }
+    ],
+    posterSrc: "./Oct3-King-Of-Spades.webp",
+    poster: "kp-poster-oct3-king-of-spades",
+    status: "active"
   }
 ];
