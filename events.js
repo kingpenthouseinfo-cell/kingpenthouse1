@@ -185,7 +185,7 @@ window.KP_EVENTS = [
     location: "Minutes from Pearson Airport",
     city: "Mississauga, Ontario",
     note: "Address given to approved guests. Cash or e-transfer at the door.",
-    fetlife: "",
+    fetlife: "https://fetlife.com/events/2026/10/03/king-penthouse-bbc-king-of-spades-fdpbmj",
     doublelist: "",
     ratio: "2/3",
     details: [
@@ -199,6 +199,33 @@ window.KP_EVENTS = [
     ],
     posterSrc: "./Oct3-King-Of-Spades.webp",
     poster: "kp-poster-oct3-king-of-spades",
+    status: "active"
+  },
+  {
+    slug: "oct10-bbcs-bikers-baddies",
+    category: "BBC",
+    url: "Oct10-BBCs-Bikers-Baddies.html",
+    name: "BBCs, BIKERS & TATTOOED BADDIES",
+    tagline: "GET YOUR TITTIES TATTED BEFORE MIDNIGHT",
+    intro: "Ladies, get there before midnight. Pretty temporary tattoo designs \u2014 detailed mandalas, florals and ornamental pieces \u2014 for the girls who want them. Then the night belongs to the BBCs, the bikers and the tattooed baddies.",
+    date: "2026-10-10",
+    dateLabel: "Saturday, October 10, 2026",
+    time: "10:30 PM \u2013 4:00 AM",
+    prices: ["Single Males \u2014 $60", "Couples \u2014 $40", "Single Females \u2014 Free"],
+    location: "Minutes from Pearson Airport",
+    city: "Mississauga, Ontario",
+    note: "Address given privately to confirmed guests.",
+    fetlife: "",
+    doublelist: "",
+    ratio: "1152/1712",
+    details: [
+      { title: "Get your titties tatted before midnight", image: "./Oct10-Tattoo.webp", ratio: "1024/1536", body: "We\u2019ll have pretty temporary tattoo designs available for the girls who want them, including detailed mandalas, florals and ornamental designs that can be placed over your titties, around your nipples, or even over your pussy if you\u2019re feeling bold.\n\nNot permanent tattoos.\n\nThe tattoo setup is only happening before midnight, so don\u2019t be the one arriving at 1 AM asking where the titty tattoos went." },
+      { title: "The night", body: "Expect the usual King Penthouse mix of music, flirting, socializing and play as the night gets later.\n\nCome with somebody or come alone. Come to meet people, watch the room develop, flirt, play if the chemistry is there, or just enjoy the party.\n\nThere is never any obligation to participate in anything simply because you came to a play event." },
+      { title: "Admission", body: "Single Males: $60\nCouples: $40\nSingle Females: FREE" },
+      { title: "Consent & house rules", body: "Ask before touching. A yes to one thing is not a yes to everything. Being naked, dressed provocatively, wearing an intimate tattoo, or being at King Penthouse is never automatic consent.\n\nRespect people\u2019s boundaries, privacy and personal space. No photos or videos of guests without their explicit permission. Anyone who repeatedly ignores boundaries will be asked to leave.\n\nThe exact private address and arrival information are provided to confirmed guests." }
+    ],
+    posterSrc: "./Oct10-BBCs-Bikers-Baddies.webp",
+    poster: "kp-poster-oct10-bbcs-bikers-baddies",
     status: "active"
   }
 ];
