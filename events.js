@@ -215,7 +215,7 @@ window.KP_EVENTS = [
     location: "Minutes from Pearson Airport",
     city: "Mississauga, Ontario",
     note: "Address given privately to confirmed guests.",
-    fetlife: "",
+    fetlife: "https://fetlife.com/events/2026/10/10/king-penthouse-bbcs-bikers-tattoed-baddies-9cwh32",
     doublelist: "",
     ratio: "1152/1712",
     details: [
