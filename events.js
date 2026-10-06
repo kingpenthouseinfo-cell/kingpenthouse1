@@ -227,5 +227,36 @@ window.KP_EVENTS = [
     posterSrc: "./Oct10-BBCs-Bikers-Baddies.webp",
     poster: "kp-poster-oct10-bbcs-bikers-baddies",
     status: "active"
+  },
+  {
+    slug: "oct31-halloween",
+    category: "BBC",
+    url: "Oct31-Halloween.html",
+    name: "KING PENTHOUSE HALLOWEEN",
+    tagline: "OUR BIGGEST PARTY OF THE YEAR",
+    intro: "Get ready for our biggest party of the year. We are expecting this event to hit capacity, so please purchase your tickets early. Once we reach capacity, we may not be able to accommodate additional guests.",
+    date: "2026-10-31",
+    dateLabel: "Saturday, October 31, 2026",
+    time: "9:30 PM \u2013 4:00 AM (+ an extra hour)",
+    prices: ["Single Males \u2014 $80", "Couples \u2014 $60", "Single Females \u2014 Free"],
+    location: "Minutes from Pearson Airport",
+    city: "Mississauga, Ontario",
+    note: "Exact address is provided to confirmed guests.",
+    fetlife: "",
+    doublelist: "",
+    ratio: "2/3",
+    details: [
+      { title: "Costumes", body: "Come in your best sexy Halloween costume. Scary, ridiculous, barely there, full character, couples costume, villain, superhero, vampire, devil, angel \u2014 whatever you\u2019ve been waiting all year to wear." },
+      { title: "An extra hour of partying", body: "This year Halloween falls on Daylight Saving Time weekend.\n\nAt 2:00 AM, the clocks roll back to 1:00 AM, which means we get an extra full hour of partying.\n\nSo even though the event is listed until 4:00 AM, we are actually partying until what would have been 5:00 AM before the clock change." },
+      { title: "Tickets", body: "Single Men: $80\nCouples: $60\nSingle Women: FREE\n\nSingle women are still free, but for Halloween you will need a ticket to secure your spot. There is no charge for the ticket \u2014 it simply reserves your place so we can keep an accurate guest count and avoid going over capacity.\n\nMessage us on FetLife or WhatsApp to RSVP and receive your ticket.\n\nIf we reach capacity, we may not be able to accommodate additional guests, even if you normally attend free, so please reserve your spot early." },
+      { title: "Costumes + masks", body: "Costumes are strongly encouraged.\n\nIf your costume includes a mask, helmet, heavy face covering, or anything that makes it difficult to identify you, that is completely fine.\n\nYou will just need to briefly show your face to admin for verification before entering. Once you are confirmed, you can put your mask back on and enjoy the night." },
+      { title: "What to expect", body: "Halloween at King Penthouse will be one of our biggest nights of the year.\n\nExpect music, drinks, costumes, flirting, socializing, Halloween decor and play spaces throughout the night.\n\nCome alone, come with someone, or come with your whole costume planned down to the last detail.\n\nThere is never any obligation to participate in anything simply because you attend." },
+      { title: "Consent + privacy", body: "Ask before touching.\n\nA costume, revealing outfit, nudity, flirting or attendance at a play party is never automatic consent.\n\nNo photos or videos of guests without their explicit permission.\n\nRespect other guests, their boundaries and the venue." },
+      { title: "Verification & address", body: "King Penthouse events are private and the exact address is not posted publicly.\n\nGuests must complete our verification process before receiving event information. Once confirmed, the address and arrival instructions will be sent directly to you." },
+      { title: "Saturday, October 31", body: "9:30 PM to 4:00 AM\n+ an extra hour because the clocks roll back\n\nPurchase your tickets early. We are expecting this one to fill." }
+    ],
+    posterSrc: "./Oct31-Halloween.webp",
+    poster: "kp-poster-oct31-halloween",
+    status: "active"
   }
 ];
