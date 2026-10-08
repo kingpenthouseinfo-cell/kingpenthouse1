@@ -202,6 +202,35 @@ window.KP_EVENTS = [
     status: "active"
   },
   {
+    slug: "oct9-freaky-friday-thanksgiving",
+    category: "BBC",
+    url: "Oct9-Freaky-Friday-Thanksgiving.html",
+    name: "FREAKY FRIDAY THANKSGIVING",
+    tagline: "THANKSGIVING LONG WEEKEND STARTS HERE",
+    intro: "Before the family dinners, leftovers and pretending to behave all weekend, come spend Friday night being a little less thankful and a lot more freaky.",
+    date: "2026-10-09",
+    dateLabel: "Friday, October 9, 2026",
+    time: "10:30 PM \u2013 4:00 AM",
+    prices: ["Single Males \u2014 $60", "Couples \u2014 $40", "Single Females \u2014 Free"],
+    location: "Minutes from Pearson Airport",
+    city: "Mississauga, Ontario",
+    note: "Exact address is provided to verified guests.",
+    fetlife: "",
+    doublelist: "",
+    ratio: "2/3",
+    details: [
+      { title: "No complicated theme", image: "./Oct9-Thanksgiving-Banner.webp", ratio: "16/9", body: "Come looking good, bring whoever you\u2019re spending the night with, or come alone and see who you meet.\n\nAutumn colours, lingerie, robes, something sexy, something comfortable, or whatever you feel good in. There\u2019s no dress requirement." },
+      { title: "What to expect", body: "Music, drinks, flirting, socializing and the usual King Penthouse atmosphere as the night gets later.\n\nCome early if you want time to settle in, grab a drink and actually meet people before things get going.\n\nYou can socialize, watch, flirt, play if there\u2019s mutual interest, or just enjoy the night. Attending never means you are expected to participate in anything." },
+      { title: "Single women", body: "Single women attend FREE.\n\nIf you\u2019re coming alone, you\u2019re absolutely welcome. Our admin team is available throughout the night if you need anything or just want someone to check in with when you arrive." },
+      { title: "Verification + location", body: "King Penthouse is a private event.\n\nAll guests must be verified before receiving the exact address and arrival instructions.\n\nIf you haven\u2019t been verified yet, message us on FetLife or WhatsApp before Friday so we can get it taken care of." },
+      { title: "Consent + privacy", body: "Ask before touching.\n\nFlirting, revealing clothing, nudity or being at a play party is never automatic consent.\n\nA yes to one thing is not a yes to everything, and anyone can change their mind at any time.\n\nNo photos or videos of guests without their explicit permission.\n\nRespect the people around you, respect the venue and clean up after yourself." },
+      { title: "Start your long weekend with us", body: "Friday, October 9\n10:30 PM to 4 AM\nMinutes from Pearson Airport\n\nSingle Males $60 \u00B7 Couples $40 \u00B7 Single Females FREE" }
+    ],
+    posterSrc: "./Oct9-Freaky-Friday-Thanksgiving.webp",
+    poster: "kp-poster-oct9-freaky-friday-thanksgiving",
+    status: "active"
+  },
+  {
     slug: "oct10-bbcs-bikers-baddies",
     category: "BBC",
     url: "Oct10-BBCs-Bikers-Baddies.html",
@@ -231,7 +260,7 @@ window.KP_EVENTS = [
   {
     slug: "oct31-halloween",
     category: "BBC",
-    url: "Oct31-Halloween.html",
+    url: "halloween.html",
     name: "KING PENTHOUSE HALLOWEEN",
     tagline: "OUR BIGGEST PARTY OF THE YEAR",
     intro: "Get ready for our biggest party of the year. We are expecting this event to hit capacity, so please purchase your tickets early. Once we reach capacity, we may not be able to accommodate additional guests.",
