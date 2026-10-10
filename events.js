@@ -258,6 +258,38 @@ window.KP_EVENTS = [
     status: "active"
   },
   {
+    slug: "oct17-jungle-fever",
+    category: "BBC",
+    url: "Oct17-Jungle-Fever.html",
+    name: "JUNGLE FEVER",
+    tagline: "WELCOME TO THE WILD SIDE",
+    intro: "We’re turning our after-hours warehouse into a jungle where the animals come out to play after dark. Leopard print, tiger stripes, snakeskin, camouflage and barely-there jungle looks — this is your excuse to unleash your wild side and bring out your inner predator.",
+    date: "2026-10-17",
+    dateLabel: "Saturday, October 17, 2026",
+    time: "10:30 PM \u2013 4:00 AM",
+    prices: ["Single Males \u2014 $60", "Couples \u2014 $40", "Single Females \u2014 Free"],
+    location: "Minutes from Toronto Pearson Airport",
+    city: "Mississauga, Ontario",
+    note: "Exact address is provided to verified guests. Cash or e-transfer at the door.",
+    fetlife: "https://fetlife.com/events/2026/10/17/king-penthouse-jungle-fever-bbc-orgy-bnhe39",
+    doublelist: "",
+    ratio: "2/3",
+    details: [
+      { title: "Dress code: animal print & camo", image: "./Oct17-Jungle-Fever-Banner.webp", ratio: "1600/854", body: "The jungle is calling, and we want everyone dressed for the theme.\n\nLeopard & Cheetah — spotted bikinis, lingerie, bodysuits, shorts and matching ears.\nTiger & Zebra — bold stripes, sexy two-piece outfits, fitted pants and wild accessories.\nSnakeskin — sleek, fitted and dangerously sexy.\nCamouflage — camo pants, shorts, crop tops, open vests and military-inspired looks.\nJungle accessories — animal ears, body chains, gold jewelry and anything that brings your wild side to life.\n\nLadies: animal-print lingerie, bikinis, bodysuits or sexy camo outfits.\nMen: camo pants, animal-print shorts, open vests, shirtless looks or anything that fits the jungle theme.\n\nDress to impress — costumes are encouraged, not mandatory." },
+      { title: "Let your wild side out", body: "King Penthouse is a private adults-only lifestyle party where couples, single women and approved single men come together to socialize, flirt, connect and explore.\n\nCome alone, bring your partner, or meet someone new. Whether you’re here to mingle, watch, explore or play, everything happens naturally and with mutual consent.\n\nNo pressure. No expectations. Just good energy, great company and a jungle full of possibilities." },
+      { title: "Verification required", body: "All guests must be verified before attending. Single men require approval.\n\nNew to King Penthouse? Message us before attending with your age, whether you’re attending as a single man, single woman or couple, a clear recent face photo, and your FetLife profile/name if available.\n\nCouples should verify together. Once approved, you’ll receive the event address and arrival information.\n\nNo unverified walk-ins." },
+      { title: "Single women", body: "Single women always attend FREE.\n\nComing alone? You’re absolutely welcome. Many of our guests attend solo, including first-timers, and the atmosphere is friendly and social.\n\nA female admin will be available throughout the night if you need assistance or have any concerns. Single women attending alone may park directly in front of the venue." },
+      { title: "Consent & respect", body: "Consent is mandatory. King Penthouse is a sexually open environment, but participation is always optional.\n\nNo one is entitled to another person’s attention, touch or participation. Always ask before touching, respect boundaries, accept rejection gracefully and never pressure another guest.\n\nIf anyone makes you uncomfortable, please notify an admin immediately." },
+      { title: "Privacy", body: "No photos or videos in the main party area.\n\nGeneral phone use should remain in the designated entrance area. Recording or photographing other guests is strictly prohibited.\n\nWhat happens at KP stays at KP." },
+      { title: "What to bring", body: "Your best animal-print or camouflage outfit\nA change of clothes, if desired\nPersonal items, toys or a towel\nA positive attitude and respect for others\n\nLockers are available for belongings, but they do not have locks. Please leave unnecessary valuables at home." },
+      { title: "Parking", body: "Single women: parking directly in front of the venue.\nCouples & single men: designated parking across the street.\n\nFull parking instructions will be provided with the address." },
+      { title: "The jungle comes alive after dark", image: "./Oct17-Jungle-Fever-Badge.webp", ratio: "1400/700", body: "Saturday, October 17, 2026\n10:30 PM – 4:00 AM\nMississauga, minutes from Toronto Pearson Airport\n\nSingle Men $60 · Couples $40 · Single Women FREE\n\nMessage King Penthouse to get verified and secure your spot." }
+    ],
+    posterSrc: "./Oct17-Jungle-Fever.webp",
+    poster: "kp-poster-oct17-jungle-fever",
+    status: "active"
+  },
+  {
     slug: "oct31-halloween",
     category: "BBC",
     url: "halloween.html",
