@@ -258,6 +258,36 @@ window.KP_EVENTS = [
     status: "active"
   },
   {
+    slug: "oct16-designer-durags",
+    category: "BBC",
+    url: "Oct16-Designer-Durags.html",
+    name: "DESIGNER & DURAGS",
+    tagline: "COME LOOKING EXPENSIVE",
+    intro: "Pull out the designer, the chains, the heels, the shades, the durags, the bags, the matching sets, or whatever makes you feel expensive.",
+    date: "2026-10-16",
+    dateLabel: "Friday, October 16, 2026",
+    time: "10:30 PM \u2013 4:00 AM",
+    prices: ["Single Males \u2014 $60", "Couples \u2014 $40", "Single Females \u2014 Free"],
+    location: "Minutes from Pearson Airport",
+    city: "Mississauga, Ontario",
+    note: "Exact address is provided to verified guests.",
+    fetlife: "",
+    doublelist: "",
+    ratio: "2/3",
+    details: [
+      { title: "The theme", image: "./Oct16-Designer-Durags-Banner.webp", ratio: "1717/916", body: "This Friday we\u2019re doing Designer & Durags.\n\nYou do not have to dress exactly to theme to come. The theme is there to make the night fun, not to turn the door into a fashion inspection. Just come looking good and ready for a night out." },
+      { title: "The night", body: "Expect the usual King Penthouse mix of music, drinks, flirting, socializing and play as the night gets later.\n\nCome with somebody or come alone. A lot of our guests come solo, so you do not need to already know anyone before walking in.\n\nCome early if you want time to settle in, meet people and get comfortable before the room gets busier.\n\nYou are welcome to socialize, flirt, watch, explore, play if there is mutual interest, or simply enjoy the party.\n\nNobody is expected to do anything just because they attend." },
+      { title: "Single women", body: "Single women attend FREE.\n\nIf you are coming alone, that is completely normal at our events. King Penthouse admin will be around throughout the night if you need anything when you arrive." },
+      { title: "Verification + private address", body: "King Penthouse is a private event.\n\nThe exact address is not posted publicly. Guests must be verified before receiving the location and arrival instructions.\n\nIf you have not been verified yet, message us on FetLife or WhatsApp before Friday so we can get that handled." },
+      { title: "Consent", body: "Ask before touching.\n\nSomeone flirting with you, dressing sexy, being naked, or attending a play party does not automatically mean they are interested in playing with you.\n\nA yes to one thing is not a yes to everything, and anyone can change their mind at any time.\n\nRespect a no the first time.\n\nAnyone repeatedly ignoring boundaries or making another guest uncomfortable will be asked to leave." },
+      { title: "Privacy", body: "No photos or videos of guests without their explicit permission.\n\nWe take privacy seriously and expect everyone attending to do the same.\n\nPlease respect the people around you, the venue and the discretion of the community." },
+      { title: "Friday night", body: "Designer & Durags\nFriday, October 16\n10:30 PM to 4:00 AM\nMississauga, minutes from Pearson Airport\n\nSingle Males $60 \u00B7 Couples $40 \u00B7 Single Females FREE" }
+    ],
+    posterSrc: "./Oct16-Designer-Durags.webp",
+    poster: "kp-poster-oct16-designer-durags",
+    status: "active"
+  },
+  {
     slug: "oct17-jungle-fever",
     category: "BBC",
     url: "Oct17-Jungle-Fever.html",
