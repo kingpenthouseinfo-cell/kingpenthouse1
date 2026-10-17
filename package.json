@@ -1,0 +1,9 @@
+{
+  "name": "kingpenthouse-site",
+  "private": true,
+  "description": "King Penthouse static site + Netlify Functions (no runtime dependencies)",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "test": "node --test test/*.test.mjs"
+  }
+}

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>King Penthouse — Private After-Hours Parties | Mississauga</title>
+<meta name="description" content="King Penthouse hosts private themed after-hours parties in Mississauga. 19+, verified guests only. Request verification and event details.">
+<meta name="theme-color" content="#08070a">
+<meta property="og:title" content="King Penthouse — Private After-Hours Parties">
+<meta property="og:description" content="Private themed events for open-minded adults. 19+ · Verified guests only.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://kingpenthouse.com/kp">
+<link rel="canonical" href="https://kingpenthouse.com/kp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./kp.css">
+</head>
+<body>
+
+<header class="hero" id="top">
+  <div class="hero-bg" aria-hidden="true"></div>
+  <div class="hero-inner">
+    <img class="crown" src="./el-crown.png" alt="" width="120" height="120">
+    <h1>KING<br>PENTHOUSE</h1>
+    <p class="tagline">PRIVATE AFTER-HOURS PARTIES</p>
+    <ul class="facts">
+      <li>Mississauga</li>
+      <li>Minutes from Toronto Pearson Airport</li>
+      <li>19+</li>
+      <li>Verified Guests Only</li>
+    </ul>
+    <a class="btn btn-primary" href="#request">GET VERIFIED + REQUEST EVENT DETAILS</a>
+    <a class="btn btn-ghost" href="#halloween">HALLOWEEN OCTOBER 31</a>
+  </div>
+</header>
+
+<main>
+  <section class="section about" id="about">
+    <p class="lede">King Penthouse hosts private themed events for open-minded adults looking for a different kind of nightlife experience.</p>
+    <p class="sub">Our exact venue location remains private and is provided directly to verified attendees.</p>
+    <div class="cards">
+      <article class="card"><h3>PRIVATE VENUE</h3><p>A discreet private event space in Mississauga, minutes from Pearson Airport.</p></article>
+      <article class="card"><h3>THEMED NIGHTS</h3><p>Different themes, special events and late-night parties throughout the year.</p></article>
+      <article class="card"><h3>VERIFIED GUESTS</h3><p>New guests complete a simple verification process before receiving private event details.</p></article>
+      <article class="card"><h3>DISCRETION</h3><p>The venue address is never publicly posted.</p></article>
+    </div>
+  </section>
+
+  <section class="section upcoming" id="events" hidden>
+    <h2 class="eyebrow">UPCOMING EVENTS</h2>
+    <div class="event-list" id="event-list"></div>
+  </section>
+
+  <section class="section halloween" id="halloween">
+    <p class="eyebrow">KING PENTHOUSE PRESENTS</p>
+    <h2 class="hw-title">HALLOWEEN</h2>
+    <p class="hw-date">Saturday, October 31, 2026</p>
+    <p class="hw-time">9:30 PM – 4:00 AM</p>
+    <p class="hw-badge">EXPECTED TO REACH CAPACITY</p>
+    <p class="lede">Get ready for our biggest party of the year.</p>
+    <p class="sub">Halloween at King Penthouse is expected to reach capacity, so guests are encouraged to secure their spot early.</p>
+    <p class="sub">Come in your best Halloween look.<br>Masks are welcome, but your face must be visible during verification.</p>
+    <a class="btn btn-halloween" href="#request" data-prefill-event="halloween">REQUEST HALLOWEEN ACCESS</a>
+  </section>
+
+  <section class="section verify" id="request">
+    <h2 class="verify-title">WANT THE ADDRESS?</h2>
+    <p class="sub">King Penthouse is a private venue, so we do not publicly post the exact event address.</p>
+    <p class="sub">Submit your request below and our team will contact you with verification and attendance information.</p>
+
+    <div class="form-wrap" id="form-wrap">
+      <form id="kp-form" novalidate autocomplete="on">
+        <div class="field">
+          <label for="f-name">Name / Alias</label>
+          <input id="f-name" name="name" type="text" maxlength="80" autocomplete="nickname" required>
+        </div>
+        <div class="field">
+          <label for="f-age">Age</label>
+          <input id="f-age" name="age" type="number" inputmode="numeric" min="19" max="99" required>
+        </div>
+        <div class="field">
+          <label for="f-email">Email</label>
+          <input id="f-email" name="email" type="email" maxlength="254" autocomplete="email" required>
+        </div>
+        <div class="field">
+          <label for="f-guest">Attending As</label>
+          <select id="f-guest" name="guestType" required>
+            <option value="">Select…</option>
+            <option value="single_woman">Single Woman</option>
+            <option value="single_man">Single Man</option>
+            <option value="couple">Couple</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="f-event">Interested In</label>
+          <select id="f-event" name="event" required>
+            <option value="">Select…</option>
+            <option value="halloween">Halloween - October 31</option>
+            <option value="saturday">Upcoming Saturday Party</option>
+            <option value="future">Future King Penthouse Events</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="f-fetlife">FetLife Username <span class="opt">(optional)</span></label>
+          <input id="f-fetlife" name="fetlife" type="text" maxlength="40" autocapitalize="off" autocorrect="off">
+        </div>
+        <div class="field">
+          <label for="f-found">How did you find King Penthouse?</label>
+          <select id="f-found" name="foundVia" required>
+            <option value="">Select…</option>
+            <option value="sexshow">Toronto Sex Show</option>
+            <option value="sugardaddys">Sugar Daddy's</option>
+            <option value="fetlife">FetLife</option>
+            <option value="friend">Friend / Referral</option>
+            <option value="flyer">Flyer</option>
+            <option value="social">Social Media</option>
+            <option value="web">Google / Web</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="f-message">Message <span class="opt">(optional)</span></label>
+          <textarea id="f-message" name="message" rows="4" maxlength="1000"></textarea>
+        </div>
+
+        <!-- honeypot: hidden from people, tempting to bots -->
+        <div class="hp" aria-hidden="true">
+          <label for="f-website">Website</label>
+          <input id="f-website" name="website" type="text" tabindex="-1" autocomplete="off">
+        </div>
+
+        <label class="check">
+          <input id="f-age-confirm" name="ageConfirmed" type="checkbox" required>
+          <span>I confirm that I am at least 19 years old.</span>
+        </label>
+
+        <div id="turnstile-box" class="turnstile"></div>
+
+        <p class="form-error" id="form-error" role="alert" hidden></p>
+
+        <button class="btn btn-primary btn-submit" id="submit-btn" type="submit">REQUEST VERIFICATION + EVENT DETAILS</button>
+        <p class="privacy">Your information is used only for King Penthouse guest verification and event communication.</p>
+      </form>
+
+      <div class="success" id="success" hidden tabindex="-1">
+        <h3>REQUEST RECEIVED</h3>
+        <p>Thanks for reaching out to King Penthouse.</p>
+        <p>Our team will review your request and contact you with verification and event information.</p>
+        <p>The private venue address is provided to verified attendees only.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <p class="f-name">King Penthouse</p>
+  <p>Mississauga, Ontario</p>
+  <p>Minutes from Toronto Pearson Airport</p>
+  <p>19+</p>
+  <!-- Set the real FetLife profile URL in kp.js (KP_CONFIG.fetlifeUrl) -->
+  <p><a id="fetlife-link" href="#" target="_blank" rel="noopener noreferrer" hidden>FetLife · KingPenthouse</a></p>
+</footer>
+
+<script src="./events.js"></script>
+<script src="./kp.js"></script>
+</body>
+</html>
