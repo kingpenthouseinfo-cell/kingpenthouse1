@@ -1,8 +1,8 @@
 import { buildWhatsAppFields, buildWhatsAppText } from "./format.mjs";
 
 const GRAPH_VERSION = "v21.0";
-// Order of template body parameters ({{1}}, {{2}}, ...). Override with WHATSAPP_TEMPLATE_PARAMS.
-const DEFAULT_PARAMS = ["event", "name", "age", "type", "email", "fetlife", "found", "source", "message", "time"];
+// Template body variables {{1}}..{{7}}, in order. Override with WHATSAPP_TEMPLATE_PARAMS (comma list of field names).
+const DEFAULT_PARAMS = ["name", "type", "method", "contact", "found", "source", "time"];
 
 export async function sendWhatsApp(d, env, fetchImpl = fetch) {
   const { WHATSAPP_ACCESS_TOKEN, WHATSAPP_PHONE_NUMBER_ID, KP_ADMIN_WHATSAPP_NUMBER } = env;

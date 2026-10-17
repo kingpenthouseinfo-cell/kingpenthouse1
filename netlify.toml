@@ -5,8 +5,7 @@
 [functions]
   node_bundler = "esbuild"
 
-# /kp -> kp.html (Netlify pretty URLs also does this; the rule makes it explicit
-# and keeps query strings such as ?source=sexshow intact).
+# /kp -> kp.html (Pretty URLs already does this; explicit rule keeps ?source= intact).
 [[redirects]]
   from = "/kp"
   to = "/kp.html"
@@ -15,12 +14,11 @@
 [[headers]]
   for = "/kp*"
   [headers.values]
-    Content-Security-Policy = "default-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; frame-src https://challenges.cloudflare.com; connect-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    X-Frame-Options = "DENY"
+    X-Robots-Tag = "noindex"
 
 [[headers]]
-  for = "/api/kp-rsvp"
+  for = "/.netlify/functions/kp-rsvp"
   [headers.values]
     Cache-Control = "no-store"

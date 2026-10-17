@@ -1,169 +1,192 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>King Penthouse — Private After-Hours Parties | Mississauga</title>
-<meta name="description" content="King Penthouse hosts private themed after-hours parties in Mississauga. 19+, verified guests only. Request verification and event details.">
-<meta name="theme-color" content="#08070a">
-<meta property="og:title" content="King Penthouse — Private After-Hours Parties">
-<meta property="og:description" content="Private themed events for open-minded adults. 19+ · Verified guests only.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://kingpenthouse.com/kp">
-<link rel="canonical" href="https://kingpenthouse.com/kp">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="./kp.css">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
 </head>
 <body>
+<x-dc>
+<helmet>
+<meta name="robots" content="noindex" />
+<title>King Penthouse</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Outfit:wght@300;400;500&family=Jost:wght@300;400;500&family=Cormorant+Garamond:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin:0; padding:0; background:#07060a; color:#EDE4D6; -webkit-font-smoothing:antialiased; overflow-x:hidden; }
+  a { color:#CFAE72; text-decoration:none; }
+  a:hover { color:#F0DEB6; }
+  input, button { font-family:'Outfit',sans-serif; }
+  #kp-form ::placeholder { color:#9a958d; }
+</style>
+</helmet>
 
-<header class="hero" id="top">
-  <div class="hero-bg" aria-hidden="true"></div>
-  <div class="hero-inner">
-    <img class="crown" src="./el-crown.png" alt="" width="120" height="120">
-    <h1>KING<br>PENTHOUSE</h1>
-    <p class="tagline">PRIVATE AFTER-HOURS PARTIES</p>
-    <ul class="facts">
-      <li>Mississauga</li>
-      <li>Minutes from Toronto Pearson Airport</li>
-      <li>19+</li>
-      <li>Verified Guests Only</li>
-    </ul>
-    <a class="btn btn-primary" href="#request">GET VERIFIED + REQUEST EVENT DETAILS</a>
-    <a class="btn btn-ghost" href="#halloween">HALLOWEEN OCTOBER 31</a>
-  </div>
-</header>
+<nav style="position:sticky;top:0;z-index:80;display:flex;align-items:center;justify-content:center;gap:clamp(12px,3vw,30px);padding:12px clamp(12px,4vw,26px);box-sizing:border-box;background:rgba(5,4,6,.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(201,168,103,.18);overflow-x:auto;white-space:nowrap;scrollbar-width:none">
+  <a href="index.html" style="flex:none;display:flex;align-items:center;justify-content:center;width:26px;height:26px;border:1px solid rgba(201,168,103,.6);border-radius:50%;font-family:'Cormorant Garamond',serif;font-size:9px;color:rgba(228,198,138,.95)">KP</a>
+  <a href="index.html" style="flex:none;min-height:34px;display:flex;align-items:center;font-family:'Jost';font-weight:300;font-size:clamp(8.5px,2.2vw,10px);letter-spacing:.3em;color:rgba(239,230,211,.62)" style-hover="color:#F1E0B8">HOME</a>
+  <a href="Events.html" style="flex:none;min-height:34px;display:flex;align-items:center;font-family:'Jost';font-weight:300;font-size:clamp(8.5px,2.2vw,10px);letter-spacing:.3em;color:rgba(239,230,211,.62)" style-hover="color:#F1E0B8">EVENTS</a>
+  <a href="Reviews.html" style="flex:none;min-height:34px;display:flex;align-items:center;font-family:'Jost';font-weight:300;font-size:clamp(8.5px,2.2vw,10px);letter-spacing:.3em;color:rgba(239,230,211,.62)" style-hover="color:#F1E0B8">REVIEWS</a>
+  <a href="Location.html" style="flex:none;min-height:34px;display:flex;align-items:center;font-family:'Jost';font-weight:300;font-size:clamp(8.5px,2.2vw,10px);letter-spacing:.3em;color:rgba(239,230,211,.62)" style-hover="color:#F1E0B8">LOCATION</a>
+  <a href="Contact.html" style="flex:none;min-height:34px;display:flex;align-items:center;font-family:'Jost';font-weight:300;font-size:clamp(8.5px,2.2vw,10px);letter-spacing:.3em;color:rgba(239,230,211,.62)" style-hover="color:#F1E0B8">CONTACT</a>
+  <a href="Verification.html" style="flex:none;min-height:34px;display:flex;align-items:center;font-family:'Jost';font-weight:300;font-size:clamp(8.5px,2.2vw,10px);letter-spacing:.3em;color:rgba(239,230,211,.62)" style-hover="color:#F1E0B8">GET VERIFIED</a>
+</nav>
 
-<main>
-  <section class="section about" id="about">
-    <p class="lede">King Penthouse hosts private themed events for open-minded adults looking for a different kind of nightlife experience.</p>
-    <p class="sub">Our exact venue location remains private and is provided directly to verified attendees.</p>
-    <div class="cards">
-      <article class="card"><h3>PRIVATE VENUE</h3><p>A discreet private event space in Mississauga, minutes from Pearson Airport.</p></article>
-      <article class="card"><h3>THEMED NIGHTS</h3><p>Different themes, special events and late-night parties throughout the year.</p></article>
-      <article class="card"><h3>VERIFIED GUESTS</h3><p>New guests complete a simple verification process before receiving private event details.</p></article>
-      <article class="card"><h3>DISCRETION</h3><p>The venue address is never publicly posted.</p></article>
-    </div>
-  </section>
-
-  <section class="section upcoming" id="events" hidden>
-    <h2 class="eyebrow">UPCOMING EVENTS</h2>
-    <div class="event-list" id="event-list"></div>
-  </section>
-
-  <section class="section halloween" id="halloween">
-    <p class="eyebrow">KING PENTHOUSE PRESENTS</p>
-    <h2 class="hw-title">HALLOWEEN</h2>
-    <p class="hw-date">Saturday, October 31, 2026</p>
-    <p class="hw-time">9:30 PM – 4:00 AM</p>
-    <p class="hw-badge">EXPECTED TO REACH CAPACITY</p>
-    <p class="lede">Get ready for our biggest party of the year.</p>
-    <p class="sub">Halloween at King Penthouse is expected to reach capacity, so guests are encouraged to secure their spot early.</p>
-    <p class="sub">Come in your best Halloween look.<br>Masks are welcome, but your face must be visible during verification.</p>
-    <a class="btn btn-halloween" href="#request" data-prefill-event="halloween">REQUEST HALLOWEEN ACCESS</a>
-  </section>
-
-  <section class="section verify" id="request">
-    <h2 class="verify-title">WANT THE ADDRESS?</h2>
-    <p class="sub">King Penthouse is a private venue, so we do not publicly post the exact event address.</p>
-    <p class="sub">Submit your request below and our team will contact you with verification and attendance information.</p>
-
-    <div class="form-wrap" id="form-wrap">
-      <form id="kp-form" novalidate autocomplete="on">
-        <div class="field">
-          <label for="f-name">Name / Alias</label>
-          <input id="f-name" name="name" type="text" maxlength="80" autocomplete="nickname" required>
-        </div>
-        <div class="field">
-          <label for="f-age">Age</label>
-          <input id="f-age" name="age" type="number" inputmode="numeric" min="19" max="99" required>
-        </div>
-        <div class="field">
-          <label for="f-email">Email</label>
-          <input id="f-email" name="email" type="email" maxlength="254" autocomplete="email" required>
-        </div>
-        <div class="field">
-          <label for="f-guest">Attending As</label>
-          <select id="f-guest" name="guestType" required>
-            <option value="">Select…</option>
-            <option value="single_woman">Single Woman</option>
-            <option value="single_man">Single Man</option>
-            <option value="couple">Couple</option>
-            <option value="other">Other</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="f-event">Interested In</label>
-          <select id="f-event" name="event" required>
-            <option value="">Select…</option>
-            <option value="halloween">Halloween - October 31</option>
-            <option value="saturday">Upcoming Saturday Party</option>
-            <option value="future">Future King Penthouse Events</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="f-fetlife">FetLife Username <span class="opt">(optional)</span></label>
-          <input id="f-fetlife" name="fetlife" type="text" maxlength="40" autocapitalize="off" autocorrect="off">
-        </div>
-        <div class="field">
-          <label for="f-found">How did you find King Penthouse?</label>
-          <select id="f-found" name="foundVia" required>
-            <option value="">Select…</option>
-            <option value="sexshow">Toronto Sex Show</option>
-            <option value="sugardaddys">Sugar Daddy's</option>
-            <option value="fetlife">FetLife</option>
-            <option value="friend">Friend / Referral</option>
-            <option value="flyer">Flyer</option>
-            <option value="social">Social Media</option>
-            <option value="web">Google / Web</option>
-            <option value="other">Other</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="f-message">Message <span class="opt">(optional)</span></label>
-          <textarea id="f-message" name="message" rows="4" maxlength="1000"></textarea>
-        </div>
-
-        <!-- honeypot: hidden from people, tempting to bots -->
-        <div class="hp" aria-hidden="true">
-          <label for="f-website">Website</label>
-          <input id="f-website" name="website" type="text" tabindex="-1" autocomplete="off">
-        </div>
-
-        <label class="check">
-          <input id="f-age-confirm" name="ageConfirmed" type="checkbox" required>
-          <span>I confirm that I am at least 19 years old.</span>
-        </label>
-
-        <div id="turnstile-box" class="turnstile"></div>
-
-        <p class="form-error" id="form-error" role="alert" hidden></p>
-
-        <button class="btn btn-primary btn-submit" id="submit-btn" type="submit">REQUEST VERIFICATION + EVENT DETAILS</button>
-        <p class="privacy">Your information is used only for King Penthouse guest verification and event communication.</p>
-      </form>
-
-      <div class="success" id="success" hidden tabindex="-1">
-        <h3>REQUEST RECEIVED</h3>
-        <p>Thanks for reaching out to King Penthouse.</p>
-        <p>Our team will review your request and contact you with verification and event information.</p>
-        <p>The private venue address is provided to verified attendees only.</p>
+<main style="max-width:480px;margin:0 auto;padding:22px 16px 60px;box-sizing:border-box;background:radial-gradient(90% 40% at 50% 0%, rgba(207,174,114,.14), rgba(7,6,10,0) 70%)">
+  <div style="border:1px solid rgba(207,174,114,.55);padding:6px">
+    <div style="border:1px solid rgba(207,174,114,.25);padding:44px 22px 30px;display:grid;gap:16px;justify-items:center;text-align:center">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:.4em;color:#DFC58C">KING PENTHOUSE</div>
+      <h1 style="margin:0;font-family:'Playfair Display',serif;font-weight:400;font-size:clamp(32px,9vw,40px);line-height:1.12;color:#F5ECDC">So you found<br /><em>our flyer?</em></h1>
+      <p style="margin:0;font-family:'Outfit';font-weight:300;font-size:14px;line-height:1.8;color:rgba(237,228,214,.78)">Private after-hours parties · Mississauga<br />19+ · Verified guests only</p>
+      <div style="display:grid;gap:14px;width:100%;margin-top:12px">
+        <a href="index.html" style="display:flex;align-items:center;justify-content:center;min-height:56px;border-radius:14px;background:linear-gradient(180deg,#FFFFFF 0%,#F6EEDC 55%,#E6D3AA 100%);box-shadow:inset 0 1px 0 #fff, inset 0 -2px 0 rgba(164,123,55,.18), 0 6px 18px rgba(0,0,0,.4);color:#1c1b1f;font-family:'Outfit';font-weight:500;font-size:11.5px;letter-spacing:.22em" style-hover="color:#1c1b1f;filter:brightness(1.04)">I WANT TO KNOW MORE</a>
+        <a href="#kp-form" style="display:flex;align-items:center;justify-content:center;min-height:56px;border-radius:14px;background:linear-gradient(180deg,#F8E6B8 0%,#D9B97C 50%,#B48A47 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.7), inset 0 -2px 0 rgba(90,60,20,.25), 0 0 24px rgba(230,196,120,.45), 0 6px 18px rgba(0,0,0,.4);color:#1c1408;font-family:'Outfit';font-weight:500;font-size:11.5px;letter-spacing:.24em" style-hover="color:#1c1408;filter:brightness(1.06)">REQUEST THE ADDRESS</a>
       </div>
     </div>
-  </section>
+  </div>
+  <img src="./kp-lounge.jpg" alt="Inside King Penthouse" style="width:100%;aspect-ratio:16/10;object-fit:cover;display:block;margin-top:16px;filter:brightness(.85)" />
+
+  <div id="kp-form" style="margin-top:36px;background:linear-gradient(180deg,#FFFFFF 0%,#F1EFEB 100%);border-radius:18px;padding:28px 20px;scroll-margin-top:70px;box-shadow:inset 0 1px 0 #fff, inset 0 -2px 6px rgba(0,0,0,.06), 0 24px 60px rgba(0,0,0,.45)">
+    <sc-if value="{{ notDone }}" hint-placeholder-val="{{ true }}">
+      <div style="display:grid;gap:14px">
+        <div style="display:grid;gap:4px"><div style="font-family:'Outfit';font-weight:500;font-size:10px;letter-spacing:.32em;color:#A88446">KING PENTHOUSE</div><div style="font-family:'Playfair Display',serif;font-size:26px;color:#111">Request the address</div></div>
+
+        <input value="{{ name }}" onChange="{{ setName }}" placeholder="Name or alias" autocomplete="nickname" maxlength="80" style="min-height:52px;box-sizing:border-box;background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:12px;padding:0 16px;font-size:16px;color:#111;outline:none;box-shadow:inset 0 2px 4px rgba(0,0,0,.06)" />
+
+        <div style="display:grid;gap:8px">
+          <div style="font-family:'Outfit';font-weight:500;font-size:10.5px;letter-spacing:.24em;color:#6b6457">HOW SHOULD WE CONTACT YOU?</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <sc-for list="{{ methods }}" as="m" hint-placeholder-count="2">
+              <button type="button" onClick="{{ m.pick }}" style="min-height:48px;border-radius:12px;border:{{ m.border }};background:{{ m.bg }};color:{{ m.color }};box-shadow:{{ m.shadow }};font-size:14px;cursor:pointer">{{ m.label }}</button>
+            </sc-for>
+          </div>
+          <input value="{{ contact }}" onChange="{{ setContact }}" placeholder="{{ contactPlaceholder }}" type="{{ contactType }}" inputmode="{{ contactMode }}" autocomplete="{{ contactAuto }}" maxlength="120" style="min-height:52px;box-sizing:border-box;background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:12px;padding:0 16px;font-size:16px;color:#111;outline:none;box-shadow:inset 0 2px 4px rgba(0,0,0,.06)" />
+        </div>
+
+        <div style="display:grid;gap:8px">
+          <div style="font-family:'Outfit';font-weight:500;font-size:10.5px;letter-spacing:.24em;color:#6b6457">I'M COMING AS</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <sc-for list="{{ types }}" as="t" hint-placeholder-count="4">
+              <button type="button" onClick="{{ t.pick }}" style="min-height:48px;border-radius:999px;border:{{ t.border }};background:{{ t.bg }};color:{{ t.color }};box-shadow:{{ t.shadow }};font-size:14px;cursor:pointer">{{ t.label }}</button>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="display:grid;gap:8px">
+          <div style="font-family:'Outfit';font-weight:500;font-size:10.5px;letter-spacing:.24em;color:#6b6457">HOW DID YOU FIND US?</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+            <sc-for list="{{ sources }}" as="s" hint-placeholder-count="3">
+              <button type="button" onClick="{{ s.pick }}" style="min-height:48px;padding:0 10px;border-radius:999px;border:{{ s.border }};background:{{ s.bg }};color:{{ s.color }};box-shadow:{{ s.shadow }};font-size:13px;line-height:1.2;cursor:pointer">{{ s.label }}</button>
+            </sc-for>
+          </div>
+          <sc-if value="{{ isOther }}" hint-placeholder-val="{{ false }}">
+            <input value="{{ otherText }}" onChange="{{ setOther }}" placeholder="Please tell us where" maxlength="80" style="min-height:52px;box-sizing:border-box;background:#fff;border:1px solid rgba(0,0,0,.06);border-radius:12px;padding:0 16px;font-size:16px;color:#111;outline:none;box-shadow:inset 0 2px 4px rgba(0,0,0,.06)" />
+          </sc-if>
+        </div>
+
+        <input value="{{ hp }}" onChange="{{ setHp }}" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0" />
+
+        <label style="display:flex;align-items:center;gap:12px;padding:4px 0;font-family:'Outfit';font-size:13.5px;color:#333;cursor:pointer"><input type="checkbox" checked="{{ age }}" onChange="{{ toggleAge }}" style="accent-color:#A88446;width:20px;height:20px;margin:0;flex:none" />I confirm I am 19 or older.</label>
+
+        <sc-if value="{{ hasError }}" hint-placeholder-val="{{ false }}">
+          <div style="font-family:'Outfit';font-size:13.5px;color:#9b2a1a">{{ error }}</div>
+        </sc-if>
+
+        <button type="button" onClick="{{ submit }}" disabled="{{ sending }}" style="min-height:58px;border:0;border-radius:14px;background:linear-gradient(180deg,#FFFFFF 0%,#F6EEDC 55%,#E6D3AA 100%);color:#1c1b1f;font-weight:500;font-size:12px;letter-spacing:.22em;cursor:pointer;box-shadow:inset 0 1px 0 #fff, inset 0 -2px 0 rgba(164,123,55,.22), 0 0 0 1px rgba(164,123,55,.2), 0 6px 16px rgba(0,0,0,.14)">{{ buttonLabel }}</button>
+        <div style="font-family:'Outfit';font-size:12px;line-height:1.6;color:#7a746a">Used only for guest verification and event communication. The address is never posted publicly.</div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ done }}" hint-placeholder-val="{{ false }}">
+      <div style="display:grid;gap:12px;padding:10px 0;text-align:center">
+        <div style="font-family:'Outfit';font-weight:500;font-size:11px;letter-spacing:.32em;color:#A88446">REQUEST RECEIVED</div>
+        <div style="font-family:'Playfair Display',serif;font-size:26px;color:#111">Thanks for reaching out.</div>
+        <p style="margin:0;font-family:'Outfit';font-size:14px;line-height:1.75;color:#444">Our team will review your request and contact you with verification and event information. The private venue address is provided to verified guests only.</p>
+        <a href="index.html" style="margin-top:8px;display:flex;align-items:center;justify-content:center;min-height:52px;border-radius:14px;background:linear-gradient(180deg,#EBD29E 0%,#CFAE72 45%,#A9823F 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.6), inset 0 -3px 0 rgba(0,0,0,.18);color:#1c1408;font-family:'Outfit';font-size:11px;letter-spacing:.24em">EXPLORE KING PENTHOUSE</a>
+      </div>
+    </sc-if>
+  </div>
 </main>
 
-<footer class="footer">
-  <p class="f-name">King Penthouse</p>
-  <p>Mississauga, Ontario</p>
-  <p>Minutes from Toronto Pearson Airport</p>
-  <p>19+</p>
-  <!-- Set the real FetLife profile URL in kp.js (KP_CONFIG.fetlifeUrl) -->
-  <p><a id="fetlife-link" href="#" target="_blank" rel="noopener noreferrer" hidden>FetLife · KingPenthouse</a></p>
-</footer>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { name: "", method: "", contact: "", type: "", source: "", otherText: "", hp: "", age: false, sending: false, done: false, error: "" };
 
-<script src="./events.js"></script>
-<script src="./kp.js"></script>
+  pickStyle(on, c) {
+    return on
+      ? { bg: `linear-gradient(180deg,${c[1]} 0%,${c[2]} 100%)`, color: "#fff", border: `1px solid ${c[2]}`, shadow: `inset 0 1px 0 rgba(255,255,255,.45), inset 0 -2px 0 rgba(0,0,0,.15), 0 4px 12px ${c[2]}66` }
+      : { bg: `linear-gradient(180deg,#FFFFFF 0%,${c[0]} 100%)`, color: "#2a2433", border: "1px solid rgba(0,0,0,.06)", shadow: "inset 0 1px 0 #fff, 0 2px 4px rgba(0,0,0,.08)" };
+  }
+
+  urlSource() {
+    try {
+      const s = new URLSearchParams(location.search).get("source") || "";
+      return /^[a-z0-9_-]{1,32}$/i.test(s) ? s.toLowerCase() : "";
+    } catch (e) { return ""; }
+  }
+
+  async submit() {
+    const s = this.state;
+    if (s.hp) return this.setState({ done: true });
+    const name = s.name.trim(), contact = s.contact.trim();
+    let err = "";
+    if (!name) err = "Please enter your name or alias.";
+    else if (!s.method) err = "Choose email or WhatsApp.";
+    else if (s.method === "Email" && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(contact)) err = "Please enter a valid email.";
+    else if (s.method === "WhatsApp" && contact.replace(/\D/g, "").length < 10) err = "Please enter a valid WhatsApp number.";
+    else if (!s.type) err = "Choose how you're coming.";
+    else if (!s.source) err = "Tell us how you found us.";
+    else if (s.source === "Other" && !s.otherText.trim()) err = "Please tell us where you found us.";
+    else if (!s.age) err = "You must be 19 or older.";
+    if (err) return this.setState({ error: err });
+    this.setState({ sending: true, error: "" });
+    try {
+      const res = await fetch("/.netlify/functions/kp-rsvp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name, contactMethod: s.method, contact, attendingAs: s.type,
+          foundUs: s.source === "Other" ? "Other: " + s.otherText.trim() : s.source,
+          source: this.urlSource(), ageConfirmed: true, company: s.hp
+        })
+      });
+      if (!res.ok) throw new Error();
+      this.setState({ sending: false, done: true });
+    } catch (e) {
+      this.setState({ sending: false, error: "Something went wrong. Please try again in a moment." });
+    }
+  }
+
+  renderVals() {
+    const s = this.state;
+    const P = {
+      purple: [["#E6DDF7","#A58FD6","#7E66B8"],["#E3E6F8","#9AA3DE","#737DBE"]],
+      pink: [["#FBE4EC","#F2A9C2","#D9809F"],["#E2EEFA","#9CC4EA","#6E9FCC"],["#E4EFE5","#A9C9AC","#7FA684"],["#FBF4E4","#E8D6A8","#C4AE76"]],
+      blue: [["#DCEBF7","#86B3DB","#5F8FBB"],["#D9F0F5","#7CC3D6","#4F9DB3"],["#E0E8F8","#93A9DE","#6680BE"]]
+    };
+    const opt = (list, key, pal) => list.map((label, i) => ({ label, ...this.pickStyle(s[key] === label, pal[i % pal.length]), pick: () => this.setState({ [key]: label, error: "" }) }));
+    const wa = s.method === "WhatsApp";
+    return {
+      name: s.name, contact: s.contact, otherText: s.otherText, hp: s.hp, age: s.age,
+      setName: e => this.setState({ name: e.target.value }),
+      setContact: e => this.setState({ contact: e.target.value }),
+      setOther: e => this.setState({ otherText: e.target.value }),
+      setHp: e => this.setState({ hp: e.target.value }),
+      toggleAge: e => this.setState({ age: e.target.checked, error: "" }),
+      methods: opt(["Email", "WhatsApp"], "method", P.purple),
+      types: opt(["Single woman", "Single man", "Couple", "Other"], "type", P.pink),
+      sources: opt(["Sugar Daddy's", "Toronto Sex Show", "Other"], "source", P.blue),
+      isOther: s.source === "Other",
+      contactPlaceholder: wa ? "WhatsApp number" : s.method === "Email" ? "Email address" : "Email or WhatsApp — choose above",
+      contactType: wa ? "tel" : "email",
+      contactMode: wa ? "tel" : "email",
+      contactAuto: wa ? "tel" : "email",
+      hasError: !!s.error, error: s.error,
+      sending: s.sending, buttonLabel: s.sending ? "SENDING…" : "SEND REQUEST",
+      submit: () => this.submit(),
+      done: s.done, notDone: !s.done
+    };
+  }
+}
+
+</script>
 </body>
 </html>

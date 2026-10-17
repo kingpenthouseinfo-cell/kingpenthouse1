@@ -1,11 +1,10 @@
 import { validateSubmission } from "./lib/validate.mjs";
 import { sendEmail } from "./lib/notify-email.mjs";
 import { sendWhatsApp } from "./lib/notify-whatsapp.mjs";
-import { turnstileEnabled, verifyTurnstile } from "./lib/turnstile.mjs";
 import { rateLimited } from "./lib/ratelimit.mjs";
 
 const MAX_BODY = 8 * 1024;
-const GENERIC_ERROR = { ok: false, message: "We couldn't process your request. Please check your details and try again." };
+const GENERIC_ERROR = { ok: false };
 
 const json = (status, body) =>
   new Response(JSON.stringify(body), {
@@ -30,19 +29,14 @@ export default async function handler(req, context, deps = {}) {
   const env = deps.env ?? process.env;
   const email = deps.sendEmail ?? sendEmail;
   const whatsapp = deps.sendWhatsApp ?? sendWhatsApp;
-  const verify = deps.verifyTurnstile ?? verifyTurnstile;
 
-  // GET -> public, non-secret client config (Turnstile *site* key is public by design).
-  if (req.method === "GET") {
-    return json(200, { turnstileSiteKey: env.TURNSTILE_SITE_KEY && env.TURNSTILE_SECRET_KEY ? env.TURNSTILE_SITE_KEY : null });
-  }
   if (req.method !== "POST") return json(405, GENERIC_ERROR);
   if (!originAllowed(req)) return json(403, GENERIC_ERROR);
 
   const ip = context?.ip || req.headers.get("x-nf-client-connection-ip") || req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
   if (rateLimited(ip)) {
     console.warn("[kp-rsvp] rate limited");
-    return json(429, { ok: false, message: "Too many requests. Please try again later." });
+    return json(429, { ok: false });
   }
 
   let body;
@@ -64,19 +58,6 @@ export default async function handler(req, context, deps = {}) {
     return json(400, GENERIC_ERROR);
   }
 
-  if (turnstileEnabled(env)) {
-    let human = false;
-    try {
-      human = await verify(body.turnstileToken, ip, env);
-    } catch (err) {
-      console.error("[kp-rsvp] turnstile verification error:", err.message);
-    }
-    if (!human) {
-      console.warn("[kp-rsvp] turnstile rejected");
-      return json(400, GENERIC_ERROR);
-    }
-  }
-
   const [emailRes, waRes] = await Promise.allSettled([email(result.data, env), whatsapp(result.data, env)]);
   const emailOk = emailRes.status === "fulfilled";
   const waOk = waRes.status === "fulfilled";
@@ -92,8 +73,3 @@ export default async function handler(req, context, deps = {}) {
 
   return json(200, { ok: true });
 }
-
-export const config = {
-  path: "/api/kp-rsvp",
-  rateLimit: { windowLimit: 10, windowSize: 60, aggregateBy: ["ip", "domain"] },
-};

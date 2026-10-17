@@ -12,7 +12,7 @@ export async function sendEmail(d, env, fetchImpl = fetch) {
     body: JSON.stringify({
       from: KP_FROM_EMAIL,
       to: KP_NOTIFICATION_EMAIL.split(",").map((s) => s.trim()).filter(Boolean),
-      reply_to: d.email, // lets admin reply straight to the guest
+      ...(d.contactMethod === "Email" ? { reply_to: d.contact } : {}), // admin can reply straight to the guest
       subject,
       text,
       html,

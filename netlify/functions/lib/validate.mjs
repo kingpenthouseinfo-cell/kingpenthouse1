@@ -1,50 +1,14 @@
-// Server-side validation + sanitization for /kp submissions.
+// Server-side validation + sanitization for /kp submissions (contract: see kp.html submit()).
 // Nothing here trusts the browser: every value is re-checked and normalised.
 
-export const GUEST_TYPES = {
-  single_woman: "Single Female",
-  single_man: "Single Male",
-  couple: "Couple",
-  other: "Other",
-};
-
-export const EVENTS = {
-  halloween: { label: "Halloween - October 31", short: "Halloween", emoji: "🎃" },
-  saturday: { label: "Upcoming Saturday Party", short: "Saturday Party", emoji: "🥂" },
-  future: { label: "Future King Penthouse Events", short: "Future Events", emoji: "👑" },
-};
-
-export const FOUND_VIA = {
-  sexshow: "Toronto Sex Show",
-  sugardaddys: "Sugar Daddy's",
-  fetlife: "FetLife",
-  friend: "Friend / Referral",
-  flyer: "Flyer",
-  social: "Social Media",
-  web: "Google / Web",
-  other: "Other",
-};
-
-// Whitelisted ?source= values (flyer / QR tracking). Anything else is dropped.
-export const SOURCES = {
-  sexshow: "sexshow",
-  sugardaddys: "sugardaddys",
-  flyer: "flyer",
-  fetlife: "fetlife",
-  instagram: "instagram",
-  social: "social",
-  friend: "friend",
-  web: "web",
-};
-
-export const MIN_AGE = 19;
-const MAX_AGE = 99;
+export const CONTACT_METHODS = ["Email", "WhatsApp"];
+export const ATTENDING_AS = ["Single woman", "Single man", "Couple", "Other"];
+export const FOUND_US = ["Sugar Daddy's", "Toronto Sex Show", "Other"];
 
 // Control chars, bidi overrides, zero-width chars and line/paragraph separators.
 const INVISIBLE_OR_CONTROL = /[\u0000-\u001F\u007F-\u009F\u200B-\u200F\u2028\u2029\u202A-\u202E\u2066-\u2069]/g;
-const CONTROL_KEEP_NEWLINE = /[\u0000-\u0009\u000B-\u001F\u007F-\u009F\u200B-\u200F\u2028\u2029\u202A-\u202E\u2066-\u2069]/g;
 
-// Strip control chars (incl. CR/LF -> space for single-line fields), collapse whitespace.
+// Single-line clean: strip control chars and angle brackets, collapse whitespace, cap length.
 export function cleanLine(value, max) {
   if (typeof value !== "string") return "";
   return value
@@ -56,83 +20,56 @@ export function cleanLine(value, max) {
     .slice(0, max);
 }
 
-// Multi-line text: keep newlines, drop other control chars and angle brackets.
-export function cleanText(value, max) {
-  if (typeof value !== "string") return "";
-  return value
-    .normalize("NFKC")
-    .replace(/\r\n?/g, "\n")
-    .replace(CONTROL_KEEP_NEWLINE, "")
-    .replace(/[<>]/g, "")
-    .replace(/\n{3,}/g, "\n\n")
-    .trim()
-    .slice(0, max);
-}
-
 const EMAIL_RE = /^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)+$/;
-const FETLIFE_RE = /^[A-Za-z0-9_.\- ]{1,40}$/;
+const PHONE_RE = /^\+?[0-9 ()._-]{7,30}$/;
+const SOURCE_RE = /^[a-z0-9_-]{1,32}$/i;
 
 /**
  * @returns {{ ok: true, data: object } | { ok: false, bot?: boolean, errors: string[] }}
  */
 export function validateSubmission(body) {
-  if (!body || typeof body !== "object" || Array.isArray(body)) {
-    return { ok: false, errors: ["body"] };
-  }
+  if (!body || typeof body !== "object" || Array.isArray(body)) return { ok: false, errors: ["body"] };
 
-  // Honeypot: real visitors never see/fill this. Caller silently fakes success.
-  if (typeof body.website === "string" && body.website.trim() !== "") {
-    return { ok: false, bot: true, errors: ["honeypot"] };
-  }
+  // Honeypot ("company"): real visitors never fill it. Caller fakes success.
+  if (typeof body.company === "string" && body.company.trim() !== "") return { ok: false, bot: true, errors: ["honeypot"] };
 
   const errors = [];
 
   const name = cleanLine(body.name, 80);
-  if (name.length < 1) errors.push("name");
+  if (!name) errors.push("name");
 
-  const ageRaw = typeof body.age === "number" ? body.age : Number(String(body.age ?? "").trim());
-  const age = Number.isInteger(ageRaw) ? ageRaw : NaN;
-  if (!(age >= MIN_AGE && age <= MAX_AGE)) errors.push("age");
+  const contactMethod = typeof body.contactMethod === "string" ? body.contactMethod : "";
+  if (!CONTACT_METHODS.includes(contactMethod)) errors.push("contactMethod");
 
-  const email = cleanLine(body.email, 254).toLowerCase();
-  if (!EMAIL_RE.test(email) || email.length > 254) errors.push("email");
+  let contact = cleanLine(body.contact, 120);
+  if (contactMethod === "Email") {
+    contact = contact.toLowerCase();
+    if (!EMAIL_RE.test(contact) || contact.length > 254) errors.push("contact");
+  } else if (contactMethod === "WhatsApp") {
+    const digits = contact.replace(/\D/g, "");
+    if (!PHONE_RE.test(contact) || digits.length < 10 || digits.length > 15) errors.push("contact");
+  }
 
-  const guestKey = typeof body.guestType === "string" ? body.guestType : "";
-  if (!Object.hasOwn(GUEST_TYPES, guestKey)) errors.push("guestType");
+  const attendingAs = typeof body.attendingAs === "string" ? body.attendingAs : "";
+  if (!ATTENDING_AS.includes(attendingAs)) errors.push("attendingAs");
 
-  const eventKey = typeof body.event === "string" ? body.event : "";
-  if (!Object.hasOwn(EVENTS, eventKey)) errors.push("event");
+  // "Sugar Daddy's" | "Toronto Sex Show" | "Other: <free text>"
+  const foundRaw = cleanLine(body.foundUs, 100);
+  let foundUs = foundRaw;
+  if (foundRaw === "Other" || foundRaw.startsWith("Other:")) {
+    const detail = foundRaw.replace(/^Other:?\s*/, "");
+    if (!detail) errors.push("foundUs");
+    foundUs = `Other: ${detail}`;
+  } else if (!FOUND_US.includes(foundRaw) || foundRaw === "Other") {
+    errors.push("foundUs");
+  }
 
-  const foundKey = typeof body.foundVia === "string" ? body.foundVia : "";
-  if (!Object.hasOwn(FOUND_VIA, foundKey)) errors.push("foundVia");
-
-  let fetlife = cleanLine(body.fetlife, 40).replace(/^@/, "");
-  if (fetlife && !FETLIFE_RE.test(fetlife)) errors.push("fetlife");
-
-  const message = cleanText(body.message, 1000);
-
+  // Server-side age gate: explicit confirmation of 19+ is mandatory.
   if (body.ageConfirmed !== true) errors.push("ageConfirmed");
 
-  const srcRaw = typeof body.source === "string" ? body.source.trim().toLowerCase() : "";
-  const source = Object.hasOwn(SOURCES, srcRaw) ? SOURCES[srcRaw] : "";
+  const src = typeof body.source === "string" ? body.source.trim() : "";
+  const source = SOURCE_RE.test(src) ? src.toLowerCase() : "";
 
   if (errors.length) return { ok: false, errors };
-
-  return {
-    ok: true,
-    data: {
-      name,
-      age,
-      email,
-      guestType: GUEST_TYPES[guestKey],
-      eventKey,
-      event: EVENTS[eventKey].label,
-      eventShort: EVENTS[eventKey].short,
-      eventEmoji: EVENTS[eventKey].emoji,
-      fetlife,
-      foundVia: FOUND_VIA[foundKey],
-      message,
-      source, // "" when absent/invalid
-    },
-  };
+  return { ok: true, data: { name, contactMethod, contact, attendingAs, foundUs, source } };
 }
