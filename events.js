@@ -271,7 +271,7 @@ window.KP_EVENTS = [
     location: "Minutes from Pearson Airport",
     city: "Mississauga, Ontario",
     note: "Exact address is provided to verified guests.",
-    fetlife: "",
+    fetlife: "https://fetlife.com/events/2026/10/24/king-penthouse-silk-smoke-cognac-bbc-orgy-nszbuq",
     doublelist: "",
     ratio: "2/3",
     details: [
