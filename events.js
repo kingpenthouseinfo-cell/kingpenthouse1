@@ -258,6 +258,36 @@ window.KP_EVENTS = [
     status: "active"
   },
   {
+    slug: "oct24-silk-smoke-cognac",
+    category: "BBC",
+    url: "Oct24-Silk-Smoke-Cognac.html",
+    name: "SILK, SMOKE & COGNAC",
+    tagline: "BBC ORGY \u00B7 GROWN & SEXY LOUNGE NIGHT",
+    intro: "Silk robes, satin, lace and lingerie. Old-school R&B, slow jams, 90s and 2000s Hip-Hop, a little cognac and some good company.",
+    date: "2026-10-24",
+    dateLabel: "Saturday, October 24, 2026",
+    time: "10:30 PM \u2013 4:00 AM",
+    prices: ["Single Males \u2014 $60", "Couples \u2014 $40", "Single Females \u2014 Free"],
+    location: "Minutes from Pearson Airport",
+    city: "Mississauga, Ontario",
+    note: "Exact address is provided to verified guests.",
+    fetlife: "",
+    doublelist: "",
+    ratio: "2/3",
+    details: [
+      { title: "Silk, smoke & cognac", image: "./Oct24-Silk-Smoke-Cognac-Banner.webp", ratio: "1717/916", body: "This week\u2019s theme is Silk, Smoke & Cognac, so pull out those silk robes, satin, lace, and lingerie!\n\nThink old-school R&B, slow jams, 90s and 2000s Hip-Hop, a little cognac, and some good company.\n\nAnd of course, it\u2019s a BBC Orgy night! Calling all Queens of Spades, BBC admirers, couples, and anyone who\u2019s been curious about coming to KP.\n\nWhether you\u2019re coming to socialize, meet new people, watch, or play, you\u2019re welcome. As always, there\u2019s no pressure or expectations. Just come enjoy yourself and see where the night goes!" },
+      { title: "What to wear", body: "Silk robes, satin shirts, lingerie, lace, boxers, or anything that fits that grown and sexy lounge vibe. Dressing for the theme is encouraged, but not required." },
+      { title: "Admission", body: "Single Men: $60\nCouples: $40\nSingle Women: FREE\n\nCash or e-transfer at the door." },
+      { title: "New to KP?", body: "Send us a message to get verified before attending. We\u2019ll need your age, whether you\u2019re coming solo or as a couple, and a recent face photo.\n\nThe address is only shared with verified guests." },
+      { title: "A few reminders", body: "Consent and respect are always expected. No one is obligated to participate, and everyone\u2019s boundaries must be respected.\n\nNo photos or videos in the party area. We take privacy seriously.\n\nA female admin will be available throughout the night." },
+      { title: "Parking", body: "Single women can park directly in front of the venue. Couples and single men can park across the street." },
+      { title: "Saturday night", body: "Silk, Smoke & Cognac\nSaturday, October 24\n10:30 PM to 4:00 AM\nMississauga, minutes from Pearson Airport\n\nHope to see some familiar faces and meet a few new ones! Message us to get verified." }
+    ],
+    posterSrc: "./Oct24-Silk-Smoke-Cognac.webp",
+    poster: "kp-poster-oct24-silk-smoke-cognac",
+    status: "active"
+  },
+  {
     slug: "oct16-designer-durags",
     category: "BBC",
     url: "Oct16-Designer-Durags.html",
