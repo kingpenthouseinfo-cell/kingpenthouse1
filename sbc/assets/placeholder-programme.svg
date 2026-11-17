@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 400" role="img" aria-label="Photographs coming soon">
+  <rect width="500" height="400" fill="#F6F1E1"/>
+  <circle cx="250" cy="170" r="84" fill="none" stroke="#1F5C3E" stroke-width="3" stroke-dasharray="3 9" stroke-linecap="round"/>
+  <circle cx="250" cy="170" r="58" fill="#CFE8D8"/>
+  <path d="M222 188c10-30 26-44 28-44s18 14 28 44c-18 10-38 10-56 0z" fill="#1F5C3E" opacity=".85"/>
+  <text x="250" y="316" text-anchor="middle" font-family="'EB Garamond',Georgia,serif" font-style="italic" font-size="26" fill="#3D3A33">Photographs coming soon</text>
+</svg>

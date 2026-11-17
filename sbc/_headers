@@ -1,0 +1,19 @@
+# Works on Netlify and Cloudflare Pages. Pages must never be cached for long, so a saved change shows on
+# the next refresh; photos and videos can be (their file names never change).
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+/index.html
+  Cache-Control: no-cache
+/config.js
+  Cache-Control: no-cache
+/content.js
+  Cache-Control: no-cache
+/support.js
+  Cache-Control: public, max-age=3600
+/admin/*
+  Cache-Control: no-cache
+  X-Robots-Tag: noindex, nofollow
+  X-Frame-Options: DENY
+/assets/*
+  Cache-Control: public, max-age=86400

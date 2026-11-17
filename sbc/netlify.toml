@@ -1,0 +1,4 @@
+# Netlify settings (Cloudflare Pages: use the same build command and output folder "dist").
+[build]
+  command = "node scripts/build.mjs"
+  publish = "dist"

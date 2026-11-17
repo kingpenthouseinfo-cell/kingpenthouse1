@@ -1,0 +1,10 @@
+{
+  "name": "SBC Website Editor",
+  "short_name": "SBC Editor",
+  "start_url": "./",
+  "scope": "./",
+  "display": "browser",
+  "background_color": "#F6F1E1",
+  "theme_color": "#0A3D28",
+  "icons": [{ "src": "../assets/sbc-emblem.png", "sizes": "512x512", "type": "image/png" }]
+}

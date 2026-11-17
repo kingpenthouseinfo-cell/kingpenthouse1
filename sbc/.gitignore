@@ -1,0 +1,5 @@
+node_modules/
+dev/.storage/
+.env
+*.log
+dist/

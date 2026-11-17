@@ -1,0 +1,22 @@
+# Only used if you run Supabase on your own computer with the Supabase CLI (optional, needs Docker).
+# The hosted project is configured in the Supabase dashboard — see docs/OWNER-SETUP.md.
+project_id = "sbc-global-foundation"
+
+[api]
+enabled = true
+
+[auth]
+site_url = "http://localhost:8787/admin/"
+additional_redirect_urls = ["http://localhost:8787/admin/"]
+enable_signup = false            # invite-only: nobody can create their own account
+
+[auth.email]
+enable_signup = false
+enable_confirmations = true
+
+[auth.email.template.magic_link]
+subject = "Your sign-in link for the SBC website editor"
+content_path = "./supabase/templates/magic-link.html"
+
+[storage]
+file_size_limit = "5MiB"

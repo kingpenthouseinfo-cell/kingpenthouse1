@@ -1,0 +1,21 @@
+{
+  "name": "sbc-global-foundation-site",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "SBC Global Foundation website with a private mobile editor",
+  "scripts": {
+    "dev": "node dev/server.mjs",
+    "seed:generate": "node scripts/generate-seed.mjs",
+    "config": "node scripts/write-config.mjs",
+    "test:db": "node --test tests/db.test.mjs",
+    "test:e2e": "node --test tests/e2e.test.mjs",
+    "test": "node --test tests/db.test.mjs tests/e2e.test.mjs"
+  },
+  "devDependencies": {
+    "@babel/standalone": "7.29.0",
+    "@electric-sql/pglite": "^0.2.17",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  }
+}
