@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SBC Website Editor — all screens</title>
+<link rel="stylesheet" href="admin.css">
+<style>
+/* Preview-only layout (not part of the editor itself) */
+body{background:#D9D6CC;padding:24px 16px 60px}
+.intro{max-width:900px;margin:0 auto 28px}
+.intro h1{font-size:30px}
+.grid{display:flex;flex-wrap:wrap;gap:36px;justify-content:center;align-items:flex-start}
+.spec{width:390px}
+.spec>h2{margin:0 0 4px;font-size:18px} .note{margin:0 0 10px;color:#4b473f;font-size:15px}
+.phone{width:390px;background:var(--cream);border-radius:28px;overflow:hidden;box-shadow:0 20px 50px -20px rgba(0,0,0,.45);border:1px solid #bdb8a8;min-height:300px}
+.phone .top{position:static}
+.phone main{padding-bottom:30px}
+.phone .bar{position:static;transform:none;margin:0 -16px -30px;}
+.phone .loading{display:none}
+</style></head><body>
+<div class="intro"><h1>SBC Website Editor — every screen</h1>
+<p>Phone-size (390&nbsp;px) views of every screen of the editor, built from the real stylesheet <code>admin.css</code>. Change the look here; keep the wording and the fields.</p></div>
+<div class="grid">
+<section class="spec" id="signin">
+  <h2>1. Sign in</h2><p class="note">First screen. Email only, no password.</p>
+  <div class="phone"><header class="top"><a href="#" class="brand"><img src="assets/sbc-emblem.png" alt="" width="36" height="36"><span>Website editor</span></a></header><main><h1>Sign in</h1>
+    <p>Enter the email address the foundation invited. We’ll email you a link — no password needed.</p>
+    <form id="signin" novalidate=""><div class="field"><label for="email"><span>Your email address</span></label><input id="email" type="email" inputmode="email" autocomplete="email" autocapitalize="none" spellcheck="false" required=""></div>
+      <button class="btn primary" type="submit" id="sendbtn">Email me a sign-in link</button></form>
+    <p class="hint">Tip: save this page to your phone’s home screen so it’s one tap away.</p></main></div>
+</section>
+<section class="spec" id="check-email">
+  <h2>2. Check your email</h2><p class="note">After asking for a link. Includes the 6-digit code backup.</p>
+  <div class="phone"><header class="top"><a href="#" class="brand"><img src="assets/sbc-emblem.png" alt="" width="36" height="36"><span>Website editor</span></a></header><main><h1>Check your email</h1>
+      <p>If <b>priest@example.org</b> has been set up as an editor, we’ve sent a sign-in link. Open it on this phone.</p>
+      <form id="codeform" class="group" autocomplete="off"><h2>Link opens somewhere else?</h2>
+        <div class="field"><label for="code"><span>Type the 6-digit code from the email</span></label><input id="code" class="code" inputmode="numeric" autocomplete="one-time-code" maxlength="8" pattern="[0-9]*"></div>
+        <button class="btn primary" type="submit" id="codebtn">Sign in with the code</button></form>
+      <a class="link" href="#/signin">Use a different email address</a></main></div>
+</section>
+<section class="spec" id="home">
+  <h2>3. Main screen</h2><p class="note">The three large buttons. Most common task first.</p>
+  <div class="phone"><header class="top"><a href="#" class="brand"><img src="assets/sbc-emblem.png" alt="" width="36" height="36"><span>Website editor</span></a></header><main><h1>What would you like to do?</h1>
+    <a class="big primary" href="#/add"><span class="ico" aria-hidden="true">＋</span><span><b>Add an update</b><small>Tell everyone what happened. Add photos.</small></span></a>
+    <a class="big" href="#/edit"><span class="ico" aria-hidden="true">✎</span><span><b>Edit an update or programme</b><small>Fix a mistake or change a description.</small></span></a>
+    <a class="big" href="#/site"><span class="ico" aria-hidden="true">ⓘ</span><span><b>Edit site information</b><small>The About page and contact details.</small></span></a>
+    <p class="who">Signed in as priest@example.org · <button class="link" id="out" type="button">Sign out</button></p>
+    <p><a href="../" target="_blank" rel="noopener">Look at the website ↗</a></p></main></div>
+</section>
+<section class="spec" id="add-empty">
+  <h2>4. Add an update (empty)</h2><p class="note">Title, What happened?, Programme, Photos, Save bar.</p>
+  <div class="phone"><header class="top"><a href="#" class="brand"><img src="assets/sbc-emblem.png" alt="" width="36" height="36"><span>Website editor</span></a></header><main class="has-bar"><a class="back" href="#/">← Back</a><h1>Add an update</h1><div id="note"></div>
+    <form id="form" novalidate="">
+      <div class="field"><label for="f-title"><span>Title</span></label><input id="f-title" type="text" maxlength="120" autocomplete="off" value="" required=""></div>
+      <div class="field"><label for="f-body"><span>What happened?</span></label><textarea id="f-body" maxlength="5000" required="" aria-describedby="f-body-hint"></textarea><p class="hint" id="f-body-hint">Leave a blank line between paragraphs.</p></div>
+      <div class="field"><label for="f-programme"><span>Programme</span></label><select id="f-programme"><option value="">General update</option><option value="31c6da4e-27f5-49ff-8f81-4ac4414e3b2c">School Supplies</option><option value="4e32d5c7-1c4b-4b71-8d9f-b134ebf35930">Disability &amp; Rehabilitation</option><option value="2d7b0eea-3b44-45f4-99ee-2afb03751fac">Sunshine Sports</option><option value="97efe713-a5c9-4219-b83c-558a520953b8">Care for the Elderly</option><option value="65822feb-fae7-4a03-85ad-5207a95e24d1">Mothers &amp; Infants</option><option value="a326f0eb-3b1a-40e4-a80f-a28ca736378e">Food &amp; Dry Rations</option><option value="3bb5258a-c5c9-46c5-bfe6-f694bbc31b55">Water &amp; Building</option><option value="62dd7563-5bb5-4cc1-b7c4-f284eff2fc95">Toilets &amp; Sanitation</option></select></div>
+      <div id="photos-block" class="field" role="group" aria-labelledby="photos-label"><span class="label" id="photos-label">Photos <span class="opt">(optional)</span></span>
+  <p class="hint" id="photo-count">No photos yet.</p><ul class="photos" id="photo-list"></ul>
+  <label class="btn quiet filebtn"><span>＋ Add photos</span><input id="photo-input" type="file" accept="image/*" multiple="" aria-label="Add photos from your camera or photo library"></label>
+  <p class="hint" id="photo-busy" aria-live="polite"></p><p class="hint">The first photo is shown first. Use ◀ ▶ to change the order.</p></div>
+    </form>
+    
+    <div class="bar"><div class="inner"><button class="btn primary" id="save" type="submit" form="form">Save</button></div></div></main></div>
+</section>
+<section class="spec" id="add-errors">
+  <h2>5. Add an update (needs filling in)</h2><p class="note">Plain-language field errors.</p>
+  <div class="phone"><header class="top"><a href="#" class="brand"><img src="assets/sbc-emblem.png" alt="" width="36" height="36"><span>Website editor</span></a></header><main class="has-bar"><a class="back" href="#/">← Back</a><h1>Add an update</h1><div id="note"></div>
+    <form id="form" novalidate="">
+      <div class="field invalid"><label for="f-title"><span>Title</span></label><input id="f-title" type="text" maxlength="120" autocomplete="off" value="" required="" aria-describedby="f-title-err" aria-invalid="true"><p class="err" id="f-title-err">Please give the update a title.</p></div>
+      <div class="field invalid"><label for="f-body"><span>What happened?</span></label><textarea id="f-body" maxlength="5000" required="" aria-describedby="f-body-err" aria-invalid="true"></textarea><p class="hint" id="f-body-hint">Leave a blank line between paragraphs.</p><p class="err" id="f-body-err">Please write what happened.</p></div>
+      <div class="field"><label for="f-programme"><span>Programme</span></label><select id="f-programme"><option value="">General update</option><option value="31c6da4e-27f5-49ff-8f81-4ac4414e3b2c">School Supplies</option><option value="4e32d5c7-1c4b-4b71-8d9f-b134ebf35930">Disability &amp; Rehabilitation</option><option value="2d7b0eea-3b44-45f4-99ee-2afb03751fac">Sunshine Sports</option><option value="97efe713-a5c9-4219-b83c-558a520953b8">Care for the Elderly</option><option value="65822feb-fae7-4a03-85ad-5207a95e24d1">Mothers &amp; Infants</option><option value="a326f0eb-3b1a-40e4-a80f-a28ca736378e">Food &amp; Dry Rations</option><option value="3bb5258a-c5c9-46c5-bfe6-f694bbc31b55">Water &amp; Building</option><option value="62dd7563-5bb5-4cc1-b7c4-f284eff2fc95">Toilets &amp; Sanitation</option></select></div>
+      <div id="photos-block" class="field" role="group" aria-labelledby="photos-label"><span class="label" id="photos-label">Photos <span class="opt">(optional)</span></span>
+  <p class="hint" id="photo-count">No photos yet.</p><ul class="photos" id="photo-list"></ul>
+  <label class="btn quiet filebtn"><span>＋ Add photos</span><input id="photo-input" type="file" accept="image/*" multiple="" aria-label="Add photos from your camera or photo library"></label>
+  <p class="hint" id="photo-busy" aria-live="polite"></p><p class="hint">The first photo is shown first. Use ◀ ▶ to change the order.</p></div>
+    </form>
+    
+    <div class="bar"><div class="inner"><button class="btn primary" id="save" type="submit" form="form">Save</button></div></div></main></div>
+</section>
+<section class="spec" id="edit-choice">
+  <h2>6. Edit an update or programme</h2><p class="note">Choice: Updates or Programmes.</p>
+  <div class="phone"><header class="top"><a href="#" class="brand"><img src="assets/sbc-emblem.png" alt="" width="36" height="36"><span>Website editor</span></a></header><main><a class="back" href="#/">← Back</a><h1>Edit an update or programme</h1>
+    <a class="big" href="#/edit/updates"><span><b>Updates</b><small>News you’ve posted</small></span></a>
+    <a class="big" href="#/edit/programmes"><span><b>Programmes</b><small>School Supplies, Water &amp; Building, and the others</small></span></a></main></div>
+</section>
+<section class="spec" id="updates-list">
+  <h2>7. List of updates</h2><p class="note">Title, date and programme.</p>
+  <div class="phone"><header class="top"><a href="#" class="brand"><img src="assets/sbc-emblem.png" alt="" width="36" height="36"><span>Website editor</span></a></header><main><a class="back" href="#/edit">← Back</a><h1>Updates</h1><a class="row" href="#/update/46932ad9-125b-4e70-9abb-81f9b34330ec"><b>New wheelchairs for the sisters’ home</b><small>18 November 2026 · General update</small></a><a class="row" href="#/update/504164bb-fc30-4ea5-93ad-038108e8faae"><b>Rice reached forty families</b><small>18 November 2026 · Food &amp; Dry Rations</small></a><a class="big primary" href="#/add"><span class="ico" aria-hidden="true">＋</span><span><b>Add an update</b></span></a></main></div>
+</section>
+<section class="spec" id="update-edit">
+  <h2>8. Edit an update (with photos)</h2><p class="note">Same form, filled in. Photos can be reordered or removed. Remove from website sits at the bottom.</p>
+  <div class="phone"><header class="top"><a href="#" class="brand"><img src="assets/sbc-emblem.png" alt="" width="36" height="36"><span>Website editor</span></a></header><main class="has-bar"><a class="back" href="#/edit/updates">← Back</a><h1>Edit update</h1><div id="note"></div>
+    <form id="form" novalidate="">
+      <div class="field"><label for="f-title"><span>Title</span></label><input id="f-title" type="text" maxlength="120" autocomplete="off" value="Rice reached forty families" required=""></div>
+      <div class="field"><label for="f-body"><span>What happened?</span></label><textarea id="f-body" maxlength="5000" required="" aria-describedby="f-body-hint">Volunteers packed the rice on Friday morning.
+
+Father John drove the van to three villages and every family signed for their parcel.</textarea><p class="hint" id="f-body-hint">Leave a blank line between paragraphs.</p></div>
+      <div class="field"><label for="f-programme"><span>Programme</span></label><select id="f-programme"><option value="">General update</option><option value="31c6da4e-27f5-49ff-8f81-4ac4414e3b2c">School Supplies</option><option value="4e32d5c7-1c4b-4b71-8d9f-b134ebf35930">Disability &amp; Rehabilitation</option><option value="2d7b0eea-3b44-45f4-99ee-2afb03751fac">Sunshine Sports</option><option value="97efe713-a5c9-4219-b83c-558a520953b8">Care for the Elderly</option><option value="65822feb-fae7-4a03-85ad-5207a95e24d1">Mothers &amp; Infants</option><option value="a326f0eb-3b1a-40e4-a80f-a28ca736378e" selected="">Food &amp; Dry Rations</option><option value="3bb5258a-c5c9-46c5-bfe6-f694bbc31b55">Water &amp; Building</option><option value="62dd7563-5bb5-4cc1-b7c4-f284eff2fc95">Toilets &amp; Sanitation</option></select></div>
+      <div id="photos-block" class="field" role="group" aria-labelledby="photos-label"><span class="label" id="photos-label">Photos <span class="opt">(optional)</span></span>
+  <p class="hint" id="photo-count">3 photos — the first one is the main photo.</p><ul class="photos" id="photo-list"><li data-id="7bfe3a63-ed8c-4788-aa66-7bedb9d90375"><img src="assets/food-van.jpg" alt="Photo 1">
+      <span class="tag">First photo</span>
+      <div class="tools"><button type="button" data-act="left" aria-label="Move photo 1 earlier" disabled="">◀</button>
+      <button type="button" data-act="right" aria-label="Move photo 1 later">▶</button>
+      <button type="button" class="rm" data-act="rm" aria-label="Remove photo 1">✕</button></div></li><li data-id="7592e87f-9bfa-487c-8e07-ae3e77779b41"><img src="assets/food-family-rice.jpg" alt="Photo 2">
+      <span class="tag"></span>
+      <div class="tools"><button type="button" data-act="left" aria-label="Move photo 2 earlier">◀</button>
+      <button type="button" data-act="right" aria-label="Move photo 2 later">▶</button>
+      <button type="button" class="rm" data-act="rm" aria-label="Remove photo 2">✕</button></div></li><li data-id="b212a152-6e4c-4cc1-ba06-8fa4faccdc67"><img src="assets/food-rice-village.jpg" alt="Photo 3">
+      <span class="tag"></span>
+      <div class="tools"><button type="button" data-act="left" aria-label="Move photo 3 earlier">◀</button>
+      <button type="button" data-act="right" aria-label="Move photo 3 later" disabled="">▶</button>
+      <button type="button" class="rm" data-act="rm" aria-label="Remove photo 3">✕</button></div></li></ul>
+  <label class="btn quiet filebtn"><span>＋ Add photos</span><input id="photo-input" type="file" accept="image/*" multiple="" aria-label="Add photos from your camera or photo library"></label>
+  <p class="hint" id="photo-busy" aria-live="polite"></p><p class="hint">The first photo is shown first. Use ◀ ▶ to change the order.</p></div>
+    </form>
+    <h2>Made a mistake?</h2><div id="rmbox"><button class="btn danger" type="button" id="rm">Remove from website</button></div>
+    <div class="bar"><div class="inner"><button class="btn primary" id="save" type="submit" form="form">Save</button></div></div></main></div>
+</section>
+<section class="spec" id="remove-confirm">
+  <h2>9. Remove from website — confirmation</h2><p class="note">Plain confirmation before anything is hidden.</p>
+  <div class="phone"><header class="top"><a href="#" class="brand"><img src="assets/sbc-emblem.png" alt="" width="36" height="36"><span>Website editor</span></a></header><main class="has-bar"><a class="back" href="#/edit/updates">← Back</a><h1>Edit update</h1><div id="note"></div>
+    <form id="form" novalidate="">
+      <div class="field"><label for="f-title"><span>Title</span></label><input id="f-title" type="text" maxlength="120" autocomplete="off" value="Rice reached forty families" required=""></div>
+      <div class="field"><label for="f-body"><span>What happened?</span></label><textarea id="f-body" maxlength="5000" required="" aria-describedby="f-body-hint">Volunteers packed the rice on Friday morning.
+
+Father John drove the van to three villages and every family signed for their parcel.</textarea><p class="hint" id="f-body-hint">Leave a blank line between paragraphs.</p></div>
+      <div class="field"><label for="f-programme"><span>Programme</span></label><select id="f-programme"><option value="">General update</option><option value="31c6da4e-27f5-49ff-8f81-4ac4414e3b2c">School Supplies</option><option value="4e32d5c7-1c4b-4b71-8d9f-b134ebf35930">Disability &amp; Rehabilitation</option><option value="2d7b0eea-3b44-45f4-99ee-2afb03751fac">Sunshine Sports</option><option value="97efe713-a5c9-4219-b83c-558a520953b8">Care for the Elderly</option><option value="65822feb-fae7-4a03-85ad-5207a95e24d1">Mothers &amp; Infants</option><option value="a326f0eb-3b1a-40e4-a80f-a28ca736378e" selected="">Food &amp; Dry Rations</option><option value="3bb5258a-c5c9-46c5-bfe6-f694bbc31b55">Water &amp; Building</option><option value="62dd7563-5bb5-4cc1-b7c4-f284eff2fc95">Toilets &amp; Sanitation</option></select></div>
+      <div id="photos-block" class="field" role="group" aria-labelledby="photos-label"><span class="label" id="photos-label">Photos <span class="opt">(optional)</span></span>
+  <p class="hint" id="photo-count">3 photos — the first one is the main photo.</p><ul class="photos" id="photo-list"><li data-id="7bfe3a63-ed8c-4788-aa66-7bedb9d90375"><img src="assets/food-van.jpg" alt="Photo 1">
+      <span class="tag">First photo</span>
+      <div class="tools"><button type="button" data-act="left" aria-label="Move photo 1 earlier" disabled="">◀</button>
+      <button type="button" data-act="right" aria-label="Move photo 1 later">▶</button>
+      <button type="button" class="rm" data-act="rm" aria-label="Remove photo 1">✕</button></div></li><li data-id="7592e87f-9bfa-487c-8e07-ae3e77779b41"><img src="assets/food-family-rice.jpg" alt="Photo 2">
+      <span class="tag"></span>
+      <div class="tools"><button type="button" data-act="left" aria-label="Move photo 2 earlier">◀</button>
+      <button type="button" data-act="right" aria-label="Move photo 2 later">▶</button>
+      <button type="button" class="rm" data-act="rm" aria-label="Remove photo 2">✕</button></div></li><li data-id="b212a152-6e4c-4cc1-ba06-8fa4faccdc67"><img src="assets/food-rice-village.jpg" alt="Photo 3">
+      <span class="tag"></span>
+      <div class="tools"><button type="button" data-act="left" aria-label="Move photo 3 earlier">◀</button>
+      <button type="button" data-act="right" aria-label="Move photo 3 later" disabled="">▶</button>
+      <button type="button" class="rm" data-act="rm" aria-label="Remove photo 3">✕</button></div></li></ul>
+  <label class="btn quiet filebtn"><span>＋ Add photos</span><input id="photo-input" type="file" accept="image/*" multiple="" aria-label="Add photos from your camera or photo library"></label>
+  <p class="hint" id="photo-busy" aria-live="polite"></p><p class="hint">The first photo is shown first. Use ◀ ▶ to change the order.</p></div>
+    </form>
+    <h2>Made a mistake?</h2><div id="rmbox"><div class="confirm" role="alertdialog" aria-labelledby="cq"><p id="cq"><b>Remove this update from the website?</b><br>Visitors will no longer see it.</p>
+        <button class="btn danger solid" type="button" id="yes">Yes, remove it</button><button class="btn quiet" type="button" id="no">No, keep it</button></div></div>
+    <div class="bar"><div class="inner"><button class="btn primary" id="save" type="submit" form="form">Save</button></div></div></main></div>
+</section>
+<section class="spec" id="programmes-list">
+  <h2>10. List of programmes</h2><p class="note">Number and name; Add a programme at the bottom.</p>
+  <div class="phone"><header class="top"><a href="#" class="brand"><img src="assets/sbc-emblem.png" alt="" width="36" height="36"><span>Website editor</span></a></header><main><a class="back" href="#/edit">← Back</a><h1>Programmes</h1><a class="row" href="#/programme/31c6da4e-27f5-49ff-8f81-4ac4414e3b2c"><b>01 · School Supplies</b><small>Village schools</small></a><a class="row" href="#/programme/4e32d5c7-1c4b-4b71-8d9f-b134ebf35930"><b>02 · Disability &amp; Rehabilitation</b><small>With VAROD, Vavuniya</small></a><a class="row" href="#/programme/2d7b0eea-3b44-45f4-99ee-2afb03751fac"><b>03 · Sunshine Sports</b><small>Colombo, Feb 2026</small></a><a class="row" href="#/programme/97efe713-a5c9-4219-b83c-558a520953b8"><b>04 · Care for the Elderly</b><small>Homes run by the sisters</small></a><a class="row" href="#/programme/65822feb-fae7-4a03-85ad-5207a95e24d1"><b>05 · Mothers &amp; Infants</b><small>Clinic, Dec 2025</small></a><a class="row" href="#/programme/a326f0eb-3b1a-40e4-a80f-a28ca736378e"><b>06 · Food &amp; Dry Rations</b><small>Village deliveries</small></a><a class="row" href="#/programme/3bb5258a-c5c9-46c5-bfe6-f694bbc31b55"><b>07 · Water &amp; Building</b><small>Villages &amp; parishes</small></a><a class="row" href="#/programme/62dd7563-5bb5-4cc1-b7c4-f284eff2fc95"><b>08 · Toilets &amp; Sanitation</b><small>Family homes</small></a><a class="big" href="#/programme/new"><span class="ico" aria-hidden="true">＋</span><span><b>Add a programme</b></span></a></main></div>
+</section>
+<section class="spec" id="programme-edit">
+  <h2>11. Edit a programme</h2><p class="note">Optional fields marked. First photo is the main photo.</p>
+  <div class="phone"><header class="top"><a href="#" class="brand"><img src="assets/sbc-emblem.png" alt="" width="36" height="36"><span>Website editor</span></a></header><main class="has-bar"><a class="back" href="#/edit/programmes">← Back</a><h1>Edit programme</h1><div id="note"></div>
+    <form id="form" novalidate="">
+      <div class="field"><label for="f-name"><span>Programme name</span></label><input id="f-name" type="text" maxlength="80" value="Water &amp; Building" required=""></div>
+      <div class="field"><label for="f-short"><span>Short name for the menu</span></label><input id="f-short" type="text" maxlength="24" value="Water" required="" aria-describedby="f-short-hint"><p class="hint" id="f-short-hint">One or two words, e.g. “School”.</p></div>
+      <div class="field"><label for="f-context"><span>Where it happens</span> <span class="opt">(optional)</span></label><input id="f-context" type="text" maxlength="80" value="Villages &amp; parishes"></div>
+      <div class="field"><label for="f-caption"><span>Caption under the main photo</span> <span class="opt">(optional)</span></label><input id="f-caption" type="text" maxlength="80" value="water for the dry months"></div>
+      <div class="field"><label for="f-desc"><span>Description</span> <span class="opt">(optional)</span></label><textarea id="f-desc" maxlength="800">Water by tanker in the dry season, new wells dug by hand, and repairs to chapels and community ground.</textarea></div>
+      <div id="photos-block" class="field" role="group" aria-labelledby="photos-label"><span class="label" id="photos-label">Photos <span class="opt">(optional)</span></span>
+  <p class="hint" id="photo-count">5 photos — the first one is the main photo.</p><ul class="photos" id="photo-list"><li data-id="4a4d0c41-ad69-49ea-bd84-47e378c879f3"><img src="assets/water-tanker.png" alt="Photo 1">
+      <span class="tag">Main photo</span>
+      <div class="tools"><button type="button" data-act="left" aria-label="Move photo 1 earlier" disabled="">◀</button>
+      <button type="button" data-act="right" aria-label="Move photo 1 later">▶</button>
+      <button type="button" class="rm" data-act="rm" aria-label="Remove photo 1">✕</button></div></li><li data-id="1d6178ac-8c13-470b-951f-d21073fea8c5"><img src="assets/build-foundation.png" alt="Photo 2">
+      <span class="tag"></span>
+      <div class="tools"><button type="button" data-act="left" aria-label="Move photo 2 earlier">◀</button>
+      <button type="button" data-act="right" aria-label="Move photo 2 later">▶</button>
+      <button type="button" class="rm" data-act="rm" aria-label="Remove photo 2">✕</button></div></li><li data-id="ea7a967b-8571-4fc5-98a5-d825f7e37589"><img src="assets/water-well-dig.jpg" alt="Photo 3">
+      <span class="tag"></span>
+      <div class="tools"><button type="button" data-act="left" aria-label="Move photo 3 earlier">◀</button>
+      <button type="button" data-act="right" aria-label="Move photo 3 later">▶</button>
+      <button type="button" class="rm" data-act="rm" aria-label="Remove photo 3">✕</button></div></li><li data-id="95e6a774-16f7-40f2-bc52-2c410a4e5ccb"><img src="assets/build-priest-sand.jpg" alt="Photo 4">
+      <span class="tag"></span>
+      <div class="tools"><button type="button" data-act="left" aria-label="Move photo 4 earlier">◀</button>
+      <button type="button" data-act="right" aria-label="Move photo 4 later">▶</button>
+      <button type="button" class="rm" data-act="rm" aria-label="Remove photo 4">✕</button></div></li><li data-id="5ab6a6e3-3569-40c2-8559-923206452f1c"><img src="assets/build-road.jpg" alt="Photo 5">
+      <span class="tag"></span>
+      <div class="tools"><button type="button" data-act="left" aria-label="Move photo 5 earlier">◀</button>
+      <button type="button" data-act="right" aria-label="Move photo 5 later" disabled="">▶</button>
+      <button type="button" class="rm" data-act="rm" aria-label="Remove photo 5">✕</button></div></li></ul>
+  <label class="btn quiet filebtn"><span>＋ Add photos</span><input id="photo-input" type="file" accept="image/*" multiple="" aria-label="Add photos from your camera or photo library"></label>
+  <p class="hint" id="photo-busy" aria-live="polite"></p><p class="hint">The first photo is the main photo. Use ◀ ▶ to move a different photo to the front.</p></div>
+    </form><div class="bar"><div class="inner"><button class="btn primary" id="save" type="submit" form="form">Save</button></div></div></main></div>
+</section>
+<section class="spec" id="site">
+  <h2>12. Site information</h2><p class="note">About page words, who carries the work out, optional contact details.</p>
+  <div class="phone"><header class="top"><a href="#" class="brand"><img src="assets/sbc-emblem.png" alt="" width="36" height="36"><span>Website editor</span></a></header><main class="has-bar"><a class="back" href="#/">← Back</a><h1>Site information</h1><div id="note"></div><form id="form" novalidate=""><fieldset class="group"><h2>About page</h2><div class="field"><label for="f-about_kicker"><span>Small line above the heading</span></label><input id="f-about_kicker" type="text" maxlength="60" value="Since c. 1994"></div><div class="field"><label for="f-about_heading"><span>Heading</span></label><input id="f-about_heading" type="text" maxlength="120" value="Old boys of one college,"></div><div class="field"><label for="f-about_heading_italic"><span>Heading — last words (shown in green italics)</span></label><input id="f-about_heading_italic" type="text" maxlength="120" value="one motto."></div><div class="field"><label for="f-about_p1"><span>First paragraph</span></label><textarea id="f-about_p1" maxlength="800" style="min-height:110px">SBC Global Foundation was started by the Old Bens — past pupils of St. Benedict College — to give something back to the communities around them.</textarea></div><div class="field"><label for="f-about_p2"><span>Second paragraph</span></label><textarea id="f-about_p2" maxlength="800" style="min-height:110px">We are a small foundation. We don’t run programmes from afar — we trust the priests and sisters who already know every family by name, and</textarea></div><div class="field"><label for="f-about_p2_italic"><span>Last words of the second paragraph (shown in italics)</span></label><input id="f-about_p2_italic" type="text" maxlength="200" value="we help them help."></div></fieldset><fieldset class="group"><h2>Who carries the work out</h2><div class="field"><label for="f-partner1_title"><span>Group 1 — name</span></label><input id="f-partner1_title" type="text" maxlength="80" value="VAROD, Vavuniya"></div><div class="field"><label for="f-partner1_text"><span>Group 1 — what they do</span></label><textarea id="f-partner1_text" maxlength="300" style="min-height:110px">Our partner for medical camps, home therapy and sport for the differently abled.</textarea></div><div class="field"><label for="f-partner2_title"><span>Group 2 — name</span></label><input id="f-partner2_title" type="text" maxlength="80" value="The religious sisters"></div><div class="field"><label for="f-partner2_text"><span>Group 2 — what they do</span></label><textarea id="f-partner2_text" maxlength="300" style="min-height:110px">They run homes for the elderly and tell us what each resident needs.</textarea></div><div class="field"><label for="f-partner3_title"><span>Group 3 — name</span></label><input id="f-partner3_title" type="text" maxlength="80" value="Parish priests"></div><div class="field"><label for="f-partner3_text"><span>Group 3 — what they do</span></label><textarea id="f-partner3_text" maxlength="300" style="min-height:110px">They know every family by name and drive the parcels out themselves.</textarea></div></fieldset><fieldset class="group"><h2>Contact details (optional)</h2><div class="field"><label for="f-contact_email"><span>Email address</span></label><input id="f-contact_email" type="email" maxlength="120" value="" inputmode="email" autocapitalize="none" aria-describedby="f-contact_email-hint"><p class="hint" id="f-contact_email-hint">Leave empty to keep it off the website.</p></div><div class="field"><label for="f-contact_phone"><span>Phone number</span></label><input id="f-contact_phone" type="tel" maxlength="40" value="" aria-describedby="f-contact_phone-hint"><p class="hint" id="f-contact_phone-hint">Leave empty to keep it off the website.</p></div><div class="field"><label for="f-contact_address"><span>Postal address</span></label><textarea id="f-contact_address" maxlength="240" style="min-height:110px" aria-describedby="f-contact_address-hint"></textarea><p class="hint" id="f-contact_address-hint">Leave empty to keep it off the website.</p></div></fieldset></form><div class="bar"><div class="inner"><button class="btn primary" id="save" type="submit" form="form">Save</button></div></div></main></div>
+</section>
+<section class="spec" id="saved">
+  <h2>13. Saved</h2><p class="note">Shown only after the change is really live.</p>
+  <div class="phone"><header class="top"><a href="#" class="brand"><img src="assets/sbc-emblem.png" alt="" width="36" height="36"><span>Website editor</span></a></header><main><div class="done"><div class="tick" aria-hidden="true">✓</div><h1>Saved. Your changes are live.</h1><p>Your update is now on the website.</p></div>
+    <a class="btn primary" href="../#update/2d3e283b-58cf-4fa6-9c8d-fd7bfeed81e0" target="_blank" rel="noopener">See it on the website ↗</a>
+    <a class="btn" href="#/add">Add another update</a>
+    <a class="btn quiet" href="#/">Back to the main screen</a></main></div>
+</section>
+<section class="spec" id="save-failed">
+  <h2>14. Save failed</h2><p class="note">Everything typed is kept. Message tells them what to do.</p>
+  <div class="phone"><header class="top"><a href="#" class="brand"><img src="assets/sbc-emblem.png" alt="" width="36" height="36"><span>Website editor</span></a></header><main class="has-bar"><a class="back" href="#/">← Back</a><h1>Add an update</h1><div id="note"><div class="note bad" role="alert">Your changes weren’t saved. Check your connection and try again.</div></div>
+    <form id="form" novalidate="">
+      <div class="field"><label for="f-title"><span>Title</span></label><input id="f-title" type="text" maxlength="120" autocomplete="off" value="" required=""></div>
+      <div class="field"><label for="f-body"><span>What happened?</span></label><textarea id="f-body" maxlength="5000" required="" aria-describedby="f-body-hint"></textarea><p class="hint" id="f-body-hint">Leave a blank line between paragraphs.</p></div>
+      <div class="field"><label for="f-programme"><span>Programme</span></label><select id="f-programme"><option value="">General update</option><option value="31c6da4e-27f5-49ff-8f81-4ac4414e3b2c">School Supplies</option><option value="4e32d5c7-1c4b-4b71-8d9f-b134ebf35930">Disability &amp; Rehabilitation</option><option value="2d7b0eea-3b44-45f4-99ee-2afb03751fac">Sunshine Sports</option><option value="97efe713-a5c9-4219-b83c-558a520953b8">Care for the Elderly</option><option value="65822feb-fae7-4a03-85ad-5207a95e24d1">Mothers &amp; Infants</option><option value="a326f0eb-3b1a-40e4-a80f-a28ca736378e">Food &amp; Dry Rations</option><option value="3bb5258a-c5c9-46c5-bfe6-f694bbc31b55">Water &amp; Building</option><option value="62dd7563-5bb5-4cc1-b7c4-f284eff2fc95">Toilets &amp; Sanitation</option></select></div>
+      <div id="photos-block" class="field" role="group" aria-labelledby="photos-label"><span class="label" id="photos-label">Photos <span class="opt">(optional)</span></span>
+  <p class="hint" id="photo-count">No photos yet.</p><ul class="photos" id="photo-list"></ul>
+  <label class="btn quiet filebtn"><span>＋ Add photos</span><input id="photo-input" type="file" accept="image/*" multiple="" aria-label="Add photos from your camera or photo library"></label>
+  <p class="hint" id="photo-busy" aria-live="polite"></p><p class="hint">The first photo is shown first. Use ◀ ▶ to change the order.</p></div>
+    </form>
+    
+    <div class="bar"><div class="inner"><button class="btn primary" id="save" type="submit" form="form">Save</button></div></div></main></div>
+</section>
+<section class="spec" id="not-editor">
+  <h2>15. Signed in but not an editor</h2><p class="note">For someone whose email has not been added.</p>
+  <div class="phone"><header class="top"><a href="#" class="brand"><img src="assets/sbc-emblem.png" alt="" width="36" height="36"><span>Website editor</span></a></header><main><h1>Not set up yet</h1><div class="note info">You’re signed in as <b>stranger@example.org</b>, but this address hasn’t been set up as an editor of the website.</div>
+    <p>Please ask the foundation to add you, then come back.</p><button class="btn" id="out">Sign out</button></main></div>
+</section>
+</div></body></html>
