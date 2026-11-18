@@ -92,7 +92,7 @@ The build publishes only the website and editor (`dist/`): never the database fi
 | **Who can edit now?** | `select * from public.editors;` |
 | **Someone can't sign in** | They tap **Email me a sign-in link** again (or use the 6-digit code). Check their email is spelled the same in Authentication → Users. If emails never arrive, check SMTP (§4.4) and the spam folder. |
 
-Editors cannot add, remove or change other editors, or change sign-in settings. **Only an owner** can change the Give page's bank details (the owner sees *Bank details (owner only)* in the editor). Until the owner fills them in, the Give page reads “To be added” as it always did.
+Editors cannot add, remove or change other editors, or change sign-in settings. **Only an owner** can change the Give page's bank details (the owner sees an *Edit bank details* button in the editor). Until the owner fills them in, the Give page reads “To be added” as it always did.
 
 ## 7. Backups and recovery
 

@@ -278,33 +278,29 @@ function viewNotEditor() {
 
 function viewHome() {
   setView(`<h1>What would you like to do?</h1>
-    <a class="big primary" href="#/add"><span class="ico" aria-hidden="true">＋</span><span><b>Add an update</b><small>Tell everyone what happened. Add photos.</small></span></a>
-    <a class="big" href="#/edit"><span class="ico" aria-hidden="true">✎</span><span><b>Edit an update or programme</b><small>Fix a mistake or change a description.</small></span></a>
-    <a class="big" href="#/site"><span class="ico" aria-hidden="true">ⓘ</span><span><b>Edit site information</b><small>The About page and contact details.</small></span></a>
+    <a class="big primary" href="#/add"><span class="ico" aria-hidden="true">＋</span><b>Add an update</b></a>
+    <a class="big" href="#/edit/updates"><span class="ico" aria-hidden="true">✎</span><b>Edit an update</b></a>
+    <a class="big" href="#/edit/programmes"><span class="ico" aria-hidden="true">✎</span><b>Edit a programme</b></a>
+    <a class="big" href="#/site"><span class="ico" aria-hidden="true">✎</span><b>Edit the About page</b></a>
+    ${me?.owner ? '<a class="big" href="#/bank"><span class="ico" aria-hidden="true">✎</span><b>Edit bank details</b></a>' : ''}
     <p class="who">Signed in as ${esc(me?.email || '')} · <button class="link" id="out" type="button">Sign out</button></p>
-    <p><a href="#/password">Set or change my password</a>${me?.owner ? ' · <a href="#/bank">Bank details (owner only)</a>' : ''}</p>
+    <p><a href="#/password">Set or change my password</a></p>
     <p><a href="../" target="_blank" rel="noopener">Look at the website ↗</a></p>`);
   $('#out').addEventListener('click', signOut);
-}
-
-function viewEditChoice() {
-  setView(`${back('#/')}<h1>Edit an update or programme</h1>
-    <a class="big" href="#/edit/updates"><span><b>Updates</b><small>News you’ve posted</small></span></a>
-    <a class="big" href="#/edit/programmes"><span><b>Programmes</b><small>School Supplies, Water &amp; Building, and the others</small></span></a>`);
 }
 
 async function viewUpdateList() {
   viewLoading();
   try { await loadContent(); } catch (e) { return viewError(e, viewUpdateList); }
   const rows = content.updates.map((u) => `<a class="row" href="#/update/${esc(u.id)}"><b>${esc(u.title)}</b><small>${esc(fmtDate(u.published_at))} · ${esc(programmeName(u.programme_id) || 'General update')}</small></a>`).join('');
-  setView(`${back('#/edit')}<h1>Updates</h1>${rows || '<p>There are no updates yet.</p>'}<a class="big primary" href="#/add"><span class="ico" aria-hidden="true">＋</span><span><b>Add an update</b></span></a>`);
+  setView(`${back('#/')}<h1>Edit an update</h1>${rows ? '<p>Choose the update you want to change.</p>' + rows : '<p>There are no updates yet.</p>'}<a class="big primary" href="#/add"><span class="ico" aria-hidden="true">＋</span><span><b>Add an update</b></span></a>`);
 }
 
 async function viewProgrammeList() {
   viewLoading();
   try { await loadContent(); } catch (e) { return viewError(e, viewProgrammeList); }
-  const rows = content.programmes.map((p) => `<a class="row" href="#/programme/${esc(p.id)}"><b>${String(p.position + 1).padStart(2, '0')} · ${esc(p.name)}</b><small>${esc(p.context || '')}</small></a>`).join('');
-  setView(`${back('#/edit')}<h1>Programmes</h1>${rows}<a class="big" href="#/programme/new"><span class="ico" aria-hidden="true">＋</span><span><b>Add a programme</b></span></a>`);
+  const rows = content.programmes.map((p) => `<a class="big" href="#/programme/${esc(p.id)}"><span class="num">${String(p.position + 1).padStart(2, '0')}</span><b>${esc(p.name)}</b></a>`).join('');
+  setView(`${back('#/')}<h1>Edit a programme</h1><p>Choose a programme.</p>${rows}<a class="big primary" href="#/programme/new"><span class="ico" aria-hidden="true">＋</span><span><b>Add a programme</b></span></a>`);
 }
 
 // A labelled field. The hint is tied to the control with aria-describedby (not part of its name).
@@ -607,7 +603,7 @@ async function viewSiteForm() {
   const groupBlock = `<fieldset class="group" id="groups-block"><h2>Who carries the work out</h2>
     <p class="hint">Each group appears as a card on the About page. Nothing changes on the website until you tap Save.</p>
     <div id="group-list"></div><button type="button" class="btn quiet" id="add-group">＋ Add a group</button><p class="hint" id="group-busy" aria-live="polite"></p></fieldset>`;
-  setView(`${back('#/')}<h1>Site information</h1><div id="note"></div><form id="form" novalidate>${fieldsets[0]}${groupBlock}${fieldsets[1]}</form>${bar('Save')}`, { bar: true, title: 'Site information' });
+  setView(`${back('#/')}<h1>About page</h1><div id="note"></div><form id="form" novalidate>${fieldsets[0]}${groupBlock}${fieldsets[1]}</form>${bar('Save')}`, { bar: true, title: 'About page' });
 
   const list = $('#group-list');
   const draw = () => { list.innerHTML = groupCards(groups) || '<p class="hint">There are no groups. The “Who carries it out” section is hidden on the website.</p>'; };
@@ -742,7 +738,7 @@ async function route() {
   if (h === '/' || h === '') return viewHome();
   if (h === '/signin') return viewSignIn();
   if (h === '/add') return viewUpdateForm(null);
-  if (h === '/edit') return viewEditChoice();
+  if (h === '/edit') { history.replaceState(null, '', location.pathname + '#/'); return viewHome(); }
   if (h === '/edit/updates') return viewUpdateList();
   if (h === '/edit/programmes') return viewProgrammeList();
   if ((m = h.match(/^\/update\/([0-9a-f-]{36})$/))) return viewUpdateForm(m[1]);

@@ -84,3 +84,6 @@ fieldset{border:0;padding:0;margin:0 0 22px}
 .gcard h3{margin:0 0 8px;font-size:18px}
 .gcard>img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:8px;display:block;margin:0 0 8px;background:#E6E0D2}
 .gcard .row2{display:flex;gap:8px;flex-wrap:wrap}.gcard .row2 .btn{flex:1 1 140px;margin-bottom:12px}
+
+.big .num{font:600 15px ui-monospace,Menlo,monospace;color:var(--mute);width:34px;flex:none;text-align:center}
+.big.primary .num{color:#DDEFE3}

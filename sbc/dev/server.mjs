@@ -227,6 +227,6 @@ export async function startDevServer({ port = 8787, db, storageDir: dir } = {}) 
 if (import.meta.url === 'file://' + process.argv[1]) {
   const s = await startDevServer({ port: Number(process.env.PORT || 8787) });
   const email = process.env.DEV_EDITOR_EMAIL || 'priest@example.org';
-  await s.addEditor(email);
-  console.log(`\nSBC dev server (local only — a stand-in for Supabase)\n  Website: ${s.origin}/\n  Editor:  ${s.origin}/admin/\n  Test editor: ${email}  (sign-in emails are not sent: open ${s.origin}/__dev/outbox?email=${email})\n`);
+  await s.addEditor(email, { password: 'password123', owner: true });
+  console.log(`\nSBC dev server (local only — a stand-in for Supabase)\n  Website: ${s.origin}/\n  Editor:  ${s.origin}/admin/\n  Sign in with:  ${email}  /  password123   (this test account is an owner, so it also sees the bank details)\n  Emailed links are not really sent: open ${s.origin}/__dev/outbox?email=${email}\n`);
 }

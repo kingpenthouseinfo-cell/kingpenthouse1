@@ -210,20 +210,31 @@ test('the editor has no drafts, no preview step and no Publish button, and fits 
     };
     await check('sign-in');
     await signIn(page);
-    for (const hash of ['/', '/add', '/edit', '/edit/updates', '/edit/programmes', '/programme/new', '/site']) {
+    for (const hash of ['/', '/add', '/edit/updates', '/edit/programmes', '/programme/new', '/site']) {
       await page.goto(`${BASE}/admin/#${hash}`); await page.waitForTimeout(700); await check(hash);
     }
     // programme edit screen (many photos) + the editor with long text
-    await page.goto(`${BASE}/admin/#/edit/programmes`); await page.locator('a.row').nth(7).click(); await page.getByRole('heading', { name: 'Edit programme' }).waitFor();
+    await page.goto(`${BASE}/admin/#/edit/programmes`); await page.locator('main a.big').nth(7).click(); await page.getByRole('heading', { name: 'Edit programme' }).waitFor();
     await check('programme edit (10 photos)');
   }
 });
 
-test('the home screen offers three large buttons, the most common task first', async () => {
+test('the main screen has short, simple buttons, the most common task first', async () => {
   const page = await newPage(); await signIn(page);
-  const labels = await page.locator('main a.big').allInnerTexts();
-  assert.equal(labels.length, 3);
-  assert.match(labels[0], /^＋\s*Add an update/); assert.match(labels[1], /Edit an update or programme/); assert.match(labels[2], /Edit site information/);
+  const labels = (await page.locator('main a.big').allInnerTexts()).map((x) => x.replace(/^[＋✎]\s*/, '').trim());
+  assert.deepEqual(labels, ['Add an update', 'Edit an update', 'Edit a programme', 'Edit the About page']);   // no bank button for an ordinary editor
+  assert.match((await page.locator('main a.big').first().innerText()), /^＋/);
+  // "Edit a programme" opens a list with every programme as its own button
+  await page.getByRole('link', { name: 'Edit a programme' }).click(); await page.getByRole('heading', { name: 'Edit a programme' }).waitFor();
+  await page.locator('main a.big').nth(8).waitFor();
+  const names = (await page.locator('main a.big').allInnerTexts()).map((x) => x.replace(/\s+/g, ' ').trim());
+  SRC.forEach((p, i) => assert.equal(names[i], `${String(i + 1).padStart(2, '0')} ${p.t}`));
+  assert.equal(names[names.length - 1], '＋ Add a programme');
+  await page.getByRole('link', { name: /Toilets/ }).click(); await page.getByRole('heading', { name: 'Edit programme' }).waitFor();
+  await page.goBack(); await page.getByRole('heading', { name: 'Edit a programme' }).waitFor();
+  await page.getByRole('link', { name: '← Back' }).click(); await page.getByRole('heading', { name: 'What would you like to do?' }).waitFor();
+  // the old "update or programme" choice screen is gone; an old bookmark lands on the main screen
+  await page.goto(`${BASE}/admin/#/edit`); await page.getByRole('heading', { name: 'What would you like to do?' }).waitFor();
 });
 
 let firstUpdate, secondUpdate;
@@ -364,7 +375,7 @@ test('an editor can add a ninth programme without moving the first eight', async
 test('About and contact edits appear on the live site; contact stays hidden until filled in', async () => {
   const visitor = await newPage(); await visitor.goto(`${BASE}/#about`); await visitor.getByText('Old boys of one college,').first().waitFor();
   assert.equal(await visitor.getByText('Get in touch').count(), 0);
-  const page = await newPage(); await signIn(page); await page.goto(`${BASE}/admin/#/site`); await page.getByRole('heading', { name: 'Site information' }).waitFor();
+  const page = await newPage(); await signIn(page); await page.goto(`${BASE}/admin/#/site`); await page.getByRole('heading', { name: 'About page', level: 1 }).waitFor();
   assert.equal(await page.getByLabel('First paragraph').inputValue(), SRC && 'SBC Global Foundation was started by the Old Bens — past pupils of St. Benedict College — to give something back to the communities around them.');
   await page.getByLabel('First paragraph').fill('We began in 1994 as past pupils of St. Benedict College.');
   await page.getByLabel('Email address').fill('office@sbc.example'); await page.getByLabel('Phone number').fill('+94 77 123 4567');
@@ -430,7 +441,7 @@ test('an editor can set a password for themselves; the old one then stops workin
 // ═══════════════ the bank details (owner only) ═══════════════
 test('only the owner can change the bank details; they show on the Give page and the copy button then copies them all', async () => {
   const priest = await newPage(); await signIn(priest, EDITOR);
-  assert.equal(await priest.getByRole('link', { name: /Bank details/ }).count(), 0, 'an ordinary editor is not offered it');
+  assert.equal(await priest.getByRole('link', { name: /bank details/i }).count(), 0, 'an ordinary editor is not offered it');
   await priest.goto(`${BASE}/admin/#/bank`); await priest.getByText('Only the owner of the website can change the bank details.').waitFor();
   const tok = await sessionToken(EDITOR); const v0 = (await api('/rest/v1/rpc/editor_content', { token: tok })).body.site_version;
   assert.equal((await api('/rest/v1/rpc/editor_save_bank', { token: tok, body: { p_expected_version: v0, p_data: { bank_name: 'Hacked Bank' } } })).status, 403);
@@ -438,8 +449,8 @@ test('only the owner can change the bank details; they show on the Give page and
 
   const owner = await newPage(); await passwordSignIn(owner, OWNER, 'owner-password-1');
   await owner.getByRole('heading', { name: 'What would you like to do?' }).waitFor();
-  assert.equal(await owner.locator('main a.big').count(), 3, 'still three big buttons');
-  await owner.getByRole('link', { name: /Bank details/ }).click(); await owner.getByRole('heading', { name: 'Bank details' }).waitFor();
+  assert.equal(await owner.locator('main a.big').count(), 5, 'the owner also gets Edit bank details');
+  await owner.getByRole('link', { name: /bank details/i }).click(); await owner.getByRole('heading', { name: 'Bank details' }).waitFor();
   await fill(owner, 'Account number', 'bad<number>');
   await owner.getByRole('button', { name: 'Save', exact: true }).click();
   await owner.getByText('The account number can only have letters, numbers, spaces and dashes.').first().waitFor();
@@ -499,7 +510,7 @@ test('several photos can be chosen in one go on a programme; they all arrive in 
 });
 
 test('groups: add one with a photo, delete another, see it on the About page; deleting all hides the section', async () => {
-  const page = await newPage(); await signIn(page); await page.goto(`${BASE}/admin/#/site`); await page.getByRole('heading', { name: 'Site information' }).waitFor();
+  const page = await newPage(); await signIn(page); await page.goto(`${BASE}/admin/#/site`); await page.getByRole('heading', { name: 'About page', level: 1 }).waitFor();
   assert.equal(await page.locator('.gcard').count(), 3);
   // a nameless group is refused with a plain message
   await page.getByRole('button', { name: '＋ Add a group' }).click();

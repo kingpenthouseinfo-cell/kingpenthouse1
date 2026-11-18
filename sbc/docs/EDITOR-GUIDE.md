@@ -35,14 +35,14 @@ Saving *is* publishing. There is no extra step.
 
 ## 4. Fix an update
 
-1. Tap **Edit an update or programme**, then **Updates**.
+1. Tap **Edit an update**.
 2. Tap the update. Change anything you like, then tap **Save**.
    The update keeps its original date and place in the list.
 3. To take a wrong update off the website: open it, scroll down and tap **Remove from website**, then **Yes, remove it**.
 
 ## 5. Edit a programme
 
-1. Tap **Edit an update or programme**, then **Programmes**, then the programme.
+1. Tap **Edit a programme**. Every programme is a button: tap the one you want.
 2. You can change: **Programme name**, **Short name for the menu**, **Where it happens**, **Caption under the main photo**, **Description**, and the photos. Anything marked *(optional)* can be left empty.
 3. The **first photo is the main photo**. To change it, move another photo to the front with **◀**.
 4. Tap **Add photos** and choose **as many photos as you like at once** (up to 40 per programme). They also appear on the website's **Gallery** page under that programme's name.
@@ -53,14 +53,14 @@ Saving *is* publishing. There is no extra step.
 
 ## 6. Change the About page or contact details
 
-1. Tap **Edit site information**.
+1. Tap **Edit the About page**.
 2. Change the words you want. Under **Contact details (optional)**, an email, phone or address only appears on the website once you type something in it. Leave it empty to keep it hidden.
 3. **Who carries the work out** shows a card for each group on the About page. Tap **＋ Add a group** for a new one, give it a **Name of the group**, say **What they do**, and add a photo with **Add photo**. To take a group off the page tap **Delete this group**, then **Yes, delete it**. (Nothing changes on the website until you tap **Save**.)
 4. Tap **Save**.
 
 ## 7. Bank details (only for the owner)
 
-If you are the owner of the website you will also see **Bank details (owner only)** at the bottom of the main screen. Fill in **Account name**, **Bank**, **Account number** and the rest, **check every number carefully** (everyone sees them on the Give page), and tap **Save**. Other editors do not see this screen.
+If you are the owner of the website you will also see **Edit bank details** on the main screen. Fill in **Account name**, **Bank**, **Account number** and the rest, **check every number carefully** (everyone sees them on the Give page), and tap **Save**. Other editors do not see this screen.
 
 ## If something goes wrong
 
