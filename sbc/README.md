@@ -6,7 +6,7 @@ and photos, correct them, edit programmes and the About page, and see the change
 | | |
 |---|---|
 | Public site | `/` (routes `#home` `#programmes` `#gallery` `#about` `#give`, `#programme/<n>`, new: `#updates`, `#update/<id>`) |
-| Editor | `/admin/` |
+| Editor | `/admin/` (sign in by emailed link or by password) |
 | Editor guide | [docs/EDITOR-GUIDE.md](docs/EDITOR-GUIDE.md) |
 | Owner setup guide | [docs/OWNER-SETUP.md](docs/OWNER-SETUP.md) |
 

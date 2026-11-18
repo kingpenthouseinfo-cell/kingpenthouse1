@@ -59,18 +59,19 @@ export async function startDevServer({ port = 8787, db, storageDir: dir } = {}) 
     const rt = randomBytes(12).toString('hex'); refresh.set(rt, u);
     return { access_token: access, token_type: 'bearer', expires_in: 3600, expires_at: now + 3600, refresh_token: rt, user: { id: u.id, email: u.email } };
   };
-  async function addEditor(email) {
+  async function addEditor(email, { password, owner = false } = {}) {
     let u = users.get(email);
     if (!u) {
       const r = await db.query(`insert into auth.users (email) values ($1) on conflict (email) do update set email = excluded.email returning id`, [email]);
       u = { id: r.rows[0].id, email }; users.set(email, u);
     }
-    await db.query(`insert into public.editors (user_id, email) values ($1, $2) on conflict do nothing`, [u.id, email]);
+    if (password) u.password = password;
+    await db.query(`insert into public.editors (user_id, email, is_owner) values ($1, $2, $3) on conflict (user_id) do update set is_owner = excluded.is_owner`, [u.id, email, owner]);
     return u;
   }
-  async function addUserOnly(email) {
+  async function addUserOnly(email, password) {
     const r = await db.query(`insert into auth.users (email) values ($1) on conflict (email) do update set email = excluded.email returning id`, [email]);
-    const u = { id: r.rows[0].id, email }; users.set(email, u); return u;
+    const u = users.get(email) || { id: r.rows[0].id, email }; if (password) u.password = password; users.set(email, u); return u;
   }
   async function knownUser(email) {
     if (users.has(email)) return users.get(email);
@@ -89,8 +90,8 @@ export async function startDevServer({ port = 8787, db, storageDir: dir } = {}) 
       const path = decodeURIComponent(url.pathname);
 
       // ── developer helpers (tests use these) ──
-      if (path === '/__dev/editor' && req.method === 'POST') { const b = JSON.parse((await readBody(req)).toString()); const u = await addEditor(b.email); return json(res, 200, u); }
-      if (path === '/__dev/user' && req.method === 'POST') { const b = JSON.parse((await readBody(req)).toString()); const u = await addUserOnly(b.email); return json(res, 200, u); }
+      if (path === '/__dev/editor' && req.method === 'POST') { const b = JSON.parse((await readBody(req)).toString()); const u = await addEditor(b.email, b); return json(res, 200, { id: u.id, email: u.email }); }
+      if (path === '/__dev/user' && req.method === 'POST') { const b = JSON.parse((await readBody(req)).toString()); const u = await addUserOnly(b.email, b.password); return json(res, 200, { id: u.id, email: u.email }); }
       if (path === '/__dev/outbox') return json(res, 200, outbox.filter((m) => !url.searchParams.get('email') || m.email === url.searchParams.get('email')));
       if (path === '/__dev/fail' && req.method === 'POST') { const b = JSON.parse((await readBody(req)).toString()); for (let i = 0; i < (b.count || 1); i++) faults[b.target].push(b.status || 503); return json(res, 200, faults); }
       if (path === '/__dev/delay' && req.method === 'POST') { delayRpcMs = JSON.parse((await readBody(req)).toString()).ms; return json(res, 200, { ok: true }); }
@@ -130,10 +131,22 @@ export async function startDevServer({ port = 8787, db, storageDir: dir } = {}) 
         if (!codes.has(key)) return json(res, 403, { code: 403, error_code: 'otp_expired', msg: 'Token has expired or is invalid' });
         codes.delete(key); return json(res, 200, session(users.get(email)));
       }
+      if (path === '/auth/v1/token' && req.method === 'POST' && url.searchParams.get('grant_type') === 'password') {
+        const b = JSON.parse((await readBody(req)).toString() || '{}'); const u = await knownUser(String(b.email || '').trim().toLowerCase());
+        if (!u || !u.password || u.password !== b.password) return json(res, 400, { code: 400, error_code: 'invalid_credentials', msg: 'Invalid login credentials', error: 'invalid_grant', error_description: 'Invalid login credentials' });
+        return json(res, 200, session(u));
+      }
       if (path === '/auth/v1/token' && req.method === 'POST') {
         const b = JSON.parse((await readBody(req)).toString()); const u = refresh.get(b.refresh_token);
         if (!u) return json(res, 400, { error: 'invalid_grant', error_description: 'Invalid Refresh Token' });
         refresh.delete(b.refresh_token); return json(res, 200, session(u));
+      }
+      if (path === '/auth/v1/user' && req.method === 'PUT') {
+        const c = who(req); if (!c?.sub) return json(res, 401, { msg: 'invalid JWT' });
+        const b = JSON.parse((await readBody(req)).toString() || '{}'); const u = [...users.values()].find((x) => x.id === c.sub);
+        if (!u) return json(res, 404, { msg: 'User not found' });
+        if (String(b.password || '').length < 6) return json(res, 422, { code: 422, error_code: 'weak_password', msg: 'Password should be at least 6 characters.' });
+        u.password = b.password; return json(res, 200, { id: u.id, email: u.email });
       }
       if (path === '/auth/v1/user') { const c = who(req); return c?.sub ? json(res, 200, { id: c.sub, email: c.email }) : json(res, 401, { msg: 'invalid JWT' }); }
       if (path === '/auth/v1/logout') { res.writeHead(204); return res.end(); }
@@ -157,33 +170,35 @@ export async function startDevServer({ port = 8787, db, storageDir: dir } = {}) 
       }
 
       // ── storage ──
-      const up = path.match(/^\/storage\/v1\/object\/media\/(.+)$/);
+      const up = path.match(/^\/storage\/v1\/object\/([a-z]+)\/(.+)$/);
       if (up && req.method === 'POST') {
         const claims = who(req); const body = await readBody(req);
         if (faults.upload.length) return json(res, faults.upload.shift(), { message: 'Upload temporarily unavailable' });
         const role = claims?.role === 'authenticated' ? 'authenticated' : 'anon';
         const ctype = (req.headers['content-type'] || '').split(';')[0];
-        const bucket = (await db.query(`select file_size_limit, allowed_mime_types from storage.buckets where id = 'media'`)).rows[0];
+        const bucket = (await db.query(`select file_size_limit, allowed_mime_types from storage.buckets where id = $1`, [up[1]])).rows[0];
+        if (!bucket) return json(res, 404, { statusCode: '404', error: 'Bucket not found', message: 'Bucket not found' });
         if (body.length > Number(bucket.file_size_limit)) return json(res, 413, { statusCode: '413', error: 'Payload too large', message: 'The object exceeded the maximum allowed size' });
         if (!bucket.allowed_mime_types.includes(ctype)) return json(res, 415, { statusCode: '415', error: 'invalid_mime_type', message: `mime type ${ctype} is not supported` });
         try {
           await asRole(db, role, role === 'authenticated' ? claims.sub : null, (tx) =>
-            tx.query(`insert into storage.objects (bucket_id, name, metadata) values ('media', $1, $2)`, [up[1], JSON.stringify({ size: body.length, mimetype: ctype })]));
+            tx.query(`insert into storage.objects (bucket_id, name, metadata) values ($1, $2, $3)`, [up[1], up[2], JSON.stringify({ size: body.length, mimetype: ctype })]));
         } catch (e) {
           const code = String(e.code);
           if (code === '23505') return json(res, 409, { statusCode: '409', error: 'Duplicate', message: 'The resource already exists' });
           return json(res, 403, { statusCode: '403', error: 'Unauthorized', message: 'new row violates row-level security policy' });
         }
-        const file = join(storageDir, normalize(up[1]).replace(/^(\.\.[/\\])+/, ''));
+        const file = join(storageDir, up[1], normalize(up[2]).replace(/^(\.\.[/\\])+/, ''));
         await mkdir(dirname(file), { recursive: true }); await writeFile(file, body); await writeFile(`${file}.type`, ctype);
-        stats.uploads++;
-        return json(res, 200, { Key: `media/${up[1]}`, Id: randomUUID() });
+        stats.uploads++; (stats.byBucket ||= {})[up[1]] = (stats.byBucket[up[1]] || 0) + 1;
+        return json(res, 200, { Key: `${up[1]}/${up[2]}`, Id: randomUUID() });
       }
-      const pub = path.match(/^\/storage\/v1\/object\/public\/media\/(.+)$/);
+      const pub = path.match(/^\/storage\/v1\/object\/public\/([a-z]+)\/(.+)$/);
       if (pub) {
-        const file = join(storageDir, normalize(pub[1]).replace(/^(\.\.[/\\])+/, ''));
+        const file = join(storageDir, pub[1], normalize(pub[2]).replace(/^(\.\.[/\\])+/, ''));
         try { const data = await readFile(file); const type = (await readFile(`${file}.type`, 'utf8')).trim();
-          res.writeHead(200, { 'content-type': type, 'cache-control': 'public, max-age=3600' }); return res.end(data); }
+          const rg = /bytes=(\d*)-(\d*)/.exec(req.headers.range || ''); if (rg) { const st = +rg[1] || 0, en = rg[2] ? +rg[2] : data.length - 1; res.writeHead(206, { 'content-type': type, 'content-range': `bytes ${st}-${en}/${data.length}`, 'accept-ranges': 'bytes', 'content-length': en - st + 1 }); return res.end(data.subarray(st, en + 1)); }
+          res.writeHead(200, { 'content-type': type, 'cache-control': 'public, max-age=3600', 'accept-ranges': 'bytes' }); return res.end(data); }
         catch { return json(res, 404, { statusCode: '404', error: 'not_found', message: 'Object not found' }); }
       }
 

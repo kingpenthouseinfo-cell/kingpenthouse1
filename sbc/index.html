@@ -180,6 +180,16 @@ a:hover{color:#123A27}
 </sc-for>
 </div>
 </div>
+<sc-if value="{{ p.hasVideos }}" hint-placeholder-val="{{ false }}">
+<div style="grid-column:1/-1;border-top:1px solid #E6E0D2;padding-top:22px">
+<div style="font-family:'Courier Prime',monospace;font-size:12px;letter-spacing:.06em;color:#6B655A">VIDEOS</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:22px;margin-top:16px">
+<sc-for list="{{ p.userVideos }}" as="uv" hint-placeholder-count="2">
+<figure style="margin:0;background:#fff;padding:8px;box-shadow:0 8px 18px -8px rgba(40,30,10,.4)"><video data-user-video="" src="{{ uv.url }}" poster="{{ uv.posterUrl }}" controls="{{ uv.on }}" playsinline="{{ uv.on }}" preload="metadata" style="width:100%;aspect-ratio:16/9;object-fit:contain;display:block;background:#0A3D28"></video></figure>
+</sc-for>
+</div>
+</div>
+</sc-if>
 <sc-if value="{{ p.hasUpdates }}" hint-placeholder-val="{{ false }}">
 <div style="grid-column:1/-1;border-top:1px solid #E6E0D2;padding-top:22px">
 <div style="font-family:'Courier Prime',monospace;font-size:12px;letter-spacing:.06em;color:#6B655A">LATEST FROM THIS PROGRAMME</div>
@@ -263,18 +273,21 @@ a:hover{color:#123A27}
 <img src="assets/sbc-emblem.png" alt="SBC Global Foundation emblem" style="position:absolute;left:20%;top:19%;width:60%;height:60%;object-fit:contain;mix-blend-mode:multiply">
 </div>
 </section>
+<sc-if value="{{ hasPartners }}" hint-placeholder-val="{{ true }}">
 <section style="padding:0 0 clamp(80px,10vw,140px)">
 <div style="font-family:'Courier Prime',monospace;font-size:13px;color:#6B655A;margin-bottom:28px">Who carries it out</div>
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:28px">
 <sc-for list="{{ partners }}" as="pt" hint-placeholder-count="3">
 <div style="position:relative;padding:30px 28px 30px 64px;background-color:#FFFEFA;background-image:repeating-linear-gradient(180deg,transparent 0 33px,#D9E6F2 33px 34px);border:1px solid #E6E0D2;box-shadow:0 10px 24px -14px rgba(40,30,10,.3)">
 <div style="position:absolute;left:44px;top:0;bottom:0;width:1px;background:#E8A9A0"></div>
-<div style="font-family:'Courier Prime',monospace;font-weight:700;font-size:17px;line-height:34px">{{ pt.t }}</div>
-<p style="font-family:'Courier Prime',monospace;font-size:15px;line-height:34px;margin:0;color:#3D3A33">{{ pt.d }}</p>
+<sc-if value="{{ pt.hasImg }}" hint-placeholder-val="{{ false }}"><img src="{{ pt.imgUrl }}" alt="" loading="lazy" style="display:block;width:100%;aspect-ratio:4/3;object-fit:cover;margin:0 0 14px;background:#E6E0D2;box-shadow:0 4px 10px -4px rgba(40,30,10,.35)"></sc-if>
+<div style="font-family:'Courier Prime',monospace;font-weight:700;font-size:17px;line-height:34px;overflow-wrap:anywhere">{{ pt.t }}</div>
+<p style="font-family:'Courier Prime',monospace;font-size:15px;line-height:34px;margin:0;color:#3D3A33;overflow-wrap:anywhere">{{ pt.d }}</p>
 </div>
 </sc-for>
 </div>
 </section>
+</sc-if>
 <sc-if value="{{ hasContact }}" hint-placeholder-val="{{ false }}">
 <section style="padding:0 0 clamp(80px,10vw,140px)">
 <div style="font-family:'Courier Prime',monospace;font-size:13px;color:#6B655A;margin-bottom:20px">Get in touch</div>
@@ -388,10 +401,11 @@ const SITE_DEFAULTS={about_kicker:'Since c. 1994',about_heading:'Old boys of one
   about_p1:'SBC Global Foundation was started by the Old Bens — past pupils of St. Benedict College — to give something back to the communities around them.',
   about_p2:'We are a small foundation. We don’t run programmes from afar — we trust the priests and sisters who already know every family by name, and',
   about_p2_italic:'we help them help.',
-  partner1_title:'VAROD, Vavuniya',partner1_text:'Our partner for medical camps, home therapy and sport for the differently abled.',
-  partner2_title:'The religious sisters',partner2_text:'They run homes for the elderly and tell us what each resident needs.',
-  partner3_title:'Parish priests',partner3_text:'They know every family by name and drive the parcels out themselves.',
-  contact_email:'',contact_phone:'',contact_address:''};
+  partners:[{title:'VAROD, Vavuniya',text:'Our partner for medical camps, home therapy and sport for the differently abled.',image:''},
+    {title:'The religious sisters',text:'They run homes for the elderly and tell us what each resident needs.',image:''},
+    {title:'Parish priests',text:'They know every family by name and drive the parcels out themselves.',image:''}],
+  contact_email:'',contact_phone:'',contact_address:'',
+  bank_account_name:'',bank_name:'',bank_branch:'',bank_account_no:'',bank_swift:'',bank_reference:''};
 let SITE={...SITE_DEFAULTS};
 let UPDATES=[];
 const Q=(()=>{const o={};new URLSearchParams(location.search).forEach((v,k)=>{if(v!==''&&!isNaN(+v))o[k]=+v;});return o;})();
@@ -406,14 +420,22 @@ class Component extends DCLogic {
     PROGS.forEach((pr,pi)=>pr.imgs.forEach(f=>{if(!(f in this.caps)){this.all.push(f);this.caps[f]=pr.ba?(/before/.test(f)?'Before — '+pr.t:/after/.test(f)?'After — '+pr.t:'Building — '+pr.t):pr.t;this.tag[f]=pi;}}));
     PAGES.programmes.k=this.kinds()+' kinds of help';}
   kinds(){return NUMW[PROGS.length]||String(PROGS.length);}
+  // Give page rows. Until the owner fills them in, these read exactly as the original page did.
+  bankRows(){const b=k=>String(SITE[k]||'').trim();
+    const rows=[['ACCOUNT NAME',b('bank_account_name')||'SBC Global Foundation'],['BANK',b('bank_name')||'To be added']];
+    if(b('bank_branch'))rows.push(['BRANCH',b('bank_branch')]);
+    rows.push(['ACCOUNT NO.',b('bank_account_no')||'To be added']);
+    if(b('bank_swift'))rows.push(['SWIFT / BIC',b('bank_swift')]);
+    rows.push(['REFERENCE',b('bank_reference')||'Your full name']);return rows;}
+  bankFilled(){return !!(String(SITE.bank_name||'').trim()&&String(SITE.bank_account_no||'').trim());}
   // Receives the live content (or the built-in fallback) from content.js.
   applyContent(r){
     const c=r&&r.content;
     if(c){
-      PROGS=c.programmes.map(x=>{const e=x.extras||{};const o={id:x.id,slug:x.slug,n:pad(x.position+1),t:x.name,s:x.short_label,m:x.context,cap:x.caption,d:x.description,imgs:x.images.slice()};
+      PROGS=c.programmes.map(x=>{const e=x.extras||{};const o={id:x.id,slug:x.slug,n:pad(x.position+1),t:x.name,s:x.short_label,m:x.context,cap:x.caption,d:x.description,imgs:x.images.slice(),videos:Array.isArray(x.videos)?x.videos.slice():[]};
         ['video','obj','ba'].forEach(k=>{if(e[k]!==undefined)o[k]=e[k];});return o;});
       SITE={...SITE_DEFAULTS};
-      Object.keys(c.site||{}).forEach(k=>{const v=c.site[k];if(typeof v!=='string')return;if(k.startsWith('contact_')||v.trim())SITE[k]=v;});
+      Object.keys(c.site||{}).forEach(k=>{const v=c.site[k];if(k==='partners'){if(Array.isArray(v))SITE.partners=v;return;}if(typeof v!=='string')return;if(k.startsWith('contact_')||v.trim())SITE[k]=v;});
       UPDATES=c.updates.map(u=>({...u}));
     }
     document.documentElement.setAttribute('data-sbc-source',r?r.source:'bundled');
@@ -448,7 +470,7 @@ class Component extends DCLogic {
   open(f){this.lbList=this.all;this.lbCapList=this.all.map(x=>this.caps[x]);this.setState({lb:this.all.indexOf(f)});}
   step(d){const n=(this.lbList||this.all).length;this.setState(s=>({lb:(s.lb+d+n)%n}));}
   jump(i){const el=document.querySelector('[data-card="'+i+'"]');if(el)window.scrollTo({top:el.getBoundingClientRect().top+scrollY-120,behavior:'smooth'});}
-  vids(){setTimeout(()=>document.querySelectorAll('video').forEach(v=>{v.defaultMuted=true;v.muted=!this.state.sound;v.play().catch(()=>{});}),60);}
+  vids(){setTimeout(()=>document.querySelectorAll('video:not([data-user-video])').forEach(v=>{v.defaultMuted=true;v.muted=!this.state.sound;v.play().catch(()=>{});}),60);}
   observe(){this.vids();this.cardIO&&this.cardIO.disconnect();setTimeout(()=>{this.cardIO=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){const a=+e.target.dataset.card;this.setState({active:a});const t=this.tabsRef.current,b=t&&t.querySelector('[data-tab="'+a+'"]');if(b)t.scrollTo({left:b.offsetLeft-20,behavior:'smooth'});}}),{rootMargin:'-45% 0px -50% 0px'});document.querySelectorAll('[data-card]').forEach(c=>this.cardIO.observe(c));},80);}
   componentDidMount(){
     this.state.route=this.parse();this.forceUpdate();this.observe();
@@ -522,15 +544,16 @@ class Component extends DCLogic {
       about:{kicker:SITE.about_kicker,heading:SITE.about_heading,headingItalic:SITE.about_heading_italic,p1:SITE.about_p1,p2:SITE.about_p2,p2Italic:SITE.about_p2_italic},
       hasContact:!!(cEmail||cPhone||cAddr),
       contact:{hasEmail:!!cEmail,email:cEmail,emailHref:'mailto:'+cEmail,hasPhone:!!cPhone,phone:cPhone,phoneHref:'tel:'+cPhone.replace(/[^\d+]/g,''),hasAddress:!!cAddr,address:cAddr},
-      programmes:PROGS.map((p,i)=>({...p,idx:i,main:p.imgs[0]||FALLBACK,mainUrl:A(p.imgs[0]||FALLBACK),videoUrl:p.video?A(p.video):'',objUrl:p.obj?A(p.obj):'',...this.progUpdates(i),rot:i%2?'2deg':'-2.5deg',jump:()=>this.jump(i),hasObj:!!p.obj,hasBA:!!p.ba,hasVideo:!!p.video,noVideo:!p.video,openMain:p.video?(()=>{const s=!this.state.sound;this.setState({sound:s});document.querySelectorAll('video').forEach(v=>{v.muted=!s;v.play().catch(()=>{});});}):(()=>this.open(p.imgs[0])),thumbs:p.imgs.slice(1).map(x=>{const lab=p.ba?(/before/.test(x)?'Before':/after/.test(x)?'After':'Building'):'';return {src:x,url:A(x),open:()=>this.open(x),lab,hasLab:!!lab,labBg:lab==='After'?'#1F5C3E':lab==='Before'?'#3D3A33':'#8A6A1E'};}),navColor:i===active?'#1F5C3E':'#9A948A',tabBg:i===active?'#1F5C3E':'#fff',tabInk:i===active?'#fff':'#1F5C3E',barW:i===active?'100%':'0%'})),
+      programmes:PROGS.map((p,i)=>({...p,idx:i,main:p.imgs[0]||FALLBACK,mainUrl:A(p.imgs[0]||FALLBACK),videoUrl:p.video?A(p.video):'',objUrl:p.obj?A(p.obj):'',...this.progUpdates(i),hasVideos:(p.videos||[]).length>0,userVideos:(p.videos||[]).map(v=>({url:window.SBCContent.video(v.src),posterUrl:v.poster?A(v.poster):'',on:true})),rot:i%2?'2deg':'-2.5deg',jump:()=>this.jump(i),hasObj:!!p.obj,hasBA:!!p.ba,hasVideo:!!p.video,noVideo:!p.video,openMain:p.video?(()=>{const s=!this.state.sound;this.setState({sound:s});document.querySelectorAll('video:not([data-user-video])').forEach(v=>{v.muted=!s;v.play().catch(()=>{});});}):(()=>this.open(p.imgs[0])),thumbs:p.imgs.slice(1).map(x=>{const lab=p.ba?(/before/.test(x)?'Before':/after/.test(x)?'After':'Building'):'';return {src:x,url:A(x),open:()=>this.open(x),lab,hasLab:!!lab,labBg:lab==='After'?'#1F5C3E':lab==='Before'?'#3D3A33':'#8A6A1E'};}),navColor:i===active?'#1F5C3E':'#9A948A',tabBg:i===active?'#1F5C3E':'#fff',tabInk:i===active?'#fff':'#1F5C3E',barW:i===active?'100%':'0%'})),
       cur:{d:P.d,prints:P.imgs.map((f,j)=>({src:f,k:'Plate '+(j+1)+' of '+P.imgs.length,rot:ROT[j%ROT.length],open:()=>this.open(f)}))},
       detailMeta:[{k:'Entry',v:P.n+' of '+pad(PROGS.length)},{k:'Where',v:P.m},{k:'Photographs',v:String(P.imgs.length)}],
       filters:[{t:'All',i:-1},...PROGS.map((p,i)=>({t:p.s,i}))].map(x=>({t:x.t,bg:x.i===filter?'#1F5C3E':'transparent',ink:x.i===filter?'#fff':'#1F5C3E',go:()=>this.setState({filter:x.i})})),
       gallery:gal.map((f,i)=>({src:f,url:A(f),cap:this.caps[f],rot:ROT[i%ROT.length],open:()=>this.open(f)})),
-      partners:[1,2,3].map(n=>({t:SITE['partner'+n+'_title'],d:SITE['partner'+n+'_text']})).filter(x=>x.t||x.d),
-      bank:[{k:'ACCOUNT NAME',v:'SBC Global Foundation'},{k:'BANK',v:'To be added'},{k:'ACCOUNT NO.',v:'To be added'},{k:'REFERENCE',v:'Your full name'}],
+      partners:(SITE.partners||[]).filter(g=>g&&(g.title||g.text)).map(g=>({t:g.title||'',d:g.text||'',hasImg:!!g.image,imgUrl:g.image?A(g.image):''})),
+      hasPartners:(SITE.partners||[]).some(g=>g&&(g.title||g.text)),
+      bank:this.bankRows().map(([k,v])=>({k,v})),
       soundLabel:this.state.sound?'♪ sound on':'tap for sound',copyLabel:copied?'Copied ✓':'Copy account details',
-      copy:()=>{try{navigator.clipboard.writeText('SBC Global Foundation');}catch(e){}this.setState({copied:true});setTimeout(()=>this.setState({copied:false}),1800);},
+      copy:()=>{try{navigator.clipboard.writeText(this.bankFilled()?this.bankRows().map(([k,v])=>k+': '+v).join('\n'):'SBC Global Foundation');}catch(e){}this.setState({copied:true});setTimeout(()=>this.setState({copied:false}),1800);},
       lbOpen:lb>=0&&!!s,lbSrc:s,lbUrl:A(s),lbCap:(this.lbCapList||[])[lb]||'',lbCount:(lb+1)+' / '+lbl.length,
       closeLb:()=>this.setState({lb:-1}),prev:e=>{e.stopPropagation();this.step(-1);},next:e=>{e.stopPropagation();this.step(1);}
     };

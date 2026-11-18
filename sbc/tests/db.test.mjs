@@ -258,3 +258,185 @@ test('only the database owner can add or remove editors', async () => {
   await db.query(`select public.remove_editor('new.priest@example.org')`);
   await denied(asRole(db, 'authenticated', id, (tx) => tx.query(`select public.editor_me()`)));
 });
+
+// ───────────── groups ("Who carries the work out") ─────────────
+const siteVersion = async () => (await asEditor('editor_content')).site_version;
+const saveSite = async (data, v) => asEditor('editor_save_site', { p_expected_version: v ?? await siteVersion(), p_data: data });
+
+test('the three original groups are a list, each with an id', async () => {
+  const s = (await publicContent()).site;
+  assert.equal(s.partners.length, 3);
+  assert.deepEqual(s.partners.map((g) => g.title), ['VAROD, Vavuniya', 'The religious sisters', 'Parish priests']);
+  assert.ok(s.partners.every((g) => g.id && g.image === ''));
+  assert.equal(s.partner1_title, undefined);
+});
+
+test('groups can be added with a photo, changed and deleted; every change is public at once', async () => {
+  const path = `${EDITOR}/${randomUUID()}.jpg`;
+  await asRole(db, 'authenticated', EDITOR, (tx) => tx.query(`insert into storage.objects (bucket_id, name) values ('media', $1)`, [path]));
+  const cur = (await publicContent()).site.partners;
+  await saveSite({ partners: [...cur, { id: randomUUID(), title: '  Women’s circle ', text: 'They cook for the camps.', image: path }] });
+  let p = (await publicContent()).site.partners;
+  assert.equal(p.length, 4);
+  assert.deepEqual(p[3], { id: p[3].id, title: 'Women’s circle', text: 'They cook for the camps.', image: path });
+  // delete the middle one, keep the others (and their ids)
+  await saveSite({ partners: [p[0], p[2], p[3]] });
+  const after = (await publicContent()).site.partners;
+  assert.deepEqual(after.map((g) => g.id), [p[0].id, p[2].id, p[3].id]);
+  // deleting every group is allowed; the page then simply hides the section
+  await saveSite({ partners: [] });
+  assert.deepEqual((await publicContent()).site.partners, []);
+  await saveSite({ partners: after });
+  assert.equal((await publicContent()).site.partners.length, 3);
+});
+
+test('group rules: a name is required, a photo must exist, at most 12, and saving groups leaves other text alone', async () => {
+  const keep = (await publicContent()).site.partners;
+  const before = (await publicContent()).site.about_p1;
+  await failsWith(saveSite({ partners: [{ title: '', text: 'x' }] }), 'PT422', 'partners');
+  await assert.rejects(saveSite({ partners: [{ title: '', text: 'x' }] }), /Name of group 1/);
+  await failsWith(saveSite({ partners: [{ title: 'A', text: '', image: `${EDITOR}/${randomUUID()}.jpg` }] }), 'PT422', 'photos');   // never uploaded
+  await failsWith(saveSite({ partners: [{ title: 'A', text: '', image: '../x.jpg' }] }), 'PT422', 'photos');
+  await failsWith(saveSite({ partners: Array.from({ length: 13 }, (_, i) => ({ title: 'G' + i, text: '' })) }), 'PT422', 'partners');
+  await failsWith(saveSite({ partners: [{ title: 'x'.repeat(81), text: '' }] }), 'PT422', 'partners');
+  await failsWith(saveSite({ partner1_title: 'old style key' }), 'PT422', 'partner1_title');
+  assert.deepEqual((await publicContent()).site.partners, keep);                 // every failure left the live data alone
+  await saveSite({ about_p1: before + '!' });
+  assert.deepEqual((await publicContent()).site.partners, keep);                 // saving other text keeps the groups
+  await saveSite({ about_p1: before });
+});
+
+test('groups: a stale save is refused, an identical retry succeeds, and a stale delete is not mistaken for a retry', async () => {
+  const g = (await publicContent()).site.partners; const v = await siteVersion();
+  await saveSite({ partners: g.slice(0, 2) }, v);
+  await failsWith(saveSite({ partners: g }, v), 'PT409');                                   // someone else deleted a group meanwhile
+  const ok = await saveSite({ partners: g.slice(0, 2) }, v);                                  // the same save again = a retry
+  assert.ok(ok.version);
+  const v2 = await siteVersion();
+  await saveSite({ partners: g }, v2);                                                        // someone adds one back
+  await failsWith(saveSite({ partners: g.slice(0, 2) }, v2), 'PT409');                      // a stale "delete" must NOT silently succeed
+  assert.equal((await publicContent()).site.partners.length, 3);
+});
+
+test('anonymous and non-editor accounts cannot change groups or videos', async () => {
+  await denied(anon('editor_save_site', { p_expected_version: 1, p_data: { partners: [] } }));
+  await denied(rpc('authenticated', STRANGER, 'editor_save_site', { p_expected_version: 1, p_data: { partners: [] } }));
+  const progArgs = { p_id: null, p_expected_version: null, p_name: 'N', p_short_label: 'N', p_context: '', p_caption: '', p_description: '', p_images: [], p_client_token: null, p_videos: [] };
+  await denied(anon('editor_save_programme', progArgs)); await denied(rpc('authenticated', STRANGER, 'editor_save_programme', progArgs));
+  for (const who of [['anon', null], ['authenticated', EDITOR]])
+    await denied(asRole(db, who[0], who[1], (tx) => tx.query(`insert into public.programme_videos (programme_id, position, src) select id, 9, '${EDITOR}/${randomUUID()}.mp4' from public.programmes limit 1`)));
+});
+
+// ───────────── videos ─────────────
+const uploadVideo = async (name, uid = EDITOR) => asRole(db, 'authenticated', uid, (tx) => tx.query(`insert into storage.objects (bucket_id, name) values ('videos', $1)`, [name]));
+const progBase = (id, version, extra = {}) => ({ p_id: id, p_expected_version: version, p_name: 'Food & Dry Rations', p_short_label: 'Food', p_context: 'Village deliveries', p_caption: 'loading the van',
+  p_description: 'Rice.', p_images: ['food-van.jpg'], p_client_token: null, ...extra });
+const food = async () => (await asEditor('editor_content')).programmes[5];
+
+test('video bucket: 50 MB, mp4/mov/webm only, editors upload into their own folder only', async () => {
+  const b = (await db.query(`select public, file_size_limit, allowed_mime_types from storage.buckets where id = 'videos'`)).rows[0];
+  assert.equal(b.public, true); assert.equal(Number(b.file_size_limit), 52428800);
+  assert.deepEqual(b.allowed_mime_types, ['video/mp4', 'video/quicktime', 'video/webm']);
+  await uploadVideo(`${EDITOR}/${randomUUID()}.mp4`);
+  await denied(uploadVideo(`${OTHER_EDITOR}/${randomUUID()}.mp4`));
+  await denied(uploadVideo(`${STRANGER}/${randomUUID()}.mp4`, STRANGER));
+  await denied(asRole(db, 'anon', null, (tx) => tx.query(`insert into storage.objects (bucket_id, name) values ('videos', '${EDITOR}/${randomUUID()}.mp4')`)));
+});
+
+test('a programme can have videos: they must exist in storage, keep their order, and can be removed', async () => {
+  const f = await food();
+  assert.deepEqual(f.videos, []);
+  const v1 = `${EDITOR}/${randomUUID()}.mp4`, v2 = `${EDITOR}/${randomUUID()}.webm`, poster = `${EDITOR}/${randomUUID()}.jpg`;
+  await failsWith(asEditor('editor_save_programme', progBase(f.id, f.version, { p_videos: [{ src: v1, poster: null }] })), 'PT422', 'videos');   // not uploaded yet
+  await failsWith(asEditor('editor_save_programme', progBase(f.id, f.version, { p_videos: [{ src: 'https://evil.example/a.mp4' }] })), 'PT422', 'videos');
+  await failsWith(asEditor('editor_save_programme', progBase(f.id, f.version, { p_videos: [{ src: `${EDITOR}/${randomUUID()}.exe` }] })), 'PT422', 'videos');
+  assert.deepEqual((await food()).videos, []);
+  await uploadVideo(v1); await uploadVideo(v2);
+  await asRole(db, 'authenticated', EDITOR, (tx) => tx.query(`insert into storage.objects (bucket_id, name) values ('media', $1)`, [poster]));
+  await asEditor('editor_save_programme', progBase(f.id, f.version, { p_videos: [{ src: v1, poster }, { src: v2, poster: null }] }));
+  let now = await food();
+  assert.deepEqual(now.videos, [{ src: v1, poster }, { src: v2, poster: null }]);
+  assert.deepEqual((await publicContent()).programmes[5].videos, now.videos);     // visitors see them too
+  // saving without mentioning videos leaves them alone; reordering and removing work
+  await asEditor('editor_save_programme', progBase(now.id, now.version, { p_description: 'Rice and flour.' }));
+  now = await food(); assert.equal(now.videos.length, 2);
+  await asEditor('editor_save_programme', progBase(now.id, now.version, { p_videos: [{ src: v2 }, { src: v1, poster }] }));
+  now = await food(); assert.deepEqual(now.videos.map((v) => v.src), [v2, v1]);
+  await asEditor('editor_save_programme', progBase(now.id, now.version, { p_videos: [] }));
+  assert.deepEqual((await food()).videos, []);
+  assert.equal((await db.query(`select count(*)::int c from storage.objects where bucket_id = 'videos'`)).rows[0].c >= 3, true, 'removing a video never deletes the file');
+});
+
+test('a programme can hold many more photos now (up to 40) and at most 8 videos', async () => {
+  const f = await food();
+  const many = Array.from({ length: 40 }, () => 'food-van.jpg');
+  await asEditor('editor_save_programme', progBase(f.id, f.version, { p_images: many }));
+  assert.equal((await food()).images.length, 40);
+  const g = await food();
+  await failsWith(asEditor('editor_save_programme', progBase(g.id, g.version, { p_images: [...many, 'a.jpg'] })), 'PT422', 'photos');
+  await failsWith(asEditor('editor_save_programme', progBase(g.id, g.version, { p_videos: Array.from({ length: 9 }, () => ({ src: `${EDITOR}/${randomUUID()}.mp4` })) })), 'PT422', 'videos');
+  await asEditor('editor_save_programme', progBase(g.id, g.version, { p_images: ['food-van.jpg'] }));
+});
+
+test('a database that still has the old fixed three groups is upgraded without losing them', async () => {
+  const { createDb } = await import('../dev/db.mjs');
+  const { readFileSync } = await import('node:fs');
+  const old = await createDb();      // already new; rebuild the OLD shape by hand, then run 0005's first statement again
+  await old.query(`update public.site_info set data = (data - 'partners') || '{"partner1_title":"One","partner1_text":"first","partner2_title":"Two","partner2_text":"second","partner3_title":"","partner3_text":"","about_p1":"keep me"}'::jsonb where id = 1`);
+  const sql = readFileSync(new URL('../supabase/migrations/0005_groups_and_videos.sql', import.meta.url), 'utf8');
+  await old.exec(sql.slice(0, sql.indexOf('-- ───────── Videos')));
+  const d = (await old.query('select data from public.site_info where id = 1')).rows[0].data;
+  assert.deepEqual(d.partners.map((g) => [g.title, g.text, g.image]), [['One', 'first', ''], ['Two', 'second', '']]);
+  assert.equal(d.partner1_title, undefined); assert.equal(d.about_p1, 'keep me');
+  await old.exec(sql.slice(0, sql.indexOf('-- ───────── Videos')));       // running it twice changes nothing
+  assert.equal((await old.query('select data from public.site_info where id = 1')).rows[0].data.partners.length, 2);
+});
+
+// ───────────── owners and the bank details ─────────────
+const OWNER = randomUUID();
+const saveBank = (uid, data, v) => rpc('authenticated', uid, 'editor_save_bank', { p_expected_version: v, p_data: data });
+
+test('only an owner can change the bank details; ordinary editors, strangers and visitors cannot', async () => {
+  await db.query(`insert into auth.users (id, email) values ($1, 'owner@example.org')`, [OWNER]);
+  await db.query(`select public.add_editor('owner@example.org', true)`);
+  assert.deepEqual(await rpc('authenticated', OWNER, 'editor_me'), { email: 'owner@example.org', owner: true });
+  assert.deepEqual(await asEditor('editor_me'), { email: 'priest@example.org', owner: false });
+  const v = await siteVersion();
+  const data = { bank_account_name: 'SBC Global Foundation', bank_name: 'Example Bank', bank_account_no: '0012 3456-78', bank_swift: 'exampl2x', bank_reference: 'Your full name' };
+  await denied(saveBank(EDITOR, data, v));              // an ordinary editor, even a trusted one
+  await denied(saveBank(STRANGER, data, v));
+  await denied(anon('editor_save_bank', { p_expected_version: v, p_data: data }));
+  assert.equal((await publicContent()).site.bank_name, undefined);
+  await saveBank(OWNER, data, v);
+  const s = (await publicContent()).site;
+  assert.equal(s.bank_name, 'Example Bank'); assert.equal(s.bank_swift, 'EXAMPL2X'); assert.equal(s.bank_account_no, '0012 3456-78');
+  assert.ok(s.about_p1);                                 // other site text untouched
+});
+
+test('bank detail rules: allowed fields only, sensible formats, conflicts and retries', async () => {
+  let v = await siteVersion();
+  await failsWith(saveBank(OWNER, { bank_account_no: '12<script>' }, v), 'PT422', 'bank_account_no');
+  await failsWith(saveBank(OWNER, { bank_swift: 'TOOSHORTX1' }, v), 'PT422', 'bank_swift');
+  await failsWith(saveBank(OWNER, { about_p1: 'sneaky' }, v), 'PT422', 'about_p1');            // not a bank field
+  await failsWith(saveBank(OWNER, { bank_name: 'x'.repeat(81) }, v), 'PT422', 'bank_name');
+  const keep = (await publicContent()).site.bank_name;
+  await saveBank(OWNER, { bank_name: 'Second Bank' }, v);
+  await failsWith(saveBank(OWNER, { bank_name: 'Third Bank' }, v), 'PT409');                    // stale
+  assert.ok(await saveBank(OWNER, { bank_name: 'Second Bank' }, v));                            // same save again = retry
+  assert.notEqual(keep, 'Second Bank');
+  // editors still cannot reach the bank fields through the ordinary site saver
+  v = await siteVersion();
+  for (const key of ['bank_name', 'bank_account_no']) await failsWith(saveSite({ [key]: '1' }, v), 'PT422', key);
+});
+
+test('owner tools: only the database owner can add or promote editors', async () => {
+  for (const [role, uid] of [['anon', null], ['authenticated', EDITOR], ['authenticated', OWNER]]) {
+    await denied(rpc(role, uid, 'add_editor', { p_email: 'x@example.org', p_owner: true }));
+    await denied(rpc(role, uid, 'set_owner', { p_email: 'priest@example.org', p_owner: true }));
+  }
+  assert.match((await db.query(`select public.set_owner('priest@example.org', true) as r`)).rows[0].r, /now an owner/);
+  assert.equal((await asEditor('editor_me')).owner, true);
+  await db.query(`select public.set_owner('priest@example.org', false)`);
+  assert.equal((await asEditor('editor_me')).owner, false);
+  await assert.rejects(db.query(`select public.set_owner('nobody@example.org', true)`), /not an editor yet/);
+});

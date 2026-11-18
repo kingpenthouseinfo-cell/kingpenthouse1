@@ -64,12 +64,10 @@ export function siteDefaults() {
     about_p1: 'SBC Global Foundation was started by the Old Bens — past pupils of St. Benedict College — to give something back to the communities around them.',
     about_p2: 'We are a small foundation. We don’t run programmes from afar — we trust the priests and sisters who already know every family by name, and',
     about_p2_italic: 'we help them help.',
-    partner1_title: 'VAROD, Vavuniya',
-    partner1_text: 'Our partner for medical camps, home therapy and sport for the differently abled.',
-    partner2_title: 'The religious sisters',
-    partner2_text: 'They run homes for the elderly and tell us what each resident needs.',
-    partner3_title: 'Parish priests',
-    partner3_text: 'They know every family by name and drive the parcels out themselves.',
+    partners: [
+      { id: '00000000-0000-4000-8000-0000000000a1', title: 'VAROD, Vavuniya', text: 'Our partner for medical camps, home therapy and sport for the differently abled.', image: '' },
+      { id: '00000000-0000-4000-8000-0000000000a2', title: 'The religious sisters', text: 'They run homes for the elderly and tell us what each resident needs.', image: '' },
+      { id: '00000000-0000-4000-8000-0000000000a3', title: 'Parish priests', text: 'They know every family by name and drive the parcels out themselves.', image: '' }],
     contact_email: '', contact_phone: '', contact_address: ''
   };
 }

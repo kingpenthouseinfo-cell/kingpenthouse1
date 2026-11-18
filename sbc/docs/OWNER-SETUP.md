@@ -35,7 +35,7 @@ Needs Node.js 20 or newer.
 cd sbc
 npm install
 npm run dev          # site: http://localhost:8787/   editor: http://localhost:8787/admin/
-npm test             # 19 database/permission tests + 24 browser tests
+npm test             # 31 database/permission tests + 31 browser tests
 ```
 
 `npm run dev` starts a **local stand-in** for Supabase (a real Postgres running the real migrations, with fake sign-in emails).
@@ -46,7 +46,8 @@ resets each time you restart it. Browser tests need Playwright (`npm i -D playwr
 
 1. **Create a project** at supabase.com. Choose a region near Sri Lanka/your users (e.g. Singapore). Save the database password in the foundation's password manager.
 2. **Create the tables and rules.** Dashboard → **SQL Editor** → run each file from `sbc/supabase/migrations/` **in order**, pasting the whole file each time:
-   `0001_schema.sql`, `0002_seed_content.sql`, `0003_storage.sql`, `0004_owner_tools.sql`.
+   `0001_schema.sql`, `0002_seed_content.sql`, `0003_storage.sql`, `0004_owner_tools.sql`, `0005_groups_and_videos.sql`, `0006_video_storage.sql`, `0007_owner_and_bank.sql`.
+   (Already ran 0001–0004 earlier? Just run the new ones, 0005 to 0007, in order.)
    (With the Supabase CLI instead: `supabase link --project-ref <ref>` then `supabase db push`.)
    `0002` loads the eight original programmes and the About wording. It is **safe to run again**: it never duplicates a programme or undoes an edit.
 3. **Make sign-in invite-only.** Dashboard → Authentication → *Sign In / Providers* → Email: switch **off** “Allow new users to sign up”.
@@ -54,10 +55,13 @@ resets each time you restart it. Browser tests need Playwright (`npm i -D playwr
    - Authentication → *URL Configuration*: set **Site URL** to `https://YOUR-DOMAIN/admin/` and add `https://YOUR-DOMAIN/admin/` (and your Netlify/Cloudflare preview address `/admin/`) under **Redirect URLs**.
    - Authentication → *Email Templates* → **Magic Link**: paste the contents of `supabase/templates/magic-link.html` (it adds the 6-digit code as a backup).
    - **Important:** Supabase's built-in email sender is only for testing and allows just a few emails per hour. For real use set up **custom SMTP**: Authentication → *SMTP Settings* with your email service. Without this the priest may not receive his link.
-5. **Add the first editor.** Authentication → *Users* → **Add user → Create new user**: type the priest's email, tick **Auto Confirm User**. Then in the SQL Editor:
+5. **Add the first editors.** Authentication → *Users* → **Add user → Create new user**: type the email and a password, tick **Auto Confirm User**. (They can sign in with that password or with an emailed link, and can change the password themselves in the editor.) Then in the SQL Editor:
    ```sql
-   select public.add_editor('priest@example.org');
+   select public.add_editor('priest@example.org');                  -- an ordinary editor
+   select public.add_editor('owner@theirdomain.org', true);         -- the owner: can also change the bank details
+   select public.set_owner('someone@example.org', true);            -- promote an existing editor
    ```
+   Also review Authentication → *Sign In / Providers* → Email: set **Minimum password length** to 8 or more.
 6. **Find your two public values.** Project Settings → *API*: **Project URL** and the **anon / publishable** key. These are *public by design*. **Never** use or share the `service_role` / secret key; nothing here needs it.
 
 ## 5. Connect and publish the website (not done yet)
@@ -81,13 +85,14 @@ The build publishes only the website and editor (`dist/`): never the database fi
 
 | Task | How |
 |---|---|
-| **Invite** a new editor | Authentication → Users → *Add user → Create new user* (tick Auto Confirm), then `select public.add_editor('new@example.org');` |
+| **Invite** a new editor | Authentication → Users → *Add user → Create new user* (with a password; tick Auto Confirm), then `select public.add_editor('new@example.org');` |
+| **Make someone an owner** (can change bank details) | `select public.set_owner('them@example.org', true);` (use `false` to take it away) |
 | **Replace** an editor (priest moves on) | Add the new person as above, then remove the old one. |
 | **Revoke** an editor | `select public.remove_editor('old@example.org');` takes away editing immediately. Then delete their user under Authentication → Users to end their sign-in. |
 | **Who can edit now?** | `select * from public.editors;` |
 | **Someone can't sign in** | They tap **Email me a sign-in link** again (or use the 6-digit code). Check their email is spelled the same in Authentication → Users. If emails never arrive, check SMTP (§4.4) and the spam folder. |
 
-Editors cannot add, remove or change other editors, change the Give page's bank details, or change sign-in settings. The bank details are not in the database at all: they live in `index.html` (`bank:` list) and the owner changes them there.
+Editors cannot add, remove or change other editors, or change sign-in settings. **Only an owner** can change the Give page's bank details (the owner sees *Bank details (owner only)* in the editor). Until the owner fills them in, the Give page reads “To be added” as it always did.
 
 ## 7. Backups and recovery
 
@@ -96,7 +101,7 @@ Editors cannot add, remove or change other editors, change the Give page's bank 
 - **Photos:** Supabase → Storage → `media`. They are only ever added, never deleted by the editor. Download the bucket occasionally.
 - **Website files:** safe in GitHub.
 - **A change was wrong:** an *update* can be removed or corrected from the editor. Anything else can be corrected by editing again. To undo a removed update: `update public.updates set removed_at = null where id = '…';`
-- **Total loss of the Supabase project:** create a new project, run the four migration files, restore the exported data, re-add editors, and update the two environment variables on the host. The site shows its built-in content meanwhile.
+- **Total loss of the Supabase project:** create a new project, run the seven migration files, restore the exported data, re-add editors, and update the two environment variables on the host. The site shows its built-in content meanwhile.
 - **Unused photos** (uploaded but later removed from every update/programme) stay in storage. They are harmless; clear them by hand only if space becomes a problem.
 
 ## 8. Test on real phones before trusting it
@@ -122,7 +127,9 @@ iPhone or Android phone. Before handing over, on the preview address, on both an
 
 ## 10. Known limits of this first version
 
-- Photos only (no video uploads); programme order, programme deletion and update deletion (beyond *Remove from website*) are not in the editor.
+- Programme order, programme deletion and update deletion (beyond *Remove from website*) are not in the editor.
 - The page's built-in videos, sanitation before/after comparisons and branding are not editable by editors.
-- The Give page's “Copy account details” button copies only the organisation name (`SBC Global Foundation`) — that is what the original site does, and it is unchanged. Bank name and account number still say “To be added” in `index.html`.
+- **Gallery page:** it is built from the programmes' photos, so adding photos to a programme adds them to the Gallery under that programme's filter. There is no separate "gallery only" upload.
+- **Videos** (programmes only): MP4, MOV or WebM, up to **50 MB** each (Supabase's free-plan limit; a paid plan can raise it in Storage settings and in `0006_video_storage.sql`), up to 8 per programme. They are stored in their own `videos` bucket, with a still picture made on the phone. A video that does not play in one browser (e.g. an iPhone “High Efficiency” HEVC clip on some Android/desktop browsers) will not play for those visitors; record in “Most Compatible”. Uploads are plain (not resumable): a dropped connection restarts that video.
+- The Give page's “Copy account details” button copies only the organisation name until the owner has entered a bank and account number; after that it copies the full details.
 - Not yet checked against a real Supabase project (see the report): the migrations and rules are tested on a real Postgres engine, and the sign-in/storage calls follow Supabase's documented API, but the final end-to-end run on a live project is your first step after §4.
