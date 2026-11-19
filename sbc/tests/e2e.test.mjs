@@ -15,7 +15,7 @@ import { readSource } from '../scripts/generate-seed.mjs';
 const { chromium } = playwright();
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const PORT = 8793, BASE = `http://localhost:${PORT}`;
-const EDITOR = 'priest@example.org', OTHER = 'second@example.org', STRANGER = 'stranger@example.org', OWNER = 'owner@example.org', PWUSER = 'password.user@example.org';
+const EDITOR = 'priest@example.org', OTHER = 'second@example.org', STRANGER = 'stranger@example.org', OWNER = 'owner@example.org', PWUSER = 'password.user@example.org', RESETUSER = 'reset.user@example.org';
 const PHONE = { width: 390, height: 844 };
 const SRC = readSource();
 const NAMES = SRC.map((p) => p.t);
@@ -39,7 +39,7 @@ async function signIn(page, email = EDITOR) {
   await page.goto(`${BASE}/admin/`);
   await page.fill('#email', email); await page.click('#sendbtn');
   await page.getByRole('heading', { name: 'Check your email' }).waitFor();
-  const mail = [...srv.outbox].reverse().find((m) => m.email === email);
+  const mail = [...srv.outbox].reverse().find((m) => m.email === email && m.kind !== 'recovery');
   await page.goto(mail.link);
   await page.getByRole('heading', { name: 'What would you like to do?' }).waitFor();
 }
@@ -81,7 +81,7 @@ const fill = async (page, label, text) => page.getByLabel(label, { exact: true }
 test.before(async () => {
   srv = await startDevServer({ port: PORT, storageDir: mkdtempSync(join(tmpdir(), 'sbc-storage-')) });
   await srv.addEditor(EDITOR); await srv.addEditor(OTHER); await srv.addUserOnly(STRANGER);
-  await srv.addEditor(OWNER, { owner: true, password: 'owner-password-1' }); await srv.addEditor(PWUSER, { password: 'correct-horse-1' });
+  await srv.addEditor(OWNER, { owner: true, password: 'owner-password-1' }); await srv.addEditor(PWUSER, { password: 'correct-horse-1' }); await srv.addEditor(RESETUSER, { password: 'old-password-1' });
   browser = await chromium.launch();
 });
 test.after(async () => { for (const c of contexts) await c.close().catch(() => {}); await browser?.close(); await srv?.close(); });
@@ -205,36 +205,45 @@ test('the editor has no drafts, no preview step and no Publish button, and fits 
       const spill = await page.evaluate(() => [...document.querySelectorAll('.photos li, .group, .row, .big, .note')].flatMap((box) => { const r = box.getBoundingClientRect();
         return [...box.querySelectorAll('*')].filter((e) => e.offsetParent && e.getBoundingClientRect().right > r.right + 1).map((e) => `${e.tagName}.${e.className} out of ${box.className}`); }).slice(0, 5));
       assert.deepEqual(spill, [], `${label} at ${vp.width}px: something sticks out of its box`);
-      const btns = await page.locator('main a.big, main .btn, .bar .btn').evaluateAll((els) => els.filter((e) => e.offsetParent).map((e) => e.getBoundingClientRect().height));
+      const btns = await page.locator('main a.big, main a.choice, main a.row, main .btn, main .out-btn, main .link, .bar .btn').evaluateAll((els) => els.filter((e) => e.offsetParent).map((e) => e.getBoundingClientRect().height));
       assert.ok(btns.every((h) => h >= 44), `${label}: touch targets are at least 44px tall`);
     };
     await check('sign-in');
+    await page.goto(`${BASE}/admin/#/forgot`); await page.getByRole('heading', { name: 'Forgot your password?' }).waitFor(); await check('forgot password');
+    await page.goto(`${BASE}/admin/`); await page.getByRole('heading', { name: 'Sign in', exact: true }).waitFor();
     await signIn(page);
-    for (const hash of ['/', '/add', '/edit/updates', '/edit/programmes', '/programme/new', '/site']) {
+    for (const hash of ['/', '/add', '/updates', '/programmes', '/programme/new', '/about', '/contact', '/gallery', '/password']) {
       await page.goto(`${BASE}/admin/#${hash}`); await page.waitForTimeout(700); await check(hash);
     }
     // programme edit screen (many photos) + the editor with long text
-    await page.goto(`${BASE}/admin/#/edit/programmes`); await page.locator('main a.big').nth(7).click(); await page.getByRole('heading', { name: 'Edit programme' }).waitFor();
+    await page.goto(`${BASE}/admin/#/programmes`); await page.locator('main a.choice').nth(7).click(); await page.getByRole('heading', { name: 'Edit programme' }).waitFor();
     await check('programme edit (10 photos)');
   }
 });
 
-test('the main screen has short, simple buttons, the most common task first', async () => {
+test('the main screen: one big Add an update button, then a plain button for each thing to edit', async () => {
   const page = await newPage(); await signIn(page);
-  const labels = (await page.locator('main a.big').allInnerTexts()).map((x) => x.replace(/^[＋✎]\s*/, '').trim());
-  assert.deepEqual(labels, ['Add an update', 'Edit an update', 'Edit a programme', 'Edit the About page']);   // no bank button for an ordinary editor
-  assert.match((await page.locator('main a.big').first().innerText()), /^＋/);
-  // "Edit a programme" opens a list with every programme as its own button
-  await page.getByRole('link', { name: 'Edit a programme' }).click(); await page.getByRole('heading', { name: 'Edit a programme' }).waitFor();
-  await page.locator('main a.big').nth(8).waitFor();
-  const names = (await page.locator('main a.big').allInnerTexts()).map((x) => x.replace(/\s+/g, ' ').trim());
+  assert.equal(await page.locator('main a.big').count(), 1);
+  assert.match(await page.locator('main a.big').innerText(), /Add an update/);
+  const labels = await page.locator('main nav.choices a').evaluateAll((as) => as.map((a) => a.textContent.replace(a.querySelector('.cico').textContent, '').trim()));
+  assert.deepEqual(labels, ['Edit an update', 'Edit or add a programme', 'Edit or add to the photo gallery', 'Edit the About page', 'Edit contact details']);   // no bank button for an ordinary editor
+  await page.getByRole('link', { name: 'Look at the website' }).waitFor();
+  assert.equal(await page.getByRole('link', { name: 'Look at the website' }).getAttribute('href'), '../');
+  await page.getByText('Signed in as').waitFor(); await page.getByRole('button', { name: 'Sign out' }).waitFor();
+  // "Edit or add a programme" opens a list with every programme as its own button
+  await page.getByRole('link', { name: 'Edit or add a programme' }).click(); await page.getByRole('heading', { name: 'Which programme?' }).waitFor();
+  await page.locator('main nav.choices a').nth(7).waitFor();
+  const names = (await page.locator('main nav.choices a').allInnerTexts()).map((x) => x.replace(/\s+/g, ' ').trim());
+  assert.equal(names.length, SRC.length);
   SRC.forEach((p, i) => assert.equal(names[i], `${String(i + 1).padStart(2, '0')} ${p.t}`));
-  assert.equal(names[names.length - 1], '＋ Add a programme');
+  assert.equal((await page.locator('main a.add-group').innerText()).trim(), '＋ Add a programme');
   await page.getByRole('link', { name: /Toilets/ }).click(); await page.getByRole('heading', { name: 'Edit programme' }).waitFor();
-  await page.goBack(); await page.getByRole('heading', { name: 'Edit a programme' }).waitFor();
+  await page.goBack(); await page.getByRole('heading', { name: 'Which programme?' }).waitFor();
   await page.getByRole('link', { name: '← Back' }).click(); await page.getByRole('heading', { name: 'What would you like to do?' }).waitFor();
-  // the old "update or programme" choice screen is gone; an old bookmark lands on the main screen
+  // old bookmarks still land somewhere sensible
   await page.goto(`${BASE}/admin/#/edit`); await page.getByRole('heading', { name: 'What would you like to do?' }).waitFor();
+  await page.goto(`${BASE}/admin/#/edit/programmes`); await page.getByRole('heading', { name: 'Which programme?' }).waitFor();
+  await page.goto(`${BASE}/admin/#/site`); await page.getByRole('heading', { name: 'About page', level: 1 }).waitFor();
 });
 
 let firstUpdate, secondUpdate;
@@ -251,7 +260,7 @@ test('an editor adds an update with photos; a signed-out visitor sees it on the 
   await page.locator('#photo-input').setInputFiles([{ name: 'IMG_0001.jpg', mimeType: 'image/jpeg', buffer: gps }, { name: 'IMG_0002.jpg', mimeType: 'image/jpeg', buffer: rotated }]);
   await page.locator('#photo-list li').nth(1).waitFor();
   assert.equal(await page.locator('#photo-list li').count(), 2);
-  assert.match(await page.locator('#photo-list li').first().innerText(), /First photo/);
+  assert.match(await page.locator('#photo-list li').first().innerText(), /first photo/i);
   await page.getByRole('button', { name: 'Remove photo 2' }).click();           // accidental selection removed…
   assert.equal(await page.locator('#photo-list li').count(), 1);
   await page.locator('#photo-input').setInputFiles([{ name: 'IMG_0002.jpg', mimeType: 'image/jpeg', buffer: rotated }]);   // …and added again
@@ -375,11 +384,14 @@ test('an editor can add a ninth programme without moving the first eight', async
 test('About and contact edits appear on the live site; contact stays hidden until filled in', async () => {
   const visitor = await newPage(); await visitor.goto(`${BASE}/#about`); await visitor.getByText('Old boys of one college,').first().waitFor();
   assert.equal(await visitor.getByText('Get in touch').count(), 0);
-  const page = await newPage(); await signIn(page); await page.goto(`${BASE}/admin/#/site`); await page.getByRole('heading', { name: 'About page', level: 1 }).waitFor();
-  assert.equal(await page.getByLabel('First paragraph').inputValue(), SRC && 'SBC Global Foundation was started by the Old Bens — past pupils of St. Benedict College — to give something back to the communities around them.');
+  const page = await newPage(); await signIn(page); await page.goto(`${BASE}/admin/#/about`); await page.getByRole('heading', { name: 'About page', level: 1 }).waitFor();
+  assert.equal(await page.getByLabel('First paragraph').inputValue(), 'SBC Global Foundation was started by the Old Bens — past pupils of St. Benedict College — to give something back to the communities around them.');
+  assert.equal(await page.getByLabel('Email address').count(), 0, 'contact details have their own screen now');
   await page.getByLabel('First paragraph').fill('We began in 1994 as past pupils of St. Benedict College.');
-  await page.getByLabel('Email address').fill('office@sbc.example'); await page.getByLabel('Phone number').fill('+94 77 123 4567');
-  await page.getByLabel('Email address').fill('not an email'); await page.getByRole('button', { name: 'Save', exact: true }).click();
+  await page.getByRole('button', { name: 'Save', exact: true }).click(); await page.getByRole('heading', { name: 'Saved. Your changes are live.' }).waitFor();
+  await page.goto(`${BASE}/admin/#/`); await page.goto(`${BASE}/admin/#/contact`); await page.getByRole('heading', { name: 'Contact details' }).waitFor();
+  await page.getByLabel('Email address').fill('not an email'); await page.getByLabel('Phone number').fill('+94 77 123 4567');
+  await page.getByRole('button', { name: 'Save', exact: true }).click();
   await page.getByText('That email address does not look right.').first().waitFor();          // field-level message
   assert.equal(await page.evaluate(() => document.activeElement.id), 'f-contact_email');
   await page.getByLabel('Email address').fill('office@sbc.example');
@@ -388,7 +400,6 @@ test('About and contact edits appear on the live site; contact stays hidden unti
   await visitor.getByText('Get in touch').waitFor();
   assert.equal(await visitor.getByRole('link', { name: 'office@sbc.example' }).getAttribute('href'), 'mailto:office@sbc.example');
   assert.equal(await visitor.getByRole('link', { name: '+94 77 123 4567' }).getAttribute('href'), 'tel:+94771234567');
-  assert.ok((await visitor.locator('body').innerText()).includes('We trust the priests') || true);
   // the Give page and its bank details are untouched
   await visitor.goto(`${BASE}/#give`); await visitor.getByText('To be added').first().waitFor();
 });
@@ -403,19 +414,19 @@ test('the copy button on the Give page copies only the organisation name (as in 
 // ═══════════════ password sign-in ═══════════════
 async function passwordSignIn(page, email, password) {
   await page.goto(`${BASE}/admin/`); await page.getByRole('heading', { name: 'Sign in', exact: true }).waitFor();
-  await page.fill('#email', email); await page.fill('#password', password); await page.click('#pwbtn');
+  await page.fill('#email', email); await page.fill('#pw', password); await page.click('#pwbtn');
 }
 
 test('an editor can sign in with an email and password as well as with an emailed link', async () => {
   const page = await newPage();
   await passwordSignIn(page, PWUSER, 'wrong-password');
-  await page.getByText('That email or password isn’t right.').waitFor();
+  await page.getByText('That password isn’t right.').waitFor();
   assert.equal(await page.getByRole('heading', { name: 'What would you like to do?' }).count(), 0);
-  await page.fill('#password', 'correct-horse-1'); await page.click('#pwbtn');
+  await page.fill('#pw', 'correct-horse-1'); await page.click('#pwbtn');
   await page.getByRole('heading', { name: 'What would you like to do?' }).waitFor();
   assert.match(page.url(), /\/admin\/#\/$/);
   // pressing Enter in the password box works too (phones use the keyboard's Go key)
-  const p2 = await newPage(); await p2.goto(`${BASE}/admin/`); await p2.fill('#email', PWUSER); await p2.fill('#password', 'correct-horse-1'); await p2.press('#password', 'Enter');
+  const p2 = await newPage(); await p2.goto(`${BASE}/admin/`); await p2.fill('#email', PWUSER); await p2.fill('#pw', 'correct-horse-1'); await p2.press('#pw', 'Enter');
   await p2.getByRole('heading', { name: 'What would you like to do?' }).waitFor();
   // a password for an address that isn't an editor signs in but is told it is not set up
   srv.addUserOnly('nopower@example.org', 'whatever-123'); await srv.addUserOnly('nopower@example.org', 'whatever-123');
@@ -434,7 +445,7 @@ test('an editor can set a password for themselves; the old one then stops workin
   await page.getByRole('button', { name: 'Save', exact: true }).click(); await page.getByRole('heading', { name: 'Password saved.' }).waitFor();
   const fresh = await newPage(); await passwordSignIn(fresh, OTHER, 'a-good-password-1'); await fresh.getByRole('heading', { name: 'What would you like to do?' }).waitFor();
   await page.getByRole('link', { name: 'Back to the main screen' }).click();
-  const bad = await newPage(); await passwordSignIn(bad, OTHER, 'not-it'); await bad.getByText('That email or password isn’t right.').waitFor();
+  const bad = await newPage(); await passwordSignIn(bad, OTHER, 'not-it'); await bad.getByText('That password isn’t right.').waitFor();
   assert.deepEqual(fresh.errors, []);
 });
 
@@ -449,20 +460,26 @@ test('only the owner can change the bank details; they show on the Give page and
 
   const owner = await newPage(); await passwordSignIn(owner, OWNER, 'owner-password-1');
   await owner.getByRole('heading', { name: 'What would you like to do?' }).waitFor();
-  assert.equal(await owner.locator('main a.big').count(), 5, 'the owner also gets Edit bank details');
+  assert.equal(await owner.locator('main nav.choices a').count(), 6, 'the owner also gets Edit bank details');
   await owner.getByRole('link', { name: /bank details/i }).click(); await owner.getByRole('heading', { name: 'Bank details' }).waitFor();
+  await owner.getByRole('button', { name: 'Save', exact: true }).click();                       // empty: the required ones are named
+  await owner.getByText('Please type the name on the account.').waitFor(); await owner.getByText('Please type the name of the bank.').waitFor();
+  await owner.getByText('Please type the branch.').waitFor(); await owner.getByText('Please type the account number.').waitFor();
+  assert.equal(await owner.evaluate(() => document.activeElement.id), 'f-bank_account_name');
+  await fill(owner, 'Name on the account', 'SBC Global Foundation'); await fill(owner, 'Bank', 'Example Bank PLC'); await fill(owner, 'Branch', 'Vavuniya');
   await fill(owner, 'Account number', 'bad<number>');
   await owner.getByRole('button', { name: 'Save', exact: true }).click();
-  await owner.getByText('The account number can only have letters, numbers, spaces and dashes.').first().waitFor();
+  await owner.getByText('The account number can only have numbers, spaces and dashes.').first().waitFor();
   assert.equal(await owner.evaluate(() => document.activeElement.id), 'f-bank_account_no');
-  await fill(owner, 'Bank', 'Example Bank PLC'); await owner.getByLabel('Branch').fill('Vavuniya'); await fill(owner, 'Account number', '0012 3456-78');
-  await owner.getByLabel('SWIFT / BIC code').fill('examlklx');
+  await fill(owner, 'Account number', '0012 3456-78');
+  await owner.getByLabel(/SWIFT code/).fill('examlklx');
+  await owner.getByLabel('Shown under the bank details').fill('Please write your name so we can thank you.');
   await owner.getByRole('button', { name: 'Save', exact: true }).click(); await owner.getByRole('heading', { name: 'Saved. Your changes are live.' }).waitFor();
 
   const ctx = await newCtx({ width: 1280, height: 800 }, { permissions: ['clipboard-read', 'clipboard-write'] }); const visitor = await ctx.newPage();
   await visitor.goto(`${BASE}/#give`); await visitor.getByText('Example Bank PLC').waitFor();
   const text = await visitor.locator('#dc-root').textContent();
-  for (const t of ['SBC Global Foundation', 'Example Bank PLC', 'Vavuniya', '0012 3456-78', 'EXAMLKLX', 'Your full name']) assert.ok(text.includes(t), t);
+  for (const t of ['SBC Global Foundation', 'Example Bank PLC', 'Vavuniya', '0012 3456-78', 'EXAMLKLX', 'Your full name', 'Please write your name so we can thank you.']) assert.ok(text.includes(t), t);
   assert.ok(!text.includes('To be added'), 'the placeholders are gone');
   await visitor.getByRole('button', { name: 'Copy account details' }).click(); await visitor.getByRole('button', { name: /Copied/ }).waitFor();
   assert.equal(await visitor.evaluate(() => navigator.clipboard.readText()),
@@ -511,24 +528,24 @@ test('several photos can be chosen in one go on a programme; they all arrive in 
 
 test('groups: add one with a photo, delete another, see it on the About page; deleting all hides the section', async () => {
   const page = await newPage(); await signIn(page); await page.goto(`${BASE}/admin/#/site`); await page.getByRole('heading', { name: 'About page', level: 1 }).waitFor();
-  assert.equal(await page.locator('.gcard').count(), 3);
+  assert.equal(await page.locator('.partner').count(), 3);
   // a nameless group is refused with a plain message
   await page.getByRole('button', { name: '＋ Add a group' }).click();
-  assert.equal(await page.locator('.gcard').count(), 4);
+  assert.equal(await page.locator('.partner').count(), 4);
   await page.getByRole('button', { name: 'Save', exact: true }).click();
-  await page.getByText('Please give group 4 a name, or delete it.').first().waitFor();
+  await page.getByText('Please give group 4 a name, or remove it.').first().waitFor();
   // fill it in, with a photo
-  await page.locator('.gcard').nth(3).getByLabel('Name of the group').fill('Women’s circle');
-  await page.locator('.gcard').nth(3).getByLabel('What they do').fill('They cook for the medical camps.');
-  await page.locator('.gcard').nth(3).locator('input[data-gphoto]').setInputFiles({ name: 'circle.jpg', mimeType: 'image/jpeg', buffer: await makeJpeg(page, { w: 900, h: 600, color: '#c63' }) });
-  await page.locator('.gcard').nth(3).locator('img').waitFor();
+  await page.locator('.partner').nth(3).getByLabel(/— name$/).fill('Women’s circle');
+  await page.locator('.partner').nth(3).getByLabel(/— what they do$/).fill('They cook for the medical camps.');
+  await page.locator('.partner').nth(3).locator('input[data-gphoto]').setInputFiles({ name: 'circle.jpg', mimeType: 'image/jpeg', buffer: await makeJpeg(page, { w: 900, h: 600, color: '#c63' }) });
+  await page.locator('.partner').nth(3).locator('img').waitFor();
   // delete group 2 (with a plain confirmation: "No" keeps it)
-  await page.locator('.gcard').nth(1).getByRole('button', { name: 'Delete this group' }).click();
-  await page.locator('.gcard').nth(1).getByRole('button', { name: 'No, keep it' }).click();
-  assert.equal(await page.locator('.gcard').count(), 4);
-  await page.locator('.gcard').nth(1).getByRole('button', { name: 'Delete this group' }).click();
-  await page.locator('.gcard').nth(1).getByRole('button', { name: 'Yes, delete it' }).click();
-  assert.equal(await page.locator('.gcard').count(), 3);
+  await page.locator('.partner').nth(1).getByRole('button', { name: 'Remove this group' }).click();
+  await page.locator('.partner').nth(1).getByRole('button', { name: 'No, keep it' }).click();
+  assert.equal(await page.locator('.partner').count(), 4);
+  await page.locator('.partner').nth(1).getByRole('button', { name: 'Remove this group' }).click();
+  await page.locator('.partner').nth(1).getByRole('button', { name: 'Yes, remove it' }).click();
+  assert.equal(await page.locator('.partner').count(), 3);
   await page.getByRole('button', { name: 'Save', exact: true }).click(); await page.getByRole('heading', { name: 'Saved. Your changes are live.' }).waitFor();
 
   const visitor = await newPage({ width: 1280, height: 800 });
@@ -544,8 +561,8 @@ test('groups: add one with a photo, delete another, see it on the About page; de
   assert.deepEqual(visitor.errors, []);
 
   // delete every group → the heading and section disappear (and come back when a group is added)
-  await page.goto(`${BASE}/admin/#/`); await page.goto(`${BASE}/admin/#/site`); await page.locator('.gcard').first().waitFor();
-  for (let i = 0; i < 3; i++) { await page.locator('.gcard').first().getByRole('button', { name: 'Delete this group' }).click(); await page.locator('.gcard').first().getByRole('button', { name: 'Yes, delete it' }).click(); }
+  await page.goto(`${BASE}/admin/#/`); await page.goto(`${BASE}/admin/#/site`); await page.locator('.partner').first().waitFor();
+  for (let i = 0; i < 3; i++) { await page.locator('.partner').first().getByRole('button', { name: 'Remove this group' }).click(); await page.locator('.partner').first().getByRole('button', { name: 'Yes, remove it' }).click(); }
   await page.getByText('There are no groups.').waitFor();
   await page.getByRole('button', { name: 'Save', exact: true }).click(); await page.getByRole('heading', { name: 'Saved. Your changes are live.' }).waitFor();
   await visitor.reload(); await visitor.getByText('Old boys of one college,').first().waitFor(); await visitor.waitForTimeout(300);
@@ -554,7 +571,7 @@ test('groups: add one with a photo, delete another, see it on the About page; de
   await page.goto(`${BASE}/admin/#/`); await page.goto(`${BASE}/admin/#/site`); await page.getByText('There are no groups.').waitFor();
   for (const [t, d] of [['VAROD, Vavuniya', 'Our partner for medical camps.'], ['The religious sisters', 'They run homes for the elderly.'], ['Parish priests', 'They drive the parcels out.']]) {
     await page.getByRole('button', { name: '＋ Add a group' }).click();
-    await page.locator('.gcard').last().getByLabel('Name of the group').fill(t); await page.locator('.gcard').last().getByLabel('What they do').fill(d);
+    await page.locator('.partner').last().getByLabel(/— name$/).fill(t); await page.locator('.partner').last().getByLabel(/— what they do$/).fill(d);
   }
   await page.getByRole('button', { name: 'Save', exact: true }).click(); await page.getByRole('heading', { name: 'Saved. Your changes are live.' }).waitFor();
   await visitor.reload(); await visitor.getByText('Who carries it out').waitFor();
@@ -579,7 +596,7 @@ test('a programme can have videos: choose several, see a picture for each, save,
   await page.locator('#video-input').setInputFiles([{ name: 'first.webm', mimeType: 'video/webm', buffer: webm }, { name: 'second.webm', mimeType: 'video/webm', buffer: webm }]);
   await page.getByText('Added 2 videos.').waitFor();
   assert.equal(await page.locator('#video-list li').count(), 2);
-  assert.equal(await page.locator('#video-list li img').count(), 2, 'each video shows a picture taken from it');
+  assert.equal(await page.locator('#video-list li .vthumb').evaluateAll((els) => els.filter((e) => /url\(/.test(e.style.backgroundImage)).length), 2, 'each video shows a picture taken from it');
   await page.getByRole('button', { name: 'Move video 2 earlier' }).click();
   await page.getByRole('button', { name: 'Remove video 2' }).click();           // changed my mind about one
   assert.equal(await page.locator('#video-list li').count(), 1);
@@ -632,6 +649,145 @@ test('a failed video upload keeps the form and the retry does not duplicate anyt
   await page.getByRole('button', { name: 'Save', exact: true }).click(); await page.getByText('Your changes weren’t saved.').waitFor();
   await page.getByRole('button', { name: 'Save', exact: true }).click(); await page.getByRole('heading', { name: 'Saved. Your changes are live.' }).waitFor();
   assert.equal((await publicContent()).programmes[2].videos.length, 1);
+});
+
+// ═══════════════ the new design's features ═══════════════
+test('the sign-in screen has the turning seal, a Show/Hide password button, and respects reduced motion', async () => {
+  const page = await newPage(); await page.goto(`${BASE}/admin/`); await page.getByRole('heading', { name: 'Sign in', exact: true }).waitFor();
+  assert.equal(await page.locator('.seal img.mark').getAttribute('src'), '../assets/sbc-emblem-lg.png');
+  assert.equal(await page.locator('.seal img.ring').getAttribute('src'), '../assets/sbc-ring.png');
+  for (const sel of ['.seal img.ring', '.seal img.mark']) assert.ok(await page.locator(sel).evaluate((i) => i.complete && i.naturalWidth > 0), `${sel} loads`);
+  assert.equal(await page.locator('#pw').getAttribute('type'), 'password');
+  await page.getByRole('button', { name: 'Show password' }).click(); assert.equal(await page.locator('#pw').getAttribute('type'), 'text');
+  await page.getByRole('button', { name: 'Hide password' }).click(); assert.equal(await page.locator('#pw').getAttribute('type'), 'password');
+  // reduced motion (set on these test pages) turns the turning off
+  assert.equal(await page.locator('.seal img.ring').evaluate((i) => getComputedStyle(i).animationName), 'none');
+  // wrong password: the email stays, the message is in words
+  await page.fill('#email', PWUSER); await page.fill('#pw', 'nope'); await page.click('#pwbtn');
+  await page.getByText('That password isn’t right. Try again, or use the sign-in link below.').waitFor();
+  assert.equal(await page.locator('#email').inputValue(), PWUSER);
+  assert.equal(await page.locator('#pw').getAttribute('aria-invalid'), 'true');
+  // no password typed
+  await page.fill('#pw', ''); await page.click('#pwbtn'); await page.getByText('Please type your password, or tap “Email me a sign-in link”.').waitFor();
+});
+
+test('forgot your password: a reset link signs you in and asks for a new password; the old one stops working', async () => {
+  const page = await newPage(); await page.goto(`${BASE}/admin/`);
+  await page.getByRole('link', { name: 'Forgot your password?' }).click(); await page.getByRole('heading', { name: 'Forgot your password?' }).waitFor();
+  await page.fill('#email', 'not-an-email'); await page.getByRole('button', { name: 'Email me a reset link' }).click();
+  await page.getByText('Please type your email address, like name@example.com.').waitFor();
+  await page.fill('#email', RESETUSER); await page.getByRole('button', { name: 'Email me a reset link' }).click();
+  await page.getByRole('heading', { name: 'Check your email' }).waitFor();
+  const mail = [...srv.outbox].reverse().find((m) => m.email === RESETUSER && m.kind === 'recovery');
+  assert.ok(mail, 'a reset email was sent'); assert.match(mail.link, /type=recovery/);
+  await page.goto(mail.link); await page.getByRole('heading', { name: 'Choose a new password' }).waitFor();
+  assert.match(page.url(), /#\/password$/);
+  await fill(page, 'New password', 'new-password-77'); await fill(page, 'Type it again', 'new-password-77');
+  await page.getByRole('button', { name: 'Save', exact: true }).click(); await page.getByRole('heading', { name: 'Password saved.' }).waitFor();
+  const fresh = await newPage(); await passwordSignIn(fresh, RESETUSER, 'new-password-77'); await fresh.getByRole('heading', { name: 'What would you like to do?' }).waitFor();
+  const old = await newPage(); await passwordSignIn(old, RESETUSER, 'old-password-1'); await old.getByText('That password isn’t right.').waitFor();
+  // an address that is not an editor gets the same friendly answer (and no email)
+  const n = srv.outbox.length; const p3 = await newPage(); await p3.goto(`${BASE}/admin/#/forgot`); await p3.fill('#email', 'nobody@example.org'); await p3.getByRole('button', { name: 'Email me a reset link' }).click();
+  await p3.getByRole('heading', { name: 'Check your email' }).waitFor(); assert.equal(srv.outbox.length, n);
+});
+
+test('the photo gallery screen: add several photos at once, reorder, remove, Save; visitors see them first, in that order', async () => {
+  const page = await newPage(); await signIn(page); await page.getByRole('link', { name: 'Edit or add to the photo gallery' }).click();
+  await page.getByRole('heading', { name: 'Photo gallery' }).waitFor(); await page.getByText('No photos yet.').waitFor();
+  assert.equal(await page.locator('#photo-input').getAttribute('multiple'), '');
+  const mk = async (w, c) => ({ name: `g${w}.jpg`, mimeType: 'image/jpeg', buffer: await makeJpeg(page, { w, h: 200, color: c }) });
+  await page.locator('#photo-input').setInputFiles([await mk(300, '#a33'), await mk(320, '#3a3'), await mk(340, '#33a')]);
+  await page.getByText('3 photos. Use the arrows to change the order.').waitFor();
+  assert.match(await page.locator('#photo-list li').first().innerText(), /shown first/i);
+  await page.getByRole('button', { name: 'Move photo 3 earlier' }).click(); await page.getByRole('button', { name: 'Move photo 2 earlier' }).click();    // 340, 300, 320
+  await page.getByRole('button', { name: 'Remove photo 3' }).click();                                                                                  // drop 320
+  assert.equal(await page.locator('#photo-list li').count(), 2);
+  await page.getByRole('button', { name: 'Save', exact: true }).click(); await page.getByRole('heading', { name: 'Saved. Your changes are live.' }).waitFor();
+  assert.equal((await publicContent()).gallery.length, 2);
+
+  const visitor = await newPage({ width: 1280, height: 800 });
+  await visitor.goto(`${BASE}/#gallery`); await visitor.getByRole('button', { name: 'More photos', exact: true }).waitFor();
+  const grid = visitor.locator('div[style*="columns"] > div'); await visitor.waitForTimeout(400);
+  const widthsOf = () => grid.locator('img').evaluateAll(async (imgs) => { await Promise.all(imgs.map((i) => i.decode().catch(() => {}))); return imgs.map((i) => i.naturalWidth); });
+  assert.deepEqual((await widthsOf()).slice(0, 2), [340, 300], 'the gallery photos come first, in the saved order');
+  await visitor.getByRole('button', { name: 'More photos', exact: true }).click(); await visitor.waitForTimeout(300);
+  assert.equal(await grid.count(), 2); assert.deepEqual(await widthsOf(), [340, 300]);
+  await grid.first().click(); await visitor.getByText(/^1 \/ \d+$/).waitFor(); await visitor.keyboard.press('Escape');       // the viewer steps through every photo, as before
+  assert.deepEqual(visitor.errors, []);
+  // an old editor page that still holds the old list is told to reload instead of overwriting
+  const a = await newPage(); await signIn(a); const b = await newPage(); await signIn(b, OTHER);
+  for (const q of [a, b]) { await q.goto(`${BASE}/admin/#/gallery`); await q.getByRole('heading', { name: 'Photo gallery' }).waitFor(); await q.locator('#photo-list li').nth(1).waitFor(); }
+  await a.getByRole('button', { name: 'Remove photo 2' }).click(); await a.getByRole('button', { name: 'Save', exact: true }).click(); await a.getByRole('heading', { name: 'Saved. Your changes are live.' }).waitFor();
+  await b.getByRole('button', { name: 'Remove photo 1' }).click(); await b.getByRole('button', { name: 'Save', exact: true }).click();
+  await b.getByText('Someone else changed this after you opened it.').waitFor();
+  assert.equal((await publicContent()).gallery.length, 1);
+});
+
+test('a programme date can be set and cleared; it shows on the programme card when set', async () => {
+  const page = await newPage(); await signIn(page); await page.goto(`${BASE}/admin/#/programmes`); await page.getByRole('link', { name: /Sunshine Sports/ }).click();
+  await page.getByRole('heading', { name: 'Edit programme' }).waitFor();
+  assert.equal(await page.locator('#f-pdate').getAttribute('type'), 'date'); assert.equal(await page.locator('#f-pdate').inputValue(), '');
+  await page.getByText('When it happened or started. Leave empty if it’s ongoing.').waitFor();
+  await page.locator('#f-pdate').fill('2026-02-14');
+  await page.getByRole('button', { name: 'Save', exact: true }).click(); await page.getByRole('heading', { name: 'Saved. Your changes are live.' }).waitFor();
+  const visitor = await newPage({ width: 1280, height: 800 });
+  await visitor.goto(`${BASE}/#programmes`); await visitor.locator('[data-card="2"]').waitFor();
+  assert.match(await visitor.locator('[data-card="2"]').textContent(), /Entry 03 · Colombo, Feb 2026 · 14 February 2026/);
+  assert.doesNotMatch(await visitor.locator('[data-card="3"]').textContent(), /Entry 04 · Homes run by the sisters ·/, 'no date, nothing extra shown');
+  await page.goto(`${BASE}/admin/#/`); await page.goto(`${BASE}/admin/#/programmes`); await page.getByRole('link', { name: /Sunshine Sports/ }).click(); await page.getByRole('heading', { name: 'Edit programme' }).waitFor();
+  assert.equal(await page.locator('#f-pdate').inputValue(), '2026-02-14');
+  await page.locator('#f-pdate').fill('');
+  await page.getByRole('button', { name: 'Save', exact: true }).click(); await page.getByRole('heading', { name: 'Saved. Your changes are live.' }).waitFor();
+  await visitor.reload(); await visitor.locator('[data-card="2"]').waitFor();
+  assert.doesNotMatch(await visitor.locator('[data-card="2"]').textContent(), /Feb 2026 · 14 February 2026/);
+});
+
+test('YouTube links: any ordinary link works, bad ones are explained, and visitors tap to play (nothing loads before)', async () => {
+  const page = await newPage(); await signIn(page); await page.goto(`${BASE}/admin/#/programmes`); await page.getByRole('link', { name: /Disability & Rehabilitation/ }).click();
+  await page.getByRole('heading', { name: 'Edit programme' }).waitFor();
+  const yt = page.getByLabel('Or paste a YouTube link');
+  await yt.fill('hello there'); await yt.press('Tab');
+  await page.getByText('That doesn’t look like a YouTube link.').waitFor();
+  await yt.fill('https://vimeo.com/12345'); await yt.press('Tab'); await page.getByText('That doesn’t look like a YouTube link.').waitFor();
+  await yt.fill('https://youtu.be/dQw4w9WgXcQ?t=5'); await yt.press('Tab');
+  await page.locator('#video-list li').first().waitFor();
+  assert.equal(await yt.inputValue(), '');                                              // it moved into the list
+  assert.match(await page.locator('#video-list li').first().innerText(), /YouTube video/);
+  await yt.fill('https://www.youtube.com/shorts/abcdefghijk');                          // typed, then Save straight away: still counts
+  await page.getByRole('button', { name: 'Save', exact: true }).click(); await page.getByRole('heading', { name: 'Saved. Your changes are live.' }).waitFor();
+  assert.deepEqual((await publicContent()).programmes[1].videos.map((v) => [v.kind, v.youtube_id]), [['youtube', 'dQw4w9WgXcQ'], ['youtube', 'abcdefghijk']]);
+
+  const visitor = await newPage({ width: 1280, height: 800 });
+  const requested = []; visitor.on('request', (r) => requested.push(r.url()));
+  await visitor.goto(`${BASE}/#programmes`); await visitor.locator('[data-card="1"]').waitFor(); await visitor.waitForTimeout(800);
+  const play = visitor.locator('[data-card="1"] button[aria-label^="Play this video"]'); assert.equal(await play.count(), 2);
+  assert.equal(await visitor.locator('[data-card="1"] iframe').count(), 0, 'no YouTube player until someone taps');
+  assert.ok(!requested.some((u) => /youtube-nocookie|youtube\.com\/embed/.test(u)), 'nothing from YouTube’s player was requested');
+  assert.match(await play.first().locator('img').getAttribute('src'), /^https:\/\/i\.ytimg\.com\/vi\/dQw4w9WgXcQ\//);
+  await play.first().click();
+  const frame = visitor.locator('[data-card="1"] iframe'); await frame.waitFor();
+  assert.match(await frame.getAttribute('src'), /^https:\/\/www\.youtube-nocookie\.com\/embed\/dQw4w9WgXcQ\?autoplay=1/);
+  assert.equal(await visitor.locator('[data-card="1"] button[aria-label^="Play this video"]').count(), 1, 'the other one waits to be tapped');
+  assert.deepEqual(visitor.errors, []);
+  // remove one again
+  await page.goto(`${BASE}/admin/#/`); await page.goto(`${BASE}/admin/#/programmes`); await page.getByRole('link', { name: /Disability & Rehabilitation/ }).click();
+  await page.locator('#video-list li').nth(1).waitFor(); await page.getByRole('button', { name: 'Remove video 2' }).click();
+  await page.getByRole('button', { name: 'Save', exact: true }).click(); await page.getByRole('heading', { name: 'Saved. Your changes are live.' }).waitFor();
+  assert.equal((await publicContent()).programmes[1].videos.length, 1);
+});
+
+test('an upload can be stopped; the programme still saves without that video', async () => {
+  const page = await newPage(); await signIn(page); await page.goto(`${BASE}/admin/#/programmes`); await page.getByRole('link', { name: /Food & Dry Rations/ }).click();
+  await page.getByRole('heading', { name: 'Edit programme' }).waitFor();
+  await page.route('**/storage/v1/object/videos/**', () => {});                      // the upload hangs, like a very weak signal
+  await page.locator('#video-input').setInputFiles({ name: 'slow.webm', mimeType: 'video/webm', buffer: await makeWebm(page) }); await page.locator('#video-list li').waitFor();
+  const before = (await publicContent()).programmes[5].videos.length;
+  await page.getByRole('button', { name: 'Save', exact: true }).click();
+  await page.getByText('Uploading… 0%').waitFor();
+  assert.equal(await page.locator('#video-list .progress').count(), 1);
+  await page.getByRole('button', { name: 'Stop uploading video 1' }).click();
+  await page.getByRole('heading', { name: 'Saved. Your changes are live.' }).waitFor();
+  assert.equal((await publicContent()).programmes[5].videos.length, before, 'the stopped video was not added');
 });
 
 // ═══════════════ failures are safe ═══════════════
