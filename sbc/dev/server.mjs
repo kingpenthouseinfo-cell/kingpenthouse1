@@ -114,7 +114,15 @@ export async function startDevServer({ port = 8787, db, storageDir: dir } = {}) 
         const token = randomBytes(16).toString('hex'), code = String(Math.floor(100000 + Math.random() * 900000));
         codes.set(token, u.email); codes.set(`${u.email}:${code}`, u.email);
         const redirect = url.searchParams.get('redirect_to') || origin();
-        outbox.push({ email: u.email, code, link: `${origin()}/auth/v1/verify?token=${token}&type=magiclink&redirect_to=${encodeURIComponent(redirect)}` });
+        outbox.push({ email: u.email, kind: 'magiclink', code, link: `${origin()}/auth/v1/verify?token=${token}&type=magiclink&redirect_to=${encodeURIComponent(redirect)}` });
+        return json(res, 200, {});
+      }
+      if (path === '/auth/v1/recover' && req.method === 'POST') {          // "Forgot your password?"
+        const b = JSON.parse((await readBody(req)).toString() || '{}'); const u = await knownUser(String(b.email || '').trim().toLowerCase());
+        if (u) {                                                            // like Supabase, the answer is the same whether or not the address is known
+          const token = randomBytes(16).toString('hex'); codes.set(token, u.email);
+          outbox.push({ email: u.email, kind: 'recovery', link: `${origin()}/auth/v1/verify?token=${token}&type=recovery&redirect_to=${encodeURIComponent(url.searchParams.get('redirect_to') || origin())}` });
+        }
         return json(res, 200, {});
       }
       if (path === '/auth/v1/verify' && req.method === 'GET') {
@@ -122,7 +130,7 @@ export async function startDevServer({ port = 8787, db, storageDir: dir } = {}) 
         if (!email) { res.writeHead(302, { location: `${redirect}#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired` }); return res.end(); }
         codes.delete(url.searchParams.get('token'));
         const s = session(users.get(email));
-        res.writeHead(302, { location: `${redirect}#access_token=${s.access_token}&expires_in=3600&refresh_token=${s.refresh_token}&token_type=bearer&type=magiclink` });
+        res.writeHead(302, { location: `${redirect}#access_token=${s.access_token}&expires_in=3600&refresh_token=${s.refresh_token}&token_type=bearer&type=${url.searchParams.get('type') === 'recovery' ? 'recovery' : 'magiclink'}` });
         return res.end();
       }
       if (path === '/auth/v1/verify' && req.method === 'POST') {

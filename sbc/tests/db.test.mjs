@@ -355,7 +355,7 @@ test('a programme can have videos: they must exist in storage, keep their order,
   await asRole(db, 'authenticated', EDITOR, (tx) => tx.query(`insert into storage.objects (bucket_id, name) values ('media', $1)`, [poster]));
   await asEditor('editor_save_programme', progBase(f.id, f.version, { p_videos: [{ src: v1, poster }, { src: v2, poster: null }] }));
   let now = await food();
-  assert.deepEqual(now.videos, [{ src: v1, poster }, { src: v2, poster: null }]);
+  assert.deepEqual(now.videos.map(({ src, poster: po }) => ({ src, poster: po })), [{ src: v1, poster }, { src: v2, poster: null }]);
   assert.deepEqual((await publicContent()).programmes[5].videos, now.videos);     // visitors see them too
   // saving without mentioning videos leaves them alone; reordering and removing work
   await asEditor('editor_save_programme', progBase(now.id, now.version, { p_description: 'Rice and flour.' }));
@@ -439,4 +439,82 @@ test('owner tools: only the database owner can add or promote editors', async ()
   await db.query(`select public.set_owner('priest@example.org', false)`);
   assert.equal((await asEditor('editor_me')).owner, false);
   await assert.rejects(db.query(`select public.set_owner('nobody@example.org', true)`), /not an editor yet/);
+});
+
+// ───────────── design features: programme date, YouTube links, gallery, bank note ─────────────
+const progArgs = (p, extra = {}) => ({ p_id: p.id, p_expected_version: p.version, p_name: p.name, p_short_label: p.short_label, p_context: p.context,
+  p_caption: p.caption, p_description: p.description, p_images: p.images, p_client_token: null, ...extra });
+const progAt = async (i) => (await asEditor('editor_content')).programmes[i];
+
+test('a programme can have an optional date; it can be set, shown publicly and cleared', async () => {
+  let p = await progAt(2);                                  // Sunshine Sports
+  assert.equal(p.date, null);
+  await asEditor('editor_save_programme', progArgs(p, { p_date: '2026-02-14' }));
+  assert.equal((await publicContent()).programmes[2].date, '2026-02-14');
+  p = await progAt(2);
+  await failsWith(asEditor('editor_save_programme', progArgs(p, { p_date: '1800-01-01' })), 'PT422', 'pdate');
+  await asEditor('editor_save_programme', progArgs(p, { p_date: null }));                       // empty = clear
+  assert.equal((await publicContent()).programmes[2].date, null);
+});
+
+test('YouTube links can be added to a programme, in order alongside uploaded videos, and removed', async () => {
+  let p = await progAt(1);
+  const up = `${EDITOR}/${randomUUID()}.mp4`; await uploadVideo(up);
+  await failsWith(asEditor('editor_save_programme', progArgs(p, { p_videos: [{ kind: 'youtube', youtube_id: 'short' }] })), 'PT422', 'videos');
+  await failsWith(asEditor('editor_save_programme', progArgs(p, { p_videos: [{ kind: 'youtube', youtube_id: 'abc"><script>' }] })), 'PT422', 'videos');
+  await asEditor('editor_save_programme', progArgs(p, { p_videos: [{ kind: 'youtube', youtube_id: 'dQw4w9WgXcQ' }, { kind: 'upload', src: up }] }));
+  const v = (await publicContent()).programmes[1].videos;
+  assert.deepEqual(v.map((x) => [x.kind, x.youtube_id, x.src]), [['youtube', 'dQw4w9WgXcQ', null], ['upload', null, up]]);
+  p = await progAt(1);
+  await asEditor('editor_save_programme', progArgs(p, { p_videos: [{ kind: 'upload', src: up }] }));
+  assert.deepEqual((await publicContent()).programmes[1].videos.map((x) => x.kind), ['upload']);
+  p = await progAt(1); await asEditor('editor_save_programme', progArgs(p, { p_videos: [] }));
+  assert.deepEqual((await publicContent()).programmes[1].videos, []);
+  // the old shape (no "kind") still means an uploaded file
+  p = await progAt(1); const up2 = `${EDITOR}/${randomUUID()}.webm`; await uploadVideo(up2);
+  await asEditor('editor_save_programme', progArgs(p, { p_videos: [{ src: up2 }] }));
+  assert.equal((await publicContent()).programmes[1].videos[0].kind, 'upload');
+  p = await progAt(1); await asEditor('editor_save_programme', progArgs(p, { p_videos: [] }));
+});
+
+const galleryVersion = async () => (await asEditor('editor_content')).gallery_version;
+const putPhoto = async (uid = EDITOR) => { const n = `${uid}/${randomUUID()}.jpg`; await asRole(db, 'authenticated', uid, (tx) => tx.query(`insert into storage.objects (bucket_id, name) values ('media', $1)`, [n])); return n; };
+
+test('the gallery: add photos in order, reorder, remove; visitors see the same order; stale saves are refused', async () => {
+  assert.deepEqual((await publicContent()).gallery, []);
+  const [a, b, c] = [await putPhoto(), await putPhoto(), await putPhoto()];
+  let v = await galleryVersion();
+  const save = (imgs, ver) => asEditor('editor_save_gallery', { p_expected_version: ver, p_images: imgs });
+  await save([a, b, c], v);
+  assert.deepEqual((await publicContent()).gallery, [a, b, c]);
+  v = await galleryVersion();
+  await save([c, a], v);                                                   // reorder + remove b
+  assert.deepEqual((await publicContent()).gallery, [c, a]);
+  await failsWith(save([b], v), 'PT409');                                  // stale: someone else saved meanwhile
+  assert.ok((await save([c, a], v)).version);                              // same save again = a retry
+  // photos must exist; at most 200; a bundled name is fine
+  const v2 = await galleryVersion();
+  await failsWith(save([`${EDITOR}/${randomUUID()}.jpg`], v2), 'PT422', 'photos');
+  await failsWith(save(Array.from({ length: 201 }, () => 'food-van.jpg'), v2), 'PT422', 'photos');
+  assert.deepEqual((await publicContent()).gallery, [c, a]);                // failures changed nothing
+  // saving the gallery does not touch site information versions
+  const sv = await siteVersion(); await save([a], v2); assert.equal(await siteVersion(), sv);
+  assert.equal((await asEditor('editor_content')).gallery_version, v2 + 1);
+});
+
+test('only editors can change the gallery; nobody can write its tables directly', async () => {
+  await denied(anon('editor_save_gallery', { p_expected_version: 1, p_images: [] }));
+  await denied(rpc('authenticated', STRANGER, 'editor_save_gallery', { p_expected_version: 1, p_images: [] }));
+  for (const who of [['anon', null], ['authenticated', EDITOR]]) {
+    await denied(asRole(db, who[0], who[1], (tx) => tx.query(`insert into public.gallery_photos (position, src) values (99, 'x.jpg')`)));
+    await denied(asRole(db, who[0], who[1], (tx) => tx.query(`update public.gallery_meta set version = 99`)));
+  }
+});
+
+test('bank note for donors: owner only, up to 300 characters', async () => {
+  const v = await siteVersion();
+  await denied(saveBank(EDITOR, { bank_note: 'sneaky' }, v));
+  await saveBank(OWNER, { bank_note: 'Please write your name so we can thank you.' }, v);
+  assert.equal((await publicContent()).site.bank_note, 'Please write your name so we can thank you.');
+  await failsWith(saveBank(OWNER, { bank_note: 'x'.repeat(301) }, await siteVersion()), 'PT422', 'bank_note');
 });

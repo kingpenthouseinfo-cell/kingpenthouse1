@@ -28,6 +28,7 @@
   function valid(c) {
     if (!c || typeof c !== 'object' || !Array.isArray(c.programmes) || !c.programmes.length) return false;
     if (!Array.isArray(c.updates) || !c.site || typeof c.site !== 'object') return false;
+    if (c.gallery !== undefined && !Array.isArray(c.gallery)) return false;
     for (var i = 0; i < c.programmes.length; i++) {
       var p = c.programmes[i];
       if (!p || typeof p.name !== 'string' || !p.name || typeof p.short_label !== 'string' ||
