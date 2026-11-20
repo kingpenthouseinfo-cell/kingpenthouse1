@@ -83,9 +83,9 @@ a:hover{color:#123A27}
 <section style="position:relative;background:#fff;padding:clamp(100px,13vw,180px) clamp(20px,4vw,48px);display:flex;justify-content:center;overflow:hidden">
 <img src="assets/school-group-cutout.png" alt="" aria-hidden="true" style="position:absolute;left:50%;bottom:-4%;width:min(1400px,120%);transform:translateX(-50%);opacity:.13;filter:grayscale(1) sepia(1) hue-rotate(80deg) saturate(1.6);pointer-events:none">
 <div style="position:absolute;inset:0;background:linear-gradient(180deg,#fff 0%,rgba(255,255,255,.6) 45%,rgba(255,255,255,0) 100%);pointer-events:none"></div>
+<img src="assets/st-benedict.png" alt="" aria-hidden="true" loading="lazy" style="position:absolute;right:{{ benR }};bottom:0;height:{{ benH }};width:auto;opacity:.18;pointer-events:none">
 <div style="position:relative;max-width:820px">
-<div style="font-family:'Courier Prime',monospace;font-size:15px;color:#6B655A">Dear friend,</div>
-<p style="font-size:clamp(30px,3.6vw,48px);line-height:1.28;margin:24px 0 0;text-wrap:pretty">We are a small foundation. We don’t run programmes from afar — we trust the priests and sisters who already know every family by name, and <span style="font-style:italic;background:linear-gradient(transparent 62%,#CFE8D8 62%)">we help them help.</span></p>
+<p style="font-size:clamp(30px,3.6vw,48px);line-height:1.28;margin:0;text-wrap:pretty">We are a small foundation. We don’t run programmes from afar — we trust the priests and sisters who already know every family by name, and <span style="font-style:italic;background:linear-gradient(transparent 62%,#CFE8D8 62%)">we help them help.</span></p>
 <div style="font-family:'Caveat',cursive;font-size:38px;color:#1F5C3E;margin-top:32px">— the Old Bens</div>
 </div>
 </section>
@@ -263,7 +263,7 @@ a:hover{color:#123A27}
 </sc-if>
 
 <sc-if value="{{ isAbout }}" hint-placeholder-val="{{ false }}">
-<section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:clamp(40px,6vw,96px);align-items:center;padding:clamp(80px,10vw,140px) 0">
+<section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:clamp(40px,6vw,96px);align-items:center;padding:{{ galTop }} 0 clamp(80px,10vw,140px)">
 <div>
 <div style="font-family:'Courier Prime',monospace;font-size:13px;color:#6B655A">{{ about.kicker }}</div>
 <h2 style="font-weight:400;font-size:clamp(44px,5vw,72px);line-height:1;letter-spacing:-.02em;margin:16px 0 0;overflow-wrap:anywhere">{{ about.heading }} <span style="font-style:italic;color:#1F5C3E">{{ about.headingItalic }}</span></h2>
@@ -277,10 +277,11 @@ a:hover{color:#123A27}
 <img src="assets/sbc-emblem.png" alt="SBC Global Foundation emblem" style="position:absolute;left:20%;top:19%;width:60%;height:60%;object-fit:contain;mix-blend-mode:multiply">
 </div>
 </section>
+<sc-if value="{{ hasAboutLower }}" hint-placeholder-val="{{ true }}">
+<section style="padding:0 0 clamp(80px,10vw,140px);margin-right:calc(-1 * clamp(20px,4vw,48px))">
 <sc-if value="{{ hasPartners }}" hint-placeholder-val="{{ true }}">
-<section style="padding:0 0 clamp(80px,10vw,140px)">
-<div style="font-family:'Courier Prime',monospace;font-size:13px;color:#6B655A;margin-bottom:28px">Who carries it out</div>
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:28px">
+<div style="font-family:'Courier Prime',monospace;font-size:13px;color:#1F5C3E;margin-bottom:24px;overflow-wrap:anywhere">{{ about.groupsLabel }}</div>
+<div style="display:grid;grid-template-columns:{{ ptCols }};gap:clamp(14px,2vw,24px);padding-right:clamp(20px,4vw,48px);margin-bottom:clamp(56px,7vw,96px)">
 <sc-for list="{{ partners }}" as="pt" hint-placeholder-count="3">
 <div style="position:relative;padding:30px 28px 30px 64px;background-color:#FFFEFA;background-image:repeating-linear-gradient(180deg,transparent 0 33px,#D9E6F2 33px 34px);border:1px solid #E6E0D2;box-shadow:0 10px 24px -14px rgba(40,30,10,.3)">
 <div style="position:absolute;left:44px;top:0;bottom:0;width:1px;background:#E8A9A0"></div>
@@ -290,6 +291,37 @@ a:hover{color:#123A27}
 </div>
 </sc-for>
 </div>
+</sc-if>
+<sc-if value="{{ hasPeople }}" hint-placeholder-val="{{ true }}">
+<div style="background:#0A3D28;color:#fff;margin-left:calc(-1 * clamp(20px,4vw,48px));padding:clamp(48px,6vw,88px) 0 clamp(28px,3vw,44px) clamp(20px,4vw,48px)">
+<div style="display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;padding-right:clamp(20px,4vw,48px);margin-bottom:clamp(24px,3vw,36px)">
+<div>
+<h3 style="color:#fff;font-weight:400;font-size:clamp(38px,4.6vw,64px);line-height:1;letter-spacing:-.02em;margin:12px 0 0;overflow-wrap:anywhere">{{ about.stripHeading }} <span style="font-style:italic;color:#9FD9B4">{{ about.stripItalic }}</span></h3>
+</div>
+<sc-if value="{{ hasStrip }}" hint-placeholder-val="{{ true }}"><span style="font-family:'Courier Prime',monospace;font-size:13px;color:#CFE8D8">scroll →</span></sc-if>
+</div>
+<sc-if value="{{ hasStrip }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;gap:14px;overflow-x:auto;scrollbar-width:none;padding-right:clamp(20px,4vw,48px);scroll-snap-type:x mandatory">
+<sc-for list="{{ strip }}" as="p" hint-placeholder-count="8">
+<figure style="flex:none;margin:0;scroll-snap-align:start"><img src="{{ p.url }}" alt="{{ p.cap }}" loading="lazy" style="display:block;height:{{ stripH }};width:auto;background:#06281A"><figcaption style="padding-top:10px;font-family:'Courier Prime',monospace;font-size:12px;color:#CFE8D8">{{ p.label }}</figcaption></figure>
+</sc-for>
+</div>
+</sc-if>
+<sc-if value="{{ hasFaces }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;margin:clamp(32px,4vw,48px) clamp(20px,4vw,48px) 0 0;padding:8px 0 0;border-top:1px solid rgba(255,255,255,.18)">
+<span style="font-family:'Courier Prime',monospace;font-size:13px;color:#CFE8D8;white-space:nowrap">{{ about.facesLabel }}</span>
+<div style="display:flex;align-items:center;padding:30px 0 30px 10px">
+<sc-for list="{{ faces }}" as="fc" hint-placeholder-count="9">
+<div onMouseEnter="{{ fc.on }}" onMouseLeave="{{ fc.off }}" onClick="{{ fc.on }}" style="position:relative;flex:none;width:{{ fc.size }};height:{{ fc.size }};margin-left:-10px;z-index:{{ fc.z }};transition:width .35s cubic-bezier(.2,.7,.1,1),height .35s cubic-bezier(.2,.7,.1,1);cursor:pointer">
+<img src="{{ fc.url }}" alt="{{ fc.alt }}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;object-position:{{ fc.pos }};border:3px solid #0A3D28;box-sizing:border-box;box-shadow:0 4px 14px rgba(0,0,0,.35);display:block;background:#06281A">
+<div style="position:absolute;left:50%;top:calc(100% + 8px);transform:translateX(-50%) translateY({{ fc.ty }});opacity:{{ fc.op }};transition:opacity .25s,transform .3s;pointer-events:none;white-space:nowrap;background:#F6F1E1;color:#0A3D28;padding:7px 12px;border-radius:999px;font-family:'Courier Prime',monospace;font-size:12px;text-align:center"><b style="font-weight:700">{{ fc.name }}</b><sc-if value="{{ fc.hasRole }}" hint-placeholder-val="{{ true }}"> · {{ fc.role }}</sc-if></div>
+</div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+</div>
+</sc-if>
 </section>
 </sc-if>
 <sc-if value="{{ hasContact }}" hint-placeholder-val="{{ false }}">
@@ -354,6 +386,7 @@ a:hover{color:#123A27}
 
 </main>
 
+<sc-if value="{{ showNext }}" hint-placeholder-val="{{ true }}">
 <a href="{{ nextPage.href }}" style="position:relative;display:flex;align-items:flex-end;height:{{ nextH }};min-height:320px;overflow:hidden;color:#fff;background:#0A3D28">
 <img src="{{ nextPage.url }}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 40%;opacity:.6;transition:transform 1.6s cubic-bezier(.2,.7,.1,1),opacity .6s" style-hover="transform:scale(1.05);opacity:.75">
 <div style="position:relative;width:100%;max-width:1240px;margin:0 auto;padding:0 clamp(20px,4vw,48px) 56px;pointer-events:none">
@@ -361,6 +394,7 @@ a:hover{color:#123A27}
 <div style="font-size:clamp(46px,8vw,130px);line-height:.95;letter-spacing:-.03em;margin-top:10px">{{ nextPage.t }} →</div>
 </div>
 </a>
+</sc-if>
 <footer style="background:#0A3D28;color:#CFE8D8;border-top:1px solid rgba(255,255,255,.12);padding-bottom:{{ footPad }}">
 <div style="max-width:1240px;margin:0 auto;padding:28px clamp(20px,4vw,48px);display:flex;flex-wrap:wrap;flex-direction:{{ footDir }};justify-content:space-between;gap:16px;font-family:'Courier Prime',monospace;font-size:13px;line-height:1.5"><span>SBC Global Foundation · Old Bens of St. Benedict College</span><span style="font-family:'EB Garamond',serif;font-style:italic;font-size:19px;color:#fff">Love towards humanity</span></div>
 </footer>
@@ -409,17 +443,23 @@ const SITE_DEFAULTS={about_kicker:'Since c. 1994',about_heading:'Old boys of one
   partners:[{title:'VAROD, Vavuniya',text:'Our partner for medical camps, home therapy and sport for the differently abled.',image:''},
     {title:'The religious sisters',text:'They run homes for the elderly and tell us what each resident needs.',image:''},
     {title:'Parish priests',text:'They know every family by name and drive the parcels out themselves.',image:''}],
+  groups_label:'Who carries it out',strip_heading:'The people',strip_heading_italic:'on the ground.',faces_label:'Faces behind it',
   contact_email:'',contact_phone:'',contact_address:'',bank_note:'',
   bank_account_name:'',bank_name:'',bank_branch:'',bank_account_no:'',bank_swift:'',bank_reference:''};
 let SITE={...SITE_DEFAULTS};
 let UPDATES=[];
+// The About page's scrolling photo strip and the priests & sisters. Built-in copy; replaced by the live lists.
+const BUNDLED_STRIP=[['act-team-wall.jpg','The parish team, together'],['act-priests-children.jpg','Priests at the school handout'],['people-priest-elders.jpg','With the elders he visits'],['team-sisters-group.jpg','The sisters'],['team-sister-blessing.jpg','A blessing at the parish'],['act-sister-envelope.jpg','Help handed over, in person'],['act-priest-varod.jpg','With VAROD, Vavuniya'],['act-books-handout.jpg','Schoolbooks for every child']].map(([src,caption])=>({src,caption}));
+const BUNDLED_FACES=[['team-01.jpg','center 20%','Fr. —','Parish priest'],['people-sister.jpg','center 18%','Sr. —','Religious sister'],['team-02.jpg','center 14%','Fr. —','Parish priest'],['people-priest-smile.jpg','center 14%','Fr. —','Parish priest'],['team-03.jpg','center 18%','Fr. —','Parish priest'],['people-priest-garden.jpg','center 14%','Fr. —','Parish priest'],['team-04.jpg','center 16%','Fr. —','Parish priest'],['team-05.jpg','center 14%','Fr. —','Parish priest'],['people-sister-priest.jpg','center 25%','Sr. — & Fr. —','Sister & priest']].map(([src,focus,name,role])=>({src,focus,name,role}));
+let STRIP=BUNDLED_STRIP.slice();
+let FACES=BUNDLED_FACES.slice();
 let GALLERY=[];     // photos the editor added to the Gallery page directly (shown first)
 const Q=(()=>{const o={};new URLSearchParams(location.search).forEach((v,k)=>{if(v!==''&&!isNaN(+v))o[k]=+v;});return o;})();
 const ORDER=['home','programmes','gallery','about','give'];
 const ROT=['-2deg','1.5deg','-1deg','2.5deg','-2.5deg','1deg'];
 class Component extends DCLogic {
   tabsRef=React.createRef();
-  state={baSound:false,baSite:0,baPos:50,mhHide:false,mhSolid:false,sound:false,mobile:false,route:'home',sticky:false,menu:false,active:0,wide:true,lb:-1,copied:false,filter:-1,loaded:false,yt:{}};
+  state={baSound:false,baSite:0,baPos:50,mhHide:false,mhSolid:false,sound:false,mobile:false,route:'home',sticky:false,menu:false,active:0,wide:true,lb:-1,copied:false,filter:-1,loaded:false,yt:{},face:-1};
   constructor(p){super(p);this.rebuild();}
   // Gallery = every programme photo once (first programme wins), tagged with its programme.
   rebuild(){this.all=[];this.caps={};this.tag={};
@@ -444,6 +484,8 @@ class Component extends DCLogic {
       SITE={...SITE_DEFAULTS};
       Object.keys(c.site||{}).forEach(k=>{const v=c.site[k];if(k==='partners'){if(Array.isArray(v))SITE.partners=v;return;}if(typeof v!=='string')return;if(k.startsWith('contact_')||v.trim())SITE[k]=v;});
       UPDATES=c.updates.map(u=>({...u}));
+      if(Array.isArray(c.strip))STRIP=c.strip.map(x=>({src:x.src,caption:x.caption||''}));
+      if(Array.isArray(c.faces))FACES=c.faces.map(x=>({src:x.src,name:x.name||'',role:x.role||'',focus:x.focus||'center 20%'}));
       GALLERY=Array.isArray(c.gallery)?c.gallery.map(g=>typeof g==='string'?{src:g,caption:''}:{src:g.src,caption:g.caption||''}):[];
     }
     document.documentElement.setAttribute('data-sbc-source',r?r.source:'bundled');
@@ -517,7 +559,7 @@ class Component extends DCLogic {
     const contactClean=k=>String(SITE[k]||'').trim();
     const cEmail=contactClean('contact_email'),cPhone=contactClean('contact_phone'),cAddr=contactClean('contact_address');
     return {
-      isMob:mobile,...(()=>{const BA=(PROGS.find(p=>p.ba)||{ba:BUNDLED_BA}).ba,i=Math.min(this.state.baSite,BA.length-1),c=BA[i];return {baBefore:c.b,baBeforeUrl:A(c.b),baAfter:c.a,baAfterUrl:A(c.a),baAfterVideoUrl:c.a?A(c.a+'.mp4'):'',baAfterPosterUrl:c.a?A(c.a+'-poster.png'):'',baAfterBgUrl:c.a?A(/\.(png|jpe?g)$/.test(c.a)?c.a:c.a+'-poster.png'):'',baFit:'cover',baKey:'ba'+i,baCols:mobile?'minmax(0,1fr)':'minmax(0,1fr) minmax(0,1fr)',baAfterTagL:mobile?'14px':'calc(50% + 15px)',baAfterTagT:mobile?'calc(50% + 15px)':'14px',baGap:mobile?'44px':'clamp(40px,6vw,88px)',baMed:mobile?'64px':'clamp(72px,7vw,104px)',baMedTop:'50%',
+      isMob:mobile,benR:mobile?'-20%':'-2%',benH:mobile?'60%':'75%',...(()=>{const BA=(PROGS.find(p=>p.ba)||{ba:BUNDLED_BA}).ba,i=Math.min(this.state.baSite,BA.length-1),c=BA[i];return {baBefore:c.b,baBeforeUrl:A(c.b),baAfter:c.a,baAfterUrl:A(c.a),baAfterVideoUrl:c.a?A(c.a+'.mp4'):'',baAfterPosterUrl:c.a?A(c.a+'-poster.png'):'',baAfterBgUrl:c.a?A(/\.(png|jpe?g)$/.test(c.a)?c.a:c.a+'-poster.png'):'',baFit:'cover',baKey:'ba'+i,baCols:mobile?'minmax(0,1fr)':'minmax(0,1fr) minmax(0,1fr)',baAfterTagL:mobile?'14px':'calc(50% + 15px)',baAfterTagT:mobile?'calc(50% + 15px)':'14px',baGap:mobile?'44px':'clamp(40px,6vw,88px)',baMed:mobile?'64px':'clamp(72px,7vw,104px)',baMedTop:'50%',
   baPrev:()=>this.setState(s=>({baSite:(s.baSite-1+BA.length)%BA.length})),baNext:()=>this.setState(s=>({baSite:(s.baSite+1)%BA.length})),
   baTs:e=>{this.bx=e.touches[0].clientX;},baTe:e=>{const d=e.changedTouches[0].clientX-(this.bx||0);if(Math.abs(d)>50)this.setState(s=>({baSite:(s.baSite+(d<0?1:-1)+BA.length)%BA.length}));},baBPos:c.bPos||'center',baAfterImg:/\.(png|jpe?g)$/.test(c.a),baAfterVid:!!c.a&&!/\.(png|jpe?g)$/.test(c.a),baAfterBg:/\.(png|jpe?g)$/.test(c.a)?c.a:c.a+'-poster.png',baHasAfter:!!c.a,baNoAfter:!c.a,baPos:this.state.baPos+'%',baClip:'inset(0 '+(100-this.state.baPos)+'% 0 0)',baVal:this.state.baPos,baSet:e=>this.setState({baPos:+e.target.value}),baTitle:c.t,baRatio:mobile?'3/4':'2/1',baMuted:!this.state.baSound,baSoundLabel:this.state.baSound?'Sound on ♪':'Sound off',toggleBaSound:()=>this.setState(s=>({baSound:!s.baSound})),baFilms:[{src:'toilet-after-1',cap:'New doors, tiled walls, running water'},{src:'toilet-after-2',cap:'A shower and a tap that works'}].map(f=>({...f,videoUrl:A(f.src+'.mp4'),posterUrl:A(f.src+'-poster.png')})),baNum:'0'+(i+1),baCount:'0'+BA.length,
   baSites:BA.map((s,j)=>({n:'0'+(j+1),t:s.t,thumb:s.b,thumbUrl:A(s.b),status:s.a?'Rebuilt':'In progress',dot:s.a?'#9FD9B4':'#E8C36A',bg:j===i?'rgba(255,255,255,.1)':'transparent',ink:j===i?'#fff':'rgba(255,255,255,.72)',line:j===i?'#9FD9B4':'transparent',op:j===i?1:.55,pick:()=>this.setState({baSite:j,baPos:50})}))};})(),deskOnly:mobile?'none':'block',wmW:mobile?('min(560px,'+(Q.size??62)+'vw)'):'min(680px,56vw)',mLogo:this.state.mhSolid?'60px':'80px',homeShade:mobile?'radial-gradient(110% 48% at 0% 8%,rgba(7,48,28,.95) 0%,rgba(7,48,28,.82) 40%,rgba(7,48,28,0) 78%),linear-gradient(180deg,rgba(7,48,28,.35) 0%,rgba(7,48,28,0) 30%)':'none',homeUrl:A(mobile?'hero-mobile.png':'hero-desktop-4.png'),pageVis:this.state.loaded?'visible':'hidden',homePos:mobile?'center 55%':'center 50%',heroFit:mobile?'contain':'cover',heroPos:mobile?'center 68%':'center 40%',heroMin:mobile?'520px':'640px',subH:mobile?'78svh':'88svh',heapTop:mobile?'-64px':'calc(-1 * clamp(90px,12vw,190px))',heapW:mobile?'132px':'clamp(150px,22vw,320px)',
@@ -537,7 +579,7 @@ class Component extends DCLogic {
       mobileMenu:mobile&&menu,narrow:!wide,
       pageFilter:menu&&!mobile?'blur(20px)':'none',pageTf:menu&&!mobile?'scale(1.2)':'none',pageOp:menu&&!mobile?.6:1,
       navLinks:ORDER.map((r,i)=>({t:r==='about'?'about us':r,label:r==='about'?'About us':r.charAt(0).toUpperCase()+r.slice(1),num:'0'+(i+1),href:'#'+r,ink:r===base?'#fff':'rgba(255,255,255,.72)'})),
-      isHome:route==='home',isSub:route!=='home'&&route!=='give'&&route!=='gallery',galTop:mobile?'110px':'200px',navBgc:route==='gallery'?'#0A3D28':'rgba(10,61,40,.35)',giveTop:mobile?'100px':'190px',isProgrammes:route==='programmes',isDetail,isGallery:route==='gallery',isAbout:route==='about',isGive:route==='give',
+      isHome:route==='home',isSub:route!=='home'&&route!=='give'&&route!=='gallery'&&route!=='about',galTop:mobile?'110px':'200px',navBgc:(route==='gallery'||route==='about')?'#0A3D28':'rgba(10,61,40,.35)',ptCols:mobile?'minmax(0,1fr)':'repeat(3,minmax(0,1fr))',showNext:route!=='about',stripH:mobile?'300px':'460px',giveTop:mobile?'100px':'190px',isProgrammes:route==='programmes',isDetail,isGallery:route==='gallery',isAbout:route==='about',isGive:route==='give',
       hero,nextPage,wide,
       slides:[
         {k:'01 — '+this.kinds()+' kinds of help',t:'Programmes.',d:'School bags, rice, wells, wheelchairs — and the Sunshine Games.',img:'food-van.jpg',href:'#programmes',cta:'SEE THE PROGRAMMES'},
@@ -549,7 +591,10 @@ class Component extends DCLogic {
       updatesNoneText:route==='updates'?'There are no updates yet.':'This update is not on the website any more.',
       updatesBack:route.startsWith('update/')&&upd.length>0,
       hasHomeUpdates:UPDATES.length>0,homeUpdates:UPDATES.slice(0,3).map(u=>this.updCard(u)),moreUpdates:UPDATES.length>3,
-      about:{kicker:SITE.about_kicker,heading:SITE.about_heading,headingItalic:SITE.about_heading_italic,p1:SITE.about_p1,p2:SITE.about_p2,p2Italic:SITE.about_p2_italic},
+      about:{kicker:SITE.about_kicker,heading:SITE.about_heading,headingItalic:SITE.about_heading_italic,p1:SITE.about_p1,p2:SITE.about_p2,p2Italic:SITE.about_p2_italic,groupsLabel:SITE.groups_label,stripHeading:SITE.strip_heading,stripItalic:SITE.strip_heading_italic,facesLabel:SITE.faces_label},
+      strip:STRIP.map((x,k)=>{const n=String(k+1).padStart(2,'0');return {url:A(x.src),cap:x.caption,label:x.caption?n+' — '+x.caption:n};}),hasStrip:STRIP.length>0,
+      faces:FACES.map((p,k)=>{const on=this.state.face===k,base=mobile?46:60,big=mobile?84:110;return {url:A(p.src),pos:p.focus,name:p.name,role:p.role,hasRole:!!p.role,alt:p.name+(p.role?', '+p.role:''),size:(on?big:base)+'px',z:on?20:10,op:on?1:0,ty:on?'0':'-6px',on:()=>this.setState({face:k}),off:()=>this.setState({face:-1})};}),hasFaces:FACES.length>0,
+      hasPeople:STRIP.length>0||FACES.length>0,hasAboutLower:(SITE.partners||[]).some(g=>g&&(g.title||g.text))||STRIP.length>0||FACES.length>0,
       hasContact:!!(cEmail||cPhone||cAddr),
       contact:{hasEmail:!!cEmail,email:cEmail,emailHref:'mailto:'+cEmail,hasPhone:!!cPhone,phone:cPhone,phoneHref:'tel:'+cPhone.replace(/[^\d+]/g,''),hasAddress:!!cAddr,address:cAddr},
       programmes:PROGS.map((p,i)=>({...p,idx:i,main:p.imgs[0]||FALLBACK,mainUrl:A(p.imgs[0]||FALLBACK),videoUrl:p.video?A(p.video):'',objUrl:p.obj?A(p.obj):'',...this.progUpdates(i),meta:'Entry '+p.n+' · '+p.m+(p.date?' · '+fmtDate(p.date+'T12:00:00'):''),hasVideos:(p.videos||[]).length>0,

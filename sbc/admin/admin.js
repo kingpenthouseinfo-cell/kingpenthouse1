@@ -309,6 +309,8 @@ function viewHome() {
     ${choice('#/programmes', '❖', [85, 70, 45], 'Edit or add a programme')}
     ${choice('#/gallery', '▦', [240], 'Edit or add to the photo gallery')}
     ${choice('#/about', 'ⓘ', [20, 25, 45], 'Edit the About page')}
+    ${choice('#/faces', '☺', [60, 60, 45], 'Edit priests and sisters')}
+    ${choice('#/strip', '▭', [270, 270, 42], 'Edit the About page photo strip')}
     ${me?.owner ? choice('#/bank', '₨', [300], 'Edit bank details') : ''}
     ${choice('#/contact', '✆', [195, 195, 42], 'Edit contact details')}
     </nav>
@@ -648,6 +650,13 @@ const ABOUT_FIELDS = [
   ['about_p2', 'Second paragraph', 'area', 800],
   ['about_p2_italic', 'Last words of the second paragraph (shown in italics)', 'text', 200],
 ];
+const HEADING_DEFAULTS = { groups_label: 'Who carries it out', strip_heading: 'The people', strip_heading_italic: 'on the ground.', faces_label: 'Faces behind it' };
+const HEADING_FIELDS = [
+  ['groups_label', 'Small heading above the groups', 'text', 60],
+  ['strip_heading', 'Heading above the photo strip', 'text', 80],
+  ['strip_heading_italic', 'Heading above the photo strip — last words (shown in green italics)', 'text', 80],
+  ['faces_label', 'Small heading beside the priests and sisters', 'text', 60],
+];
 const CONTACT_FIELDS = [
   ['contact_email', 'Email address', 'email', 120, 'Leave empty to keep it off the website.'],
   ['contact_phone', 'Phone number', 'tel', 40, 'Leave empty to keep it off the website.'],
@@ -682,6 +691,7 @@ async function viewAboutForm() {
   const groups = (site.partners || []).map((g) => ({ id: g.id, title: g.title || '', text: g.text || '', image: g.image || '', blob: null, preview: '', path: null }));
   setView(`${back('#/')}<h1>About page</h1><div id="note"></div><form id="form" novalidate>
     <fieldset class="group"><h2>About page</h2>${siteRows(ABOUT_FIELDS, site)}</fieldset>
+    <fieldset class="group"><h2>Section headings</h2>${siteRows(HEADING_FIELDS, { ...HEADING_DEFAULTS, ...Object.fromEntries(Object.entries(site).filter(([k, v]) => k in HEADING_DEFAULTS && String(v).trim())) })}<p class="hint">The photos and names below these headings are edited from the main screen: <b>Edit priests and sisters</b> and <b>Edit the About page photo strip</b>.</p></fieldset>
     <fieldset class="group" id="groups-block"><h2>Who carries the work out</h2><div id="group-list"></div>
       <button type="button" class="btn quiet add-group" id="add-group">＋ Add a group</button>
       <p class="hint">Groups are shown on the About page in this order. Nothing changes on the website until you tap Save.</p><p class="hint" id="group-busy" aria-live="polite"></p></fieldset>
@@ -715,7 +725,7 @@ async function viewAboutForm() {
   wireSave({
     validate: () => { for (const [i, g] of groups.entries()) if (!g.title.trim()) { fieldError(`g-${g.id}-title`, `Please give group ${i + 1} a name, or remove it.`); return false; } return true; },
     work: async () => {
-      const data = readSite(ABOUT_FIELDS);
+      const data = { ...readSite(ABOUT_FIELDS), ...readSite(HEADING_FIELDS) };
       const uid = current()?.user?.id; const todo = groups.filter((g) => g.blob && !g.path); let n = 0;
       for (const g of todo) { const path = `${uid}/${uuid()}.jpg`; await uploadFile('media', path, g.blob, 'image/jpeg'); g.path = path; progress(`Uploading photos… ${++n} of ${todo.length}`); }
       progress('Saving…');
@@ -840,6 +850,111 @@ async function viewGalleryEdit() {
   followKeyboard();
 }
 
+// ── About page lists: priests & sisters (photo + name + role) and the scrolling photo strip (photo + caption) ──
+// Both screens work the same way: a big Add button at the top, then every item listed so it can be edited, moved or deleted.
+const PEOPLE_ROLES = ['Parish priest', 'Religious sister', 'Sister & priest'];
+const LIST_KINDS = {
+  faces: {
+    title: 'Priests and sisters', max: 30, rpc: 'editor_save_faces', versionKey: 'faces_version', round: true,
+    addLabel: 'Add priests or sisters', addHint: 'Pick one or more photos, then type each name.', word: 'person', words: 'people',
+    get: () => (content.faces || []).map((f) => ({ src: f.src, name: f.name || '', role: f.role || '', focus: f.focus || 'center 20%' })),
+    blank: () => ({ name: '', role: '', focus: 'center 20%' }),
+    fields: [
+      { k: 'name', label: 'Name', max: 80, ph: 'Fr. John Perera', req: 'Please type this person’s name.' },
+      { k: 'role', label: 'Role', max: 60, ph: 'Parish priest', opt: true, list: 'roles' },
+    ],
+    payload: (i) => ({ src: i.src, name: i.name.trim(), role: i.role.trim(), focus: i.focus }),
+    done: 'The priests and sisters on the About page are updated.',
+  },
+  strip: {
+    title: 'About page photo strip', max: 40, rpc: 'editor_save_strip', versionKey: 'strip_version', round: false,
+    addLabel: 'Add photos', addHint: 'Pick several at once. They scroll sideways on the About page.', word: 'photo', words: 'photos',
+    get: () => (content.strip || []).map((f) => ({ src: f.src, caption: f.caption || '' })),
+    blank: () => ({ caption: '' }),
+    fields: [{ k: 'caption', label: 'Caption', max: 160, ph: 'What is happening in this photo?', opt: true }],
+    payload: (i) => ({ src: i.src, caption: i.caption.trim() }),
+    done: 'The photo strip on the About page is updated.',
+  },
+};
+
+async function viewPeopleList(kind) {
+  const K = LIST_KINDS[kind];
+  viewLoading();
+  try { await loadContent(); } catch (e) { return viewError(e, () => viewPeopleList(kind)); }
+  const items = K.get().map((x) => ({ id: uuid(), ...x, blob: null, preview: '', path: null })); let version = content[K.versionKey];
+  setView(`${back('#/')}<h1>${esc(K.title)}</h1><div id="note"></div>
+    <label class="big primary pick"><span class="ico" aria-hidden="true">＋</span><span><b>${esc(K.addLabel)}</b><small>${esc(K.addHint)}</small></span><input id="photo-input" type="file" accept="image/*" multiple aria-label="${esc(K.addLabel)}: choose photos from your phone"></label>
+    <p class="hint" id="photo-busy" aria-live="polite"></p>
+    <form id="form" novalidate><p class="hint" id="photo-count"></p><ul class="galedit${K.round ? ' people' : ''}" id="pl-list"></ul></form>${bar('Save')}
+    <datalist id="roles">${PEOPLE_ROLES.map((r) => `<option value="${esc(r)}">`).join('')}</datalist>`, { bar: true, title: K.title });
+  const list = $('#pl-list');
+  const draw = () => {
+    list.innerHTML = items.map((it, i) => {
+      const n = i + 1;
+      const fields = K.fields.map((f) => fld(`pl-${it.id}-${f.k}`, `${f.label} for ${K.word} ${n}`,
+        `<input id="pl-${esc(it.id)}-${f.k}" data-f="${f.k}" type="text" maxlength="${f.max}" value="${esc(it[f.k])}" placeholder="${esc(f.ph || '')}" ${f.list ? `list="${f.list}"` : ''} autocomplete="off">`, { opt: !!f.opt })).join('');
+      return `<li data-id="${esc(it.id)}"><img class="${K.round ? 'face' : ''}" src="${esc(it.preview || imgUrl(it.src))}" alt="${esc(K.round ? (it.name || 'Photo ' + n) : (it.caption || 'Photo ' + n))}" ${K.round ? `style="object-position:${esc(it.focus || 'center 20%')}"` : ''}>
+      <span class="tag">${i === 0 ? 'Shown first' : ''}</span>${fields}
+      <div class="tools"><button type="button" data-act="left" aria-label="Move ${K.word} ${n} earlier" ${i === 0 ? 'disabled' : ''}>←</button><button type="button" data-act="right" aria-label="Move ${K.word} ${n} later" ${i === items.length - 1 ? 'disabled' : ''}>→</button>
+      <label class="filebtn-sm">Change photo<input type="file" accept="image/*" data-replace aria-label="Change the photo of ${K.word} ${n}"></label></div>
+      <div data-delbox><button type="button" class="btn danger" data-act="del">Delete this ${K.word}</button></div></li>`;
+    }).join('') || `<li class="hint">There are no ${K.words} here yet. Tap <b>${esc(K.addLabel)}</b> above.</li>`;
+    $('#photo-count').textContent = items.length ? `${items.length} ${items.length === 1 ? K.word : K.words}. Use the arrows to change the order.` : '';
+  };
+  draw();
+  const find = (el) => items.find((g) => g.id === el.closest('li')?.dataset.id);
+  list.addEventListener('input', (ev) => { const g = find(ev.target), k = ev.target.dataset.f; if (g && k) g[k] = ev.target.value; });
+  list.addEventListener('click', (ev) => {
+    const b = ev.target.closest('button'); if (!b) return; const g = find(b); if (!g) return; const i = items.indexOf(g);
+    const box = b.closest('li').querySelector('[data-delbox]');
+    if (b.dataset.act === 'left' && i > 0) { [items[i - 1], items[i]] = [items[i], items[i - 1]]; draw(); }
+    else if (b.dataset.act === 'right' && i < items.length - 1) { [items[i + 1], items[i]] = [items[i], items[i + 1]]; draw(); }
+    else if (b.dataset.act === 'del') { box.innerHTML = `<div class="confirm" role="alertdialog"><p><b>Delete this ${K.word}?</b><br>${esc(K.word === 'person' ? 'Their photo and name' : 'This photo and its caption')} disappear from the About page when you tap Save.</p><button type="button" class="btn danger solid" data-act="yes">Yes, delete it</button><button type="button" class="btn quiet" data-act="no">No, keep it</button></div>`; box.querySelector('[data-act="no"]').focus(); }
+    else if (b.dataset.act === 'no') box.innerHTML = `<button type="button" class="btn danger" data-act="del">Delete this ${K.word}</button>`;
+    else if (b.dataset.act === 'yes') { if (g.preview) URL.revokeObjectURL(g.preview); items.splice(i, 1); draw(); }
+  });
+  list.addEventListener('change', async (ev) => {                                       // Change photo (one item)
+    if (!ev.target.matches('input[data-replace]')) return;
+    const g = find(ev.target), f = ev.target.files[0]; if (!g || !f) return; ev.target.value = '';
+    clearErrors(); showNote('', ''); $('#photo-busy').textContent = 'Preparing photo…';
+    try { const blob = await processPhoto(f); if (g.preview) URL.revokeObjectURL(g.preview); g.blob = blob; g.path = null; g.preview = URL.createObjectURL(blob); $('#photo-busy').textContent = ''; draw(); }
+    catch (e) { $('#photo-busy').textContent = ''; showNote('bad', esc(e instanceof PhotoError ? e.message : 'That photo could not be added.')); }
+  });
+  $('#photo-input').addEventListener('change', async (ev) => {                          // Add (one or many)
+    const files = [...ev.target.files]; ev.target.value = ''; if (!files.length) return;
+    clearErrors(); showNote('', '');
+    const take = files.slice(0, Math.max(0, K.max - items.length)); const left = files.length - take.length;
+    const busy = $('#photo-busy'); const problems = []; let done = 0;
+    if (left > 0) problems.push(`This list can hold up to ${K.max} ${K.words}, so ${left} ${left === 1 ? 'photo was' : 'photos were'} left out.`);
+    busy.textContent = `Preparing ${take.length} photo${take.length === 1 ? '' : 's'}…`;
+    const results = await pool(take, 3, async (f) => {
+      try { const blob = await processPhoto(f); return { id: uuid(), src: '', ...K.blank(), blob, preview: URL.createObjectURL(blob), path: null }; }
+      catch (e) { problems.push(e instanceof PhotoError ? e.message : 'A photo could not be added.'); return null; }
+      finally { done++; busy.textContent = `Preparing photos… ${done} of ${take.length}`; }
+    });
+    const added = results.filter(Boolean); added.forEach((r) => items.push(r));
+    busy.textContent = added.length ? `Added ${added.length} ${added.length === 1 ? K.word : K.words}. ${K.round ? 'Type each name' : 'Add a caption if you like'}, then tap Save.` : '';
+    draw(); if (problems.length) showNote('bad', [...new Set(problems)].map(esc).join('<br>'));
+    if (added.length) { const first = $(`#pl-${added[0].id}-${K.fields[0].k}`); first?.scrollIntoView({ block: 'center', behavior: 'smooth' }); first?.focus({ preventScroll: true }); }
+  });
+  wireSave({
+    validate: () => {
+      for (const it of items) for (const f of K.fields) if (f.req && !String(it[f.k]).trim()) { fieldError(`pl-${it.id}-${f.k}`, f.req); return false; }
+      return true;
+    },
+    work: async () => {
+      const uid = current()?.user?.id; const todo = items.filter((it) => it.blob && !it.path); let n = 0;
+      await pool(todo, 3, async (it) => { const path = `${uid}/${uuid()}.jpg`; await uploadFile('media', path, it.blob, 'image/jpeg'); it.path = path; n++; progress(`Uploading photos… ${n} of ${todo.length}`); });
+      progress('Saving…');
+      const out = await rpc(K.rpc, { p_expected_version: version, p_items: items.map((it) => K.payload({ ...it, src: it.blob ? it.path : it.src })) });
+      version = out.version; return out;
+    },
+    done: () => viewDone({ text: K.done, viewHref: '../#about', viewLabel: 'See the About page' }),
+    onReload: () => viewPeopleList(kind),
+  });
+  followKeyboard();
+}
+
 // ── password ──
 function viewPasswordForm() {
   const recovery = !!window.__recovery;
@@ -952,6 +1067,8 @@ async function route() {
   if (h === '/programme/new') return viewProgrammeForm('new');
   if ((m = h.match(/^\/programme\/([0-9a-f-]{36})$/))) return viewProgrammeForm(m[1]);
   if (h === '/about') return viewAboutForm();
+  if (h === '/faces') return viewPeopleList('faces');
+  if (h === '/strip') return viewPeopleList('strip');
   if (h === '/contact') return viewContactForm();
   if (h === '/gallery') return viewGalleryMenu();
   if (h === '/gallery/photos') return viewGalleryEdit();

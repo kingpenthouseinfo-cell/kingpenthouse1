@@ -212,7 +212,7 @@ test('the editor has no drafts, no preview step and no Publish button, and fits 
     await page.goto(`${BASE}/admin/#/forgot`); await page.getByRole('heading', { name: 'Forgot your password?' }).waitFor(); await check('forgot password');
     await page.goto(`${BASE}/admin/`); await page.getByRole('heading', { name: 'Sign in', exact: true }).waitFor();
     await signIn(page);
-    for (const hash of ['/', '/add', '/updates', '/programmes', '/programme/new', '/about', '/contact', '/gallery', '/password']) {
+    for (const hash of ['/', '/add', '/updates', '/programmes', '/programme/new', '/about', '/faces', '/strip', '/contact', '/gallery', '/password']) {
       await page.goto(`${BASE}/admin/#${hash}`); await page.waitForTimeout(700); await check(hash);
     }
     // programme edit screen (many photos) + the editor with long text
@@ -226,7 +226,7 @@ test('the main screen: one big Add an update button, then a plain button for eac
   assert.equal(await page.locator('main a.big').count(), 1);
   assert.match(await page.locator('main a.big').innerText(), /Add an update/);
   const labels = await page.locator('main nav.choices a').evaluateAll((as) => as.map((a) => a.textContent.replace(a.querySelector('.cico').textContent, '').trim()));
-  assert.deepEqual(labels, ['Edit an update', 'Edit or add a programme', 'Edit or add to the photo gallery', 'Edit the About page', 'Edit contact details']);   // no bank button for an ordinary editor
+  assert.deepEqual(labels, ['Edit an update', 'Edit or add a programme', 'Edit or add to the photo gallery', 'Edit the About page', 'Edit priests and sisters', 'Edit the About page photo strip', 'Edit contact details']);   // no bank button for an ordinary editor
   await page.getByRole('link', { name: 'Look at the website' }).waitFor();
   assert.equal(await page.getByRole('link', { name: 'Look at the website' }).getAttribute('href'), '../');
   await page.getByText('Signed in as').waitFor(); await page.getByRole('button', { name: 'Sign out' }).waitFor();
@@ -460,7 +460,7 @@ test('only the owner can change the bank details; they show on the Give page and
 
   const owner = await newPage(); await passwordSignIn(owner, OWNER, 'owner-password-1');
   await owner.getByRole('heading', { name: 'What would you like to do?' }).waitFor();
-  assert.equal(await owner.locator('main nav.choices a').count(), 6, 'the owner also gets Edit bank details');
+  assert.equal(await owner.locator('main nav.choices a').count(), 8, 'the owner also gets Edit bank details');
   await owner.getByRole('link', { name: /bank details/i }).click(); await owner.getByRole('heading', { name: 'Bank details' }).waitFor();
   await owner.getByRole('button', { name: 'Save', exact: true }).click();                       // empty: the required ones are named
   await owner.getByText('Please type the name on the account.').waitFor(); await owner.getByText('Please type the name of the bank.').waitFor();
@@ -575,6 +575,127 @@ test('groups: add one with a photo, delete another, see it on the About page; de
   }
   await page.getByRole('button', { name: 'Save', exact: true }).click(); await page.getByRole('heading', { name: 'Saved. Your changes are live.' }).waitFor();
   await visitor.reload(); await visitor.getByText('Who carries it out').waitFor();
+});
+
+// ═══════════════ About page: the people band ═══════════════
+const aboutRoot = (page) => page.locator('#dc-root');
+const faceImgs = (page) => page.locator('#dc-root img[alt*=", "][style*="border-radius:50%"], #dc-root img[style*="border-radius: 50%"]');
+
+test('the About page shows the people band: a scrolling photo strip with captions, and faces with names on hover', async () => {
+  const visitor = await newPage({ width: 1280, height: 800 }); await visitor.goto(`${BASE}/#about`); await visitor.getByText('on the ground.').first().waitFor();
+  const text = await aboutRoot(visitor).textContent();
+  for (const t of ['Who carries it out', 'The people', 'on the ground.', 'scroll →', 'Faces behind it']) assert.ok(text.includes(t), t);
+  const caps = await aboutRoot(visitor).locator('figcaption').allTextContents();
+  assert.equal(caps.length, 8); assert.equal(caps[0], '01 — The parish team, together'); assert.equal(caps[7], '08 — Schoolbooks for every child');
+  const faces = faceImgs(visitor); assert.equal(await faces.count(), 9);
+  assert.equal(await aboutRoot(visitor).locator('img[alt="Fr. —, Parish priest"]').count(), 7);
+  const tip = (img) => img.evaluate((i) => getComputedStyle(i.parentElement.querySelector('div')).opacity);
+  assert.equal(await tip(faces.first()), '0', 'names are hidden until you point at a face');
+  await faces.first().hover(); await visitor.waitForTimeout(450);
+  assert.equal(await tip(faces.first()), '1');
+  assert.match(await faces.first().evaluate((i) => i.parentElement.innerText), /Fr\. — · Parish priest/);
+  assert.equal(await aboutRoot(visitor).getByText('NEXT PAGE').count(), 0, 'the About page has no "next page" block');
+  // every strip photo and face photo loads
+  const srcs = [...await aboutRoot(visitor).locator('figure img').evaluateAll((els) => els.map((e) => e.src)), ...await faces.evaluateAll((els) => els.map((e) => e.src))];
+  assert.equal(srcs.length, 17); for (const u of srcs) assert.equal((await fetch(u)).status, 200, u);
+  assert.deepEqual(visitor.errors, []);
+});
+
+test('editors can add, edit, move and delete priests and sisters (photo + name + role); the About page follows', async () => {
+  const page = await newPage(); await signIn(page); await page.getByRole('link', { name: 'Edit priests and sisters' }).click();
+  await page.getByRole('heading', { name: 'Priests and sisters' }).waitFor();
+  assert.equal(await page.locator('main label.big.primary').count(), 1); assert.match(await page.locator('main label.big.primary').innerText(), /Add priests or sisters/);
+  assert.equal(await page.locator('#photo-input').getAttribute('multiple'), '');
+  assert.equal(await page.locator('#pl-list li').count(), 9);
+  assert.equal(await page.getByLabel('Name for person 1').inputValue(), 'Fr. —');
+  // add two people in one selection
+  await page.locator('#photo-input').setInputFiles([{ name: 'p1.jpg', mimeType: 'image/jpeg', buffer: await makeJpeg(page, { w: 400, h: 500, color: '#a63' }) }, { name: 'p2.jpg', mimeType: 'image/jpeg', buffer: await makeJpeg(page, { w: 420, h: 520, color: '#36a' }) }]);
+  await page.getByText(/Added 2 people/).waitFor(); assert.equal(await page.locator('#pl-list li').count(), 11);
+  assert.equal(await page.evaluate(() => document.activeElement.dataset.f), 'name', 'the cursor lands in the first new name box');
+  // a name is required, in words
+  await page.getByRole('button', { name: 'Save', exact: true }).click(); await page.getByText('Please type this person’s name.').first().waitFor();
+  assert.equal(await page.evaluate(() => document.activeElement.id.endsWith('-name')), true);
+  const nameOf = (n) => page.locator(`#pl-list li:nth-child(${n}) [data-f="name"]`), roleOf = (n) => page.locator(`#pl-list li:nth-child(${n}) [data-f="role"]`);
+  await nameOf(10).fill('Fr. John Perera'); await roleOf(10).fill('Parish priest, Mannar');
+  await nameOf(11).fill('Sr. Mary Fernando'); await roleOf(11).fill('Religious sister');
+  await nameOf(1).fill('Fr. Anthony Silva');                                                             // edit an existing one
+  await page.locator('#pl-list li:nth-child(2)').locator('input[data-replace]').setInputFiles({ name: 'new.jpg', mimeType: 'image/jpeg', buffer: await makeJpeg(page, { w: 450, h: 450, color: '#3a3' }) });   // change a photo
+  await page.getByRole('button', { name: 'Move person 11 earlier' }).click();                             // Sr. Mary before Fr. John
+  assert.equal(await nameOf(10).inputValue(), 'Sr. Mary Fernando');
+  await page.locator('#pl-list li:nth-child(3)').getByRole('button', { name: 'Delete this person' }).click();
+  await page.getByText('Delete this person?').waitFor(); await page.getByRole('button', { name: 'No, keep it' }).click(); assert.equal(await page.locator('#pl-list li').count(), 11);
+  await page.locator('#pl-list li:nth-child(3)').getByRole('button', { name: 'Delete this person' }).click(); await page.getByRole('button', { name: 'Yes, delete it' }).click();
+  assert.equal(await page.locator('#pl-list li').count(), 10);
+  assert.equal((await publicContent()).faces.length, 9, 'nothing changes on the website until Save');
+  await page.getByRole('button', { name: 'Save', exact: true }).click(); await page.getByRole('heading', { name: 'Saved. Your changes are live.' }).waitFor();
+  const f = (await publicContent()).faces;
+  assert.equal(f.length, 10); assert.equal(f[0].name, 'Fr. Anthony Silva');
+  assert.deepEqual(f.slice(8).map((x) => [x.name, x.role]), [['Sr. Mary Fernando', 'Religious sister'], ['Fr. John Perera', 'Parish priest, Mannar']]);
+  assert.match(f[1].src, /^[0-9a-f-]{36}\/[0-9a-f-]{36}\.jpg$/, 'the changed photo was uploaded'); assert.match(f[8].src, /\//);
+
+  const visitor = await newPage({ width: 1280, height: 800 }); await visitor.goto(`${BASE}/#about`); await visitor.getByText('Faces behind it').first().waitFor();
+  const faces = faceImgs(visitor); assert.equal(await faces.count(), 10);
+  const mary = aboutRoot(visitor).locator('img[alt="Sr. Mary Fernando, Religious sister"]'); await mary.waitFor();
+  assert.match(await mary.getAttribute('src'), /\/storage\/v1\/object\/public\/media\//);
+  await mary.hover(); await visitor.waitForTimeout(450); assert.match(await mary.evaluate((i) => i.parentElement.innerText), /Sr\. Mary Fernando · Religious sister/);
+  assert.deepEqual(visitor.errors, []);
+
+  // two editors at once: the second is asked to reload instead of overwriting
+  const a = await newPage(); await signIn(a); const b = await newPage(); await signIn(b, OTHER);
+  for (const q of [a, b]) { await q.goto(`${BASE}/admin/#/faces`); await q.getByRole('heading', { name: 'Priests and sisters' }).waitFor(); await q.locator('#pl-list li').first().waitFor(); }
+  await a.locator('#pl-list li:nth-child(1) [data-f="name"]').fill('A was here'); await a.getByRole('button', { name: 'Save', exact: true }).click(); await a.getByRole('heading', { name: 'Saved. Your changes are live.' }).waitFor();
+  await b.locator('#pl-list li:nth-child(1) [data-f="name"]').fill('B was here'); await b.getByRole('button', { name: 'Save', exact: true }).click();
+  await b.getByText('Someone else changed this after you opened it.').waitFor(); assert.equal((await publicContent()).faces[0].name, 'A was here');
+});
+
+test('editors can add, edit, move and delete the About page photo strip (the school and parish photos)', async () => {
+  const page = await newPage(); await signIn(page); await page.getByRole('link', { name: 'Edit the About page photo strip' }).click();
+  await page.getByRole('heading', { name: 'About page photo strip' }).waitFor();
+  assert.equal(await page.locator('#pl-list li').count(), 8);
+  assert.equal(await page.getByLabel(/^Caption for photo 1/).inputValue(), 'The parish team, together');
+  await page.locator('#photo-input').setInputFiles([{ name: 's1.jpg', mimeType: 'image/jpeg', buffer: await makeJpeg(page, { w: 500, h: 300, color: '#c60' }) }, { name: 's2.jpg', mimeType: 'image/jpeg', buffer: await makeJpeg(page, { w: 520, h: 300, color: '#06c' }) }]);
+  await page.getByText(/Added 2 photos/).waitFor(); assert.equal(await page.locator('#pl-list li').count(), 10);
+  const cap = (n) => page.locator(`#pl-list li:nth-child(${n}) [data-f="caption"]`);
+  await cap(9).fill('Handing out school bags'); await cap(10).fill('');                                    // the second one gets no caption
+  await cap(1).fill('The parish team, together (2026)');                                                   // edit an existing caption
+  await page.getByRole('button', { name: 'Move photo 9 earlier' }).click(); await page.getByRole('button', { name: 'Move photo 8 earlier' }).click();   // new photo to position 7
+  await page.locator('#pl-list li:nth-child(9)').getByRole('button', { name: 'Delete this photo' }).click(); await page.getByRole('button', { name: 'Yes, delete it' }).click();   // drop one old photo
+  assert.equal(await page.locator('#pl-list li').count(), 9);
+  await page.getByRole('button', { name: 'Save', exact: true }).click(); await page.getByRole('heading', { name: 'Saved. Your changes are live.' }).waitFor();
+  const st = (await publicContent()).strip; assert.equal(st.length, 9); assert.equal(st[0].caption, 'The parish team, together (2026)');
+  assert.ok(st.some((x) => x.caption === 'Handing out school bags' && /\//.test(x.src)));
+  const visitor = await newPage({ width: 1280, height: 800 }); await visitor.goto(`${BASE}/#about`); await visitor.getByText('scroll →').first().waitFor();
+  const caps = await aboutRoot(visitor).locator('figcaption').allTextContents();
+  assert.equal(caps.length, 9); assert.equal(caps[0], '01 — The parish team, together (2026)'); assert.ok(caps.includes('07 — Handing out school bags') || caps.some((c) => /Handing out school bags/.test(c)));
+  assert.ok(caps.some((c) => /^\d\d$/.test(c.trim())), 'a photo with no caption shows only its number');
+});
+
+test('About page headings can be edited; with no groups, photos or people the lower part of the page disappears', async () => {
+  const page = await newPage(); await signIn(page); await page.goto(`${BASE}/admin/#/about`); await page.getByRole('heading', { name: 'About page', level: 1 }).waitFor();
+  assert.equal(await page.getByLabel('Small heading above the groups').inputValue(), 'Who carries it out');
+  await page.getByLabel('Small heading above the groups').fill('Our partners'); await page.getByLabel('Heading above the photo strip', { exact: true }).fill('Faces');
+  await page.getByLabel(/^Heading above the photo strip — last words/).fill('of the work.'); await page.getByLabel('Small heading beside the priests and sisters').fill('Who they are');
+  await page.getByRole('button', { name: 'Save', exact: true }).click(); await page.getByRole('heading', { name: 'Saved. Your changes are live.' }).waitFor();
+  const visitor = await newPage({ width: 1280, height: 800 }); await visitor.goto(`${BASE}/#about`); await visitor.getByText('of the work.').first().waitFor();
+  const text = await aboutRoot(visitor).textContent(); for (const t of ['Our partners', 'Faces', 'of the work.', 'Who they are']) assert.ok(text.includes(t), t);
+  assert.ok(!text.includes('Who carries it out'));
+  // back to the original wording
+  await page.goto(`${BASE}/admin/#/`); await page.goto(`${BASE}/admin/#/about`); await page.getByLabel('Small heading above the groups').waitFor();
+  await page.getByLabel('Small heading above the groups').fill('Who carries it out'); await page.getByLabel('Heading above the photo strip', { exact: true }).fill('The people');
+  await page.getByLabel(/^Heading above the photo strip — last words/).fill('on the ground.'); await page.getByLabel('Small heading beside the priests and sisters').fill('Faces behind it');
+  await page.getByRole('button', { name: 'Save', exact: true }).click(); await page.getByRole('heading', { name: 'Saved. Your changes are live.' }).waitFor();
+  // delete the whole strip and every person: the dark band disappears, the rest of the page stays
+  for (const [hash, heading] of [['/strip', 'About page photo strip'], ['/faces', 'Priests and sisters']]) {
+    await page.goto(`${BASE}/admin/#/`); await page.goto(`${BASE}/admin/#${hash}`); await page.getByRole('heading', { name: heading }).waitFor(); await page.locator('#pl-list li').first().waitFor();
+    const n = await page.locator('#pl-list li').count();
+    for (let i = 0; i < n; i++) { await page.locator('#pl-list li').first().getByRole('button', { name: /^Delete this/ }).click(); await page.getByRole('button', { name: 'Yes, delete it' }).click(); }
+    await page.getByText(/There are no (photos|people) here yet/).waitFor();
+    await page.getByRole('button', { name: 'Save', exact: true }).click(); await page.getByRole('heading', { name: 'Saved. Your changes are live.' }).waitFor();
+  }
+  assert.deepEqual([(await publicContent()).strip, (await publicContent()).faces], [[], []]);
+  await visitor.reload(); await visitor.getByText('Who carries it out').first().waitFor(); await visitor.waitForTimeout(300);
+  const t2 = await aboutRoot(visitor).textContent(); assert.ok(!t2.includes('on the ground.') && !t2.includes('Faces behind it') && !t2.includes('scroll →'));
+  assert.ok(t2.includes('VAROD, Vavuniya'), 'the groups are still there');
 });
 
 test('a programme can have videos: choose several, see a picture for each, save, and visitors can watch (nothing autoplays)', async () => {

@@ -541,3 +541,87 @@ test('gallery photos can have captions: add, edit, clear; too-long ones are refu
   v = await galleryVersion(); await save([], v);                                                                // deleting everything is allowed
   assert.deepEqual((await publicContent()).gallery, []);
 });
+
+// ───────────── About page: scrolling photo strip, priests & sisters, section headings ─────────────
+const metaVersion = async (k) => (await asEditor('editor_content'))[k + '_version'];
+const saveStrip = (items, v) => asEditor('editor_save_strip', { p_expected_version: v, p_items: items });
+const saveFaces = (items, v) => asEditor('editor_save_faces', { p_expected_version: v, p_items: items });
+
+test('the About page starts with the photos and people it already showed', async () => {
+  const c = await publicContent();
+  assert.equal(c.strip.length, 8);
+  assert.deepEqual(c.strip.map((s) => s.caption).slice(0, 3), ['The parish team, together', 'Priests at the school handout', 'With the elders he visits']);
+  assert.equal(c.faces.length, 9);
+  assert.deepEqual(c.faces[0], { src: 'team-01.jpg', name: 'Fr. —', role: 'Parish priest', focus: 'center 20%' });
+  assert.equal(c.faces[8].name, 'Sr. — & Fr. —');
+  assert.equal(c.strip_version, undefined);                                   // versions are for editors only
+  // re-running the seed part of the migration never adds them again
+  const { readFileSync } = await import('node:fs');
+  const sql = readFileSync(new URL('../supabase/migrations/0010_about_people.sql', import.meta.url), 'utf8');
+  await db.exec(sql.slice(sql.indexOf('do $seed$'), sql.indexOf('-- Public content now carries both lists.')));
+  assert.equal((await publicContent()).strip.length, 8);
+});
+
+test('the photo strip: add with captions, reorder, delete; failures change nothing; conflicts are refused', async () => {
+  const a = await putPhoto(); let v = await metaVersion('strip');
+  const before = (await publicContent()).strip;
+  await saveStrip([...before, { src: a, caption: '  A new moment  ' }], v);
+  let s = (await publicContent()).strip; assert.equal(s.length, 9); assert.deepEqual(s[8], { src: a, caption: 'A new moment' });
+  v = await metaVersion('strip');
+  await saveStrip([s[8], ...s.slice(0, 8)], v);                                                   // move it to the front
+  assert.equal((await publicContent()).strip[0].src, a);
+  v = await metaVersion('strip');
+  await failsWith(saveStrip([{ src: a, caption: 'x'.repeat(161) }], v), 'PT422', 'caption');
+  await failsWith(saveStrip([{ src: `${EDITOR}/${randomUUID()}.jpg`, caption: '' }], v), 'PT422', 'photos');          // never uploaded
+  await failsWith(saveStrip(Array.from({ length: 41 }, () => ({ src: 'act-team-wall.jpg', caption: '' })), v), 'PT422', 'photos');
+  assert.equal((await publicContent()).strip.length, 9);
+  await failsWith(saveStrip([], v - 1), 'PT409');                                                 // stale
+  const keep = (await publicContent()).strip; assert.ok((await saveStrip(keep, v)).version);                           // the current version works
+  v = await metaVersion('strip'); await saveStrip([], v);                                         // everything deleted is allowed
+  assert.deepEqual((await publicContent()).strip, []);
+  v = await metaVersion('strip'); await saveStrip(before, v);                                     // put the original eight back for later tests
+  assert.equal((await publicContent()).strip.length, 8);
+});
+
+test('priests and sisters: a name is required; role and order are kept; each list has its own version', async () => {
+  const a = await putPhoto(); const fv = await metaVersion('faces'); const sv0 = await metaVersion('strip');
+  const before = (await publicContent()).faces;
+  await failsWith(saveFaces([...before, { src: a, name: '   ', role: 'Parish priest' }], fv), 'PT422', 'name');
+  await assert.rejects(saveFaces([...before, { src: a, name: '', role: '' }], fv), /Name of person 10/);
+  await failsWith(saveFaces([{ src: a, name: 'x'.repeat(81), role: '' }], fv), 'PT422', 'name');
+  await failsWith(saveFaces([{ src: a, name: 'Fr. John', role: 'x'.repeat(61) }], fv), 'PT422', 'role');
+  await failsWith(saveFaces(Array.from({ length: 31 }, () => ({ src: 'team-01.jpg', name: 'N', role: '' })), fv), 'PT422', 'photos');
+  assert.equal((await publicContent()).faces.length, 9);                                          // failures changed nothing
+  await saveFaces([{ src: a, name: ' Fr. John Perera ', role: 'Parish priest, Mannar', focus: 'top' }, ...before.slice(0, 2)], fv);
+  let f = (await publicContent()).faces;
+  assert.deepEqual(f[0], { src: a, name: 'Fr. John Perera', role: 'Parish priest, Mannar', focus: 'top' });
+  assert.deepEqual(f.slice(1).map((x) => x.src), ['team-01.jpg', 'people-sister.jpg']);
+  assert.equal(f[1].focus, 'center 20%', 'the framing of existing photos is kept');
+  await saveFaces([{ src: 'team-01.jpg', name: 'Fr. Ann', role: '', focus: '<script>' }], await metaVersion('faces'));
+  assert.equal((await publicContent()).faces[0].focus, 'center 20%', 'a bad framing value falls back to the default');
+  assert.equal(await metaVersion('strip'), sv0, 'saving people does not touch the photo strip version');
+  await failsWith(saveFaces([], fv), 'PT409');
+  await saveFaces([], await metaVersion('faces')); assert.deepEqual((await publicContent()).faces, []);
+  await saveFaces(before, await metaVersion('faces')); assert.equal((await publicContent()).faces.length, 9);
+});
+
+test('only editors can change the photo strip or the people; nobody can write those tables directly', async () => {
+  for (const [fn, args] of [['editor_save_strip', { p_expected_version: 1, p_items: [] }], ['editor_save_faces', { p_expected_version: 1, p_items: [] }]]) {
+    await denied(anon(fn, args)); await denied(rpc('authenticated', STRANGER, fn, args));
+  }
+  for (const who of [['anon', null], ['authenticated', EDITOR]]) {
+    await denied(asRole(db, who[0], who[1], (tx) => tx.query(`insert into public.about_strip (position, src) values (99, 'x.jpg')`)));
+    await denied(asRole(db, who[0], who[1], (tx) => tx.query(`insert into public.about_faces (position, src, name) values (99, 'x.jpg', 'N')`)));
+    await denied(asRole(db, who[0], who[1], (tx) => tx.query(`update public.about_lists_meta set version = 99`)));
+  }
+});
+
+test('About page section headings can be edited by editors', async () => {
+  const v = await siteVersion();
+  await saveSite({ groups_label: 'Our partners', strip_heading: 'Faces', strip_heading_italic: 'of the work.', faces_label: 'Who they are' }, v);
+  const s = (await publicContent()).site;
+  assert.deepEqual([s.groups_label, s.strip_heading, s.strip_heading_italic, s.faces_label], ['Our partners', 'Faces', 'of the work.', 'Who they are']);
+  assert.ok(s.partners.length >= 1, 'the groups were not touched');
+  await failsWith(saveSite({ strip_heading: 'x'.repeat(81) }, await siteVersion()), 'PT422', 'strip_heading');
+  await saveSite({ groups_label: '', strip_heading: '', strip_heading_italic: '', faces_label: '' }, await siteVersion());      // back to the defaults (the site falls back to its own wording)
+});

@@ -29,6 +29,8 @@ The big green button, **Add an update**, is for the most common job. Under it ar
 - **Edit or add a programme**
 - **Edit or add to the photo gallery**
 - **Edit the About page**
+- **Edit priests and sisters**
+- **Edit the About page photo strip**
 - **Edit bank details** *(only if you are the owner)*
 - **Edit contact details**
 
@@ -80,13 +82,32 @@ On the website's Gallery page these photos appear first, under **More photos**, 
 
 1. Tap **Edit the About page** and change the words you want.
 2. **Who carries the work out** shows a card for each group. For each group you can add a **photo** (optional), change its **name** and **what they do**. Tap **Remove this group**, then **Yes, remove it**, to take one away. **＋ Add a group** adds a new one. Groups appear on the page in this order.
-3. Tap **Save**.
+3. **Section headings:** the small headings on the About page (above the groups, above the photo strip, beside the faces) can be changed here too.
+4. Tap **Save**.
 
-## 9. Contact details
+## 9. Priests and sisters (the faces on the About page)
+
+Tap **Edit priests and sisters**. Each person has a round photo, a **Name** and a **Role**. Visitors point at (or tap) a face to see the name and role.
+- **To add someone:** tap the big **Add priests or sisters** button and pick one or more photos. Type each person's **Name** (required) and **Role** (optional, for example "Parish priest"), then tap **Save**.
+- **To change someone:** edit their name or role, or tap **Change photo**.
+- **To reorder:** use **←** and **→**.
+- **To remove someone:** tap **Delete this person**, then **Yes, delete it**.
+- Nothing changes on the website until you tap **Save**.
+
+## 10. The About page photo strip (school and parish photos)
+
+Tap **Edit the About page photo strip**. These photos scroll sideways in the green "The people on the ground" band.
+- **To add photos:** tap the big **Add photos** button and pick several at once. Add a caption to each if you like. Tap **Save**.
+- **To change one:** edit its caption, or tap **Change photo**.
+- **To reorder:** use **←** and **→**.
+- **To remove one:** tap **Delete this photo**, then **Yes, delete it**.
+- Nothing changes on the website until you tap **Save**.
+
+## 11. Contact details
 
 Tap **Edit contact details**. An email, phone number or address only appears on the website if you type something in it — leave a box empty to keep it off the website. Tap **Save**.
 
-## 10. Bank details (only for the owner)
+## 12. Bank details (only for the owner)
 
 If you are the owner you will see **Edit bank details**. Fill in **Name on the account**, **Bank**, **Branch** and **Account number** (and a **SWIFT code** for gifts from abroad, and a **Note for donors** if you want one). **Check the account number twice** — everyone sees it on the Give page and donors copy it exactly. Tap **Save**.
 
