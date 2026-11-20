@@ -3,3 +3,6 @@ dev/.storage/
 .env
 *.log
 dist/
+
+# build artifacts for manual deploys
+sbc-site-for-netlify.zip

@@ -1,0 +1,35 @@
+SBC Global Foundation — put the new website and editor live on Netlify (drag and drop)
+======================================================================================
+
+Before you start (only once)
+----------------------------
+1. In the SBC Supabase project, open "SQL Editor" and run these files in order if they have not been run yet:
+   0005_groups_and_videos.sql, 0006_video_storage.sql, 0007_owner_and_bank.sql, 0008_design_features.sql
+   (they are in the project under supabase/migrations/). Do this BEFORE using the new editor.
+2. In Supabase: Project Settings -> API. Copy the "Project URL" and the "anon / public" key.
+   NEVER use the "service_role" or "secret" key.
+
+Step 1 - Fill in config.js
+--------------------------
+1. Unzip sbc-site-for-netlify.zip into a folder (right-click -> Extract All, or double-click on a Mac).
+2. Open the file "config.js" in Notepad / TextEdit (plain text). It looks like:
+      window.SBC_CONFIG = { supabaseUrl: '', anonKey: '' };
+3. Put your two values between the quotes, for example:
+      window.SBC_CONFIG = { supabaseUrl: 'https://abcdxyz.supabase.co', anonKey: 'eyJ...your public key...' };
+4. Save the file.
+
+Step 2 - Drag it onto Netlify
+-----------------------------
+1. Sign in to Netlify with the client's account. Open the site (sbcfoundation-site) -> "Deploys".
+2. Drag the WHOLE unzipped folder onto the box that says "Drag and drop your site output folder here".
+   (Drag the folder, not the zip, because you edited config.js.)
+3. Wait for "Published". 
+
+Step 3 - Check it
+-----------------
+- Website:  https://sbcfoundation-site.netlify.app/        (the Programmes, Gallery, About and Give pages)
+- Editor:   https://sbcfoundation-site.netlify.app/admin/   (should show the new Sign in screen with a round seal)
+- If the editor says "Not set up yet": config.js is empty or has a typo. Fix it and drag the folder again.
+- If an old design still shows: close the browser tab and open the link again (it is a cached copy).
+
+Later, once GitHub is connected, Netlify can update itself and you will not need to drag folders any more.
