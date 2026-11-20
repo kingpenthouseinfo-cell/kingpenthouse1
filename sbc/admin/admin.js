@@ -742,21 +742,100 @@ async function viewContactForm() {
   followKeyboard();
 }
 
-async function viewGalleryForm() {
+// The photo gallery has two screens: one to ADD photos (with optional captions), one to EDIT or DELETE the photos already there.
+const galleryItems = () => (content.gallery || []).map((g) => (typeof g === 'string' ? { src: g, caption: '' } : { src: g.src, caption: g.caption || '' }));
+const GALLERY_MAX = 200;
+
+async function viewGalleryMenu() {
   viewLoading();
-  try { await loadContent(); } catch (e) { return viewError(e, viewGalleryForm); }
-  const photos = (content.gallery || []).map((src) => ({ id: uuid(), src })); let version = content.gallery_version;
-  setView(`${back('#/')}<h1>Photo gallery</h1><div id="note"></div><form id="form" novalidate>
-    <div id="photos-block" class="field"><span class="sr-only" id="photos-label">Gallery photos</span>
-    <label class="btn quiet filebtn"><span>＋ Add photos</span><input id="photo-input" type="file" accept="image/*" multiple aria-label="Add photos from your phone"></label>
-    <p class="hint">You can pick several photos at once.</p><p class="hint" id="photo-count"></p><p class="hint" id="photo-busy" aria-live="polite"></p>
-    <ul class="photos" id="photo-list"></ul></div></form>${bar('Save')}`, { bar: true, title: 'Photo gallery' });
-  photoPicker(photos, { max: 100, mainWord: 'Shown first', arrows: ['←', '→'], countText: (n) => (n ? `${n} photo${n === 1 ? '' : 's'}. Use the arrows to change the order.` : 'No photos yet.') });
+  try { await loadContent(); } catch (e) { return viewError(e, viewGalleryMenu); }
+  const existing = galleryItems(); let version = content.gallery_version; const fresh = [];
+  setView(`${back('#/')}<h1>Photo gallery</h1><div id="note"></div>
+    <form id="form" novalidate>
+      <label class="big primary pick"><span class="ico" aria-hidden="true">＋</span><span><b>Add photos</b><small>Pick several at once from your phone.</small></span><input id="photo-input" type="file" accept="image/*" multiple aria-label="Add photos from your phone"></label>
+      <p class="hint" id="photo-busy" aria-live="polite"></p>
+      <div id="fresh" hidden><h2>New photos</h2><p class="hint">Add a caption to each if you like, then tap Save.</p><ul class="videos" id="fresh-list"></ul></div>
+    </form>
+    <nav class="choices" aria-label="Photos already in the gallery"><a class="choice" href="#/gallery/photos"><span class="cico" aria-hidden="true" style="background:oklch(93% .04 150);color:oklch(42% .09 150)">✎</span>Edit or delete current photos<span class="count">${existing.length}</span></a></nav>
+    <div class="bar" id="savebar" hidden><div class="inner"><button class="btn primary" id="save" type="submit" form="form">Save</button></div></div>`, { title: 'Photo gallery' });
+
+  const list = $('#fresh-list');
+  const draw = () => {
+    list.innerHTML = fresh.map((f, i) => `<li data-id="${esc(f.id)}"><div class="vthumb" style="background-image:url('${esc(f.preview)}')"></div>
+      <div class="vmeta"><label class="sr-only" for="c-${esc(f.id)}">Caption for new photo ${i + 1}</label><input id="c-${esc(f.id)}" data-cap type="text" maxlength="160" placeholder="Caption (optional)" value="${esc(f.caption)}"></div>
+      <button type="button" class="rm" data-act="rm" aria-label="Remove new photo ${i + 1}">✕</button></li>`).join('');
+    $('#fresh').hidden = !fresh.length; $('#savebar').hidden = !fresh.length; app.classList.toggle('has-bar', !!fresh.length);
+  };
+  list.addEventListener('input', (ev) => { const f = fresh.find((x) => x.id === ev.target.closest('li')?.dataset.id); if (f && ev.target.matches('[data-cap]')) f.caption = ev.target.value; });
+  list.addEventListener('click', (ev) => {
+    const b = ev.target.closest('button[data-act="rm"]'); if (!b) return;
+    const i = fresh.findIndex((x) => x.id === b.closest('li').dataset.id); if (i < 0) return;
+    const [x] = fresh.splice(i, 1); if (x.preview) URL.revokeObjectURL(x.preview); draw();
+  });
+  $('#photo-input').addEventListener('change', async (ev) => {
+    const files = [...ev.target.files]; ev.target.value = ''; if (!files.length) return;
+    clearErrors(); showNote('', '');
+    const take = files.slice(0, Math.max(0, GALLERY_MAX - existing.length - fresh.length)); const left = files.length - take.length;
+    const busy = $('#photo-busy'); const problems = []; let done = 0;
+    if (left > 0) problems.push(`The gallery can hold up to ${GALLERY_MAX} photos, so ${left} ${left === 1 ? 'photo was' : 'photos were'} left out.`);
+    busy.textContent = `Preparing ${take.length} photo${take.length === 1 ? '' : 's'}…`;
+    const results = await pool(take, 3, async (f) => {
+      try { const blob = await processPhoto(f); return { id: uuid(), blob, preview: URL.createObjectURL(blob), caption: '', path: null }; }
+      catch (e) { problems.push(e instanceof PhotoError ? e.message : 'A photo could not be added.'); return null; }
+      finally { done++; busy.textContent = `Preparing photos… ${done} of ${take.length}`; }
+    });
+    const added = results.filter(Boolean); added.forEach((r) => fresh.push(r));
+    busy.textContent = added.length ? `Added ${added.length} photo${added.length === 1 ? '' : 's'}. Tap Save when you are ready.` : '';
+    draw(); if (problems.length) showNote('bad', [...new Set(problems)].map(esc).join('<br>'));
+  });
+  wireSave({
+    validate: () => fresh.length > 0,
+    work: async () => {
+      const uid = current()?.user?.id; const todo = fresh.filter((f) => !f.path); let n = 0;
+      await pool(todo, 3, async (f) => { const path = `${uid}/${uuid()}.jpg`; await uploadFile('media', path, f.blob, 'image/jpeg'); f.path = path; n++; progress(`Uploading photos… ${n} of ${todo.length}`); });
+      progress('Saving…');
+      const items = [...existing, ...fresh.map((f) => ({ src: f.path, caption: f.caption.trim() }))];
+      const out = await rpc('editor_save_gallery', { p_expected_version: version, p_images: items }); version = out.version; return out;
+    },
+    done: () => viewDone({ text: `${fresh.length === 1 ? 'Your photo is' : 'Your photos are'} now in the gallery.`, viewHref: '../#gallery', viewLabel: 'See the gallery', another: { href: '#/gallery/photos', label: 'Edit or delete current photos' } }),
+    onReload: viewGalleryMenu,
+  });
+  followKeyboard();
+}
+
+async function viewGalleryEdit() {
+  viewLoading();
+  try { await loadContent(); } catch (e) { return viewError(e, viewGalleryEdit); }
+  const items = galleryItems().map((g) => ({ id: uuid(), ...g })); let version = content.gallery_version;
+  if (!items.length) { setView(`${back('#/gallery')}<h1>Edit or delete photos</h1><div class="note info">There are no photos in the gallery yet.</div><a class="btn primary" href="#/gallery">＋ Add photos</a>`, { title: 'Edit or delete photos' }); return; }
+  setView(`${back('#/gallery')}<h1>Edit or delete photos</h1><div id="note"></div>
+    <form id="form" novalidate><p class="hint" id="photo-count"></p><ul class="galedit" id="gal-list"></ul></form>${bar('Save')}`, { bar: true, title: 'Edit or delete photos' });
+  const list = $('#gal-list');
+  const draw = () => {
+    list.innerHTML = items.map((g, i) => `<li data-id="${esc(g.id)}"><img src="${esc(imgUrl(g.src))}" alt="${esc(g.caption || 'Gallery photo ' + (i + 1))}" loading="lazy">
+      <span class="tag">${i === 0 ? 'Shown first' : ''}</span>
+      ${fld('c-' + g.id, `Caption for photo ${i + 1}`, `<input id="c-${esc(g.id)}" data-cap type="text" maxlength="160" value="${esc(g.caption)}" placeholder="Add a caption">`, { opt: true })}
+      <div class="tools"><button type="button" data-act="left" aria-label="Move photo ${i + 1} earlier" ${i === 0 ? 'disabled' : ''}>←</button><button type="button" data-act="right" aria-label="Move photo ${i + 1} later" ${i === items.length - 1 ? 'disabled' : ''}>→</button></div>
+      <div data-delbox><button type="button" class="btn danger" data-act="del">Delete this photo</button></div></li>`).join('') || '<li class="hint">All photos will be removed from the gallery when you tap Save.</li>';
+    $('#photo-count').textContent = items.length ? `${items.length} photo${items.length === 1 ? '' : 's'}. Use the arrows to change the order.` : 'No photos left.';
+  };
+  draw();
+  const find = (el) => items.find((g) => g.id === el.closest('li')?.dataset.id);
+  list.addEventListener('input', (ev) => { const g = find(ev.target); if (g && ev.target.matches('[data-cap]')) g.caption = ev.target.value; });
+  list.addEventListener('click', (ev) => {
+    const b = ev.target.closest('button'); if (!b) return; const g = find(b); if (!g) return; const i = items.indexOf(g);
+    const box = b.closest('li').querySelector('[data-delbox]');
+    if (b.dataset.act === 'left' && i > 0) { [items[i - 1], items[i]] = [items[i], items[i - 1]]; draw(); }
+    else if (b.dataset.act === 'right' && i < items.length - 1) { [items[i + 1], items[i]] = [items[i], items[i + 1]]; draw(); }
+    else if (b.dataset.act === 'del') { box.innerHTML = `<div class="confirm" role="alertdialog"><p><b>Delete this photo?</b><br>It and its caption disappear from the gallery when you tap Save.</p><button type="button" class="btn danger solid" data-act="yes">Yes, delete it</button><button type="button" class="btn quiet" data-act="no">No, keep it</button></div>`; box.querySelector('[data-act="no"]').focus(); }
+    else if (b.dataset.act === 'no') box.innerHTML = '<button type="button" class="btn danger" data-act="del">Delete this photo</button>';
+    else if (b.dataset.act === 'yes') { items.splice(i, 1); draw(); }
+  });
   wireSave({
     validate: () => true,
-    work: async () => { const images = await uploadPending(photos); progress('Saving…'); const out = await rpc('editor_save_gallery', { p_expected_version: version, p_images: images }); version = out.version; return out; },
-    done: () => viewDone({ text: 'The photo gallery is updated.', viewHref: '../#gallery', viewLabel: 'See the gallery' }),
-    onReload: viewGalleryForm,
+    work: async () => { const out = await rpc('editor_save_gallery', { p_expected_version: version, p_images: items.map((g) => ({ src: g.src, caption: g.caption.trim() })) }); version = out.version; return out; },
+    done: () => viewDone({ text: 'The photo gallery is updated.', viewHref: '../#gallery', viewLabel: 'See the gallery', another: { href: '#/gallery', label: 'Back to the gallery screen' } }),
+    onReload: viewGalleryEdit,
   });
   followKeyboard();
 }
@@ -874,7 +953,8 @@ async function route() {
   if ((m = h.match(/^\/programme\/([0-9a-f-]{36})$/))) return viewProgrammeForm(m[1]);
   if (h === '/about') return viewAboutForm();
   if (h === '/contact') return viewContactForm();
-  if (h === '/gallery') return viewGalleryForm();
+  if (h === '/gallery') return viewGalleryMenu();
+  if (h === '/gallery/photos') return viewGalleryEdit();
   if (h === '/forgot') return viewForgot();
   if (h === '/password') return viewPasswordForm();
   if (h === '/bank') return viewBankForm();

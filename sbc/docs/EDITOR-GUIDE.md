@@ -66,9 +66,15 @@ Saving *is* publishing. There is no extra step.
 
 Tap **Edit or add to the photo gallery**. These are photos that belong to no particular programme.
 
-1. Tap **＋ Add photos** and pick several at once.
-2. Use **←** and **→** to put them in order. The first is **Shown first**. Tap **✕** to take one out.
-3. Tap **Save**. On the website's Gallery page these appear first, under **More photos**.
+**To add photos:** tap the big **Add photos** button and pick several at once. Each new photo appears in a list where you can type an optional **caption**. Tap **✕** to take one out before saving. Tap **Save**. New photos go to the end of the gallery.
+
+**To change or delete photos already there:** tap **Edit or delete current photos**. Every photo in the gallery is listed with its caption.
+- Change a caption by typing in its box.
+- Use **←** and **→** to move a photo. The first photo is **Shown first**.
+- Tap **Delete this photo**, then **Yes, delete it**, to remove the photo and its caption. (**No, keep it** cancels.)
+- Nothing changes on the website until you tap **Save**.
+
+On the website's Gallery page these photos appear first, under **More photos**, with their captions.
 
 ## 8. The About page
 

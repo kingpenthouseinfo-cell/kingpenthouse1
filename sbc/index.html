@@ -423,7 +423,7 @@ class Component extends DCLogic {
   constructor(p){super(p);this.rebuild();}
   // Gallery = every programme photo once (first programme wins), tagged with its programme.
   rebuild(){this.all=[];this.caps={};this.tag={};
-    GALLERY.forEach(f=>{if(!(f in this.caps)){this.all.push(f);this.caps[f]='';this.tag[f]=PROGS.length;}});
+    GALLERY.forEach(g=>{const f=g.src;if(f&&!(f in this.caps)){this.all.push(f);this.caps[f]=g.caption||'';this.tag[f]=PROGS.length;}});
     PROGS.forEach((pr,pi)=>pr.imgs.forEach(f=>{if(!(f in this.caps)){this.all.push(f);this.caps[f]=pr.ba?(/before/.test(f)?'Before — '+pr.t:/after/.test(f)?'After — '+pr.t:'Building — '+pr.t):pr.t;this.tag[f]=pi;}}));
     PAGES.programmes.k=this.kinds()+' kinds of help';}
   kinds(){return NUMW[PROGS.length]||String(PROGS.length);}
@@ -444,7 +444,7 @@ class Component extends DCLogic {
       SITE={...SITE_DEFAULTS};
       Object.keys(c.site||{}).forEach(k=>{const v=c.site[k];if(k==='partners'){if(Array.isArray(v))SITE.partners=v;return;}if(typeof v!=='string')return;if(k.startsWith('contact_')||v.trim())SITE[k]=v;});
       UPDATES=c.updates.map(u=>({...u}));
-      GALLERY=Array.isArray(c.gallery)?c.gallery.slice():[];
+      GALLERY=Array.isArray(c.gallery)?c.gallery.map(g=>typeof g==='string'?{src:g,caption:''}:{src:g.src,caption:g.caption||''}):[];
     }
     document.documentElement.setAttribute('data-sbc-source',r?r.source:'bundled');
     this.rebuild();

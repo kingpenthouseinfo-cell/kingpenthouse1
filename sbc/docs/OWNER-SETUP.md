@@ -35,7 +35,7 @@ Needs Node.js 20 or newer.
 cd sbc
 npm install
 npm run dev          # site: http://localhost:8787/   editor: http://localhost:8787/admin/
-npm test             # 36 database/permission tests + 37 browser tests
+npm test             # 37 database/permission tests + 38 browser tests
 ```
 
 `npm run dev` starts a **local stand-in** for Supabase (a real Postgres running the real migrations, with fake sign-in emails).
@@ -46,7 +46,7 @@ resets each time you restart it. Browser tests need Playwright (`npm i -D playwr
 
 1. **Create a project** at supabase.com. Choose a region near Sri Lanka/your users (e.g. Singapore). Save the database password in the foundation's password manager.
 2. **Create the tables and rules.** Dashboard → **SQL Editor** → run each file from `sbc/supabase/migrations/` **in order**, pasting the whole file each time:
-   `0001_schema.sql`, `0002_seed_content.sql`, `0003_storage.sql`, `0004_owner_tools.sql`, `0005_groups_and_videos.sql`, `0006_video_storage.sql`, `0007_owner_and_bank.sql`, `0008_design_features.sql`.
+   `0001_schema.sql`, `0002_seed_content.sql`, `0003_storage.sql`, `0004_owner_tools.sql`, `0005_groups_and_videos.sql`, `0006_video_storage.sql`, `0007_owner_and_bank.sql`, `0008_design_features.sql`, `0009_gallery_captions.sql`.
    (Already ran some earlier? Just run the new ones, in order.)
    (With the Supabase CLI instead: `supabase link --project-ref <ref>` then `supabase db push`.)
    `0002` loads the eight original programmes and the About wording. It is **safe to run again**: it never duplicates a programme or undoes an edit.
@@ -101,7 +101,7 @@ Editors cannot add, remove or change other editors, or change sign-in settings. 
 - **Photos:** Supabase → Storage → `media`. They are only ever added, never deleted by the editor. Download the bucket occasionally.
 - **Website files:** safe in GitHub.
 - **A change was wrong:** an *update* can be removed or corrected from the editor. Anything else can be corrected by editing again. To undo a removed update: `update public.updates set removed_at = null where id = '…';`
-- **Total loss of the Supabase project:** create a new project, run the eight migration files, restore the exported data, re-add editors, and update the two environment variables on the host. The site shows its built-in content meanwhile.
+- **Total loss of the Supabase project:** create a new project, run the nine migration files, restore the exported data, re-add editors, and update the two environment variables on the host. The site shows its built-in content meanwhile.
 - **Unused photos** (uploaded but later removed from every update/programme) stay in storage. They are harmless; clear them by hand only if space becomes a problem.
 
 ## 8. Test on real phones before trusting it
@@ -129,7 +129,7 @@ iPhone or Android phone. Before handing over, on the preview address, on both an
 
 - Programme order, programme deletion and update deletion (beyond *Remove from website*) are not in the editor. **Forgot your password** relies on Supabase's recovery email: add your editor address `https://YOUR-DOMAIN/admin/` to Authentication → URL Configuration → Redirect URLs (the same one used for sign-in links) and, if you like, customise the *Reset Password* email template.
 - The page's built-in videos, sanitation before/after comparisons and branding are not editable by editors.
-- **Gallery page:** it shows each programme's photos under that programme's filter, plus any photos the editors add with *Edit or add to the photo gallery* (shown first, under **More photos**; up to 100 per save).
+- **Gallery page:** it shows each programme's photos under that programme's filter, plus any photos the editors add with *Edit or add to the photo gallery* (shown first, under **More photos**, with optional captions; up to 200 photos, and editors can edit captions, reorder and delete them).
 - **Videos** (programmes only): MP4, MOV or WebM, up to **50 MB** each (Supabase's free-plan limit; a paid plan can raise it in Storage settings and in `0006_video_storage.sql`), up to 8 per programme. They are stored in their own `videos` bucket, with a still picture made on the phone. YouTube links are also supported (visitors tap to play; nothing from YouTube loads until then). A video that does not play in one browser (e.g. an iPhone “High Efficiency” HEVC clip on some Android/desktop browsers) will not play for those visitors; record in “Most Compatible”. Uploads are plain (not resumable): a dropped connection restarts that video.
 - The Give page's “Copy account details” button copies only the organisation name until the owner has entered a bank and account number; after that it copies the full details.
 - Not yet checked against a real Supabase project (see the report): the migrations and rules are tested on a real Postgres engine, and the sign-in/storage calls follow Supabase's documented API, but the final end-to-end run on a live project is your first step after §4.

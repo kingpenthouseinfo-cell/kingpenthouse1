@@ -482,21 +482,22 @@ const putPhoto = async (uid = EDITOR) => { const n = `${uid}/${randomUUID()}.jpg
 
 test('the gallery: add photos in order, reorder, remove; visitors see the same order; stale saves are refused', async () => {
   assert.deepEqual((await publicContent()).gallery, []);
+  const gsrc = async () => (await publicContent()).gallery.map((g) => g.src);
   const [a, b, c] = [await putPhoto(), await putPhoto(), await putPhoto()];
   let v = await galleryVersion();
   const save = (imgs, ver) => asEditor('editor_save_gallery', { p_expected_version: ver, p_images: imgs });
   await save([a, b, c], v);
-  assert.deepEqual((await publicContent()).gallery, [a, b, c]);
+  assert.deepEqual(await gsrc(), [a, b, c]);
   v = await galleryVersion();
   await save([c, a], v);                                                   // reorder + remove b
-  assert.deepEqual((await publicContent()).gallery, [c, a]);
+  assert.deepEqual(await gsrc(), [c, a]);
   await failsWith(save([b], v), 'PT409');                                  // stale: someone else saved meanwhile
   assert.ok((await save([c, a], v)).version);                              // same save again = a retry
   // photos must exist; at most 200; a bundled name is fine
   const v2 = await galleryVersion();
   await failsWith(save([`${EDITOR}/${randomUUID()}.jpg`], v2), 'PT422', 'photos');
   await failsWith(save(Array.from({ length: 201 }, () => 'food-van.jpg'), v2), 'PT422', 'photos');
-  assert.deepEqual((await publicContent()).gallery, [c, a]);                // failures changed nothing
+  assert.deepEqual(await gsrc(), [c, a]);                                   // failures changed nothing
   // saving the gallery does not touch site information versions
   const sv = await siteVersion(); await save([a], v2); assert.equal(await siteVersion(), sv);
   assert.equal((await asEditor('editor_content')).gallery_version, v2 + 1);
@@ -517,4 +518,26 @@ test('bank note for donors: owner only, up to 300 characters', async () => {
   await saveBank(OWNER, { bank_note: 'Please write your name so we can thank you.' }, v);
   assert.equal((await publicContent()).site.bank_note, 'Please write your name so we can thank you.');
   await failsWith(saveBank(OWNER, { bank_note: 'x'.repeat(301) }, await siteVersion()), 'PT422', 'bank_note');
+});
+
+
+test('gallery photos can have captions: add, edit, clear; too-long ones are refused; strings still work', async () => {
+  const [a, b] = [await putPhoto(), await putPhoto()];
+  let v = await galleryVersion();
+  const save = (items, ver) => asEditor('editor_save_gallery', { p_expected_version: ver, p_images: items });
+  await save([{ src: a, caption: '  Packing the rice  ' }, { src: b, caption: '' }], v);
+  assert.deepEqual((await publicContent()).gallery, [{ src: a, caption: 'Packing the rice' }, { src: b, caption: '' }]);
+  v = await galleryVersion();
+  await save([{ src: b, caption: 'The van leaves' }, { src: a, caption: 'Packing the rice, take two' }], v);          // reorder + edit captions
+  assert.deepEqual((await publicContent()).gallery.map((g) => g.caption), ['The van leaves', 'Packing the rice, take two']);
+  v = await galleryVersion();
+  await failsWith(save([{ src: a, caption: 'x'.repeat(161) }], v), 'PT422', 'caption');
+  await failsWith(save([{ src: '', caption: 'no photo' }], v), 'PT422', 'photos');
+  assert.equal((await publicContent()).gallery.length, 2);                                                       // failures changed nothing
+  assert.ok((await save([{ src: b, caption: 'The van leaves' }, { src: a, caption: 'Packing the rice, take two' }], v - 0)).version);   // an identical re-save of the live state is not a conflict
+  v = await galleryVersion();
+  await save([a], v);                                                                                           // a plain string = no caption
+  assert.deepEqual((await publicContent()).gallery, [{ src: a, caption: '' }]);
+  v = await galleryVersion(); await save([], v);                                                                // deleting everything is allowed
+  assert.deepEqual((await publicContent()).gallery, []);
 });

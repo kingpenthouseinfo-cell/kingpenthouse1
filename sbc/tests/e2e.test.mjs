@@ -691,36 +691,82 @@ test('forgot your password: a reset link signs you in and asks for a new passwor
   await p3.getByRole('heading', { name: 'Check your email' }).waitFor(); assert.equal(srv.outbox.length, n);
 });
 
-test('the photo gallery screen: add several photos at once, reorder, remove, Save; visitors see them first, in that order', async () => {
+const galleryGrid = (page) => page.locator('div[style*="columns"] > div');
+const gridWidths = (grid) => grid.locator('img').evaluateAll(async (imgs) => { await Promise.all(imgs.map((i) => i.decode().catch(() => {}))); return imgs.map((i) => i.naturalWidth); });
+
+test('the photo gallery: "Add photos" is the main button; new photos get optional captions and appear on the site after Save', async () => {
   const page = await newPage(); await signIn(page); await page.getByRole('link', { name: 'Edit or add to the photo gallery' }).click();
-  await page.getByRole('heading', { name: 'Photo gallery' }).waitFor(); await page.getByText('No photos yet.').waitFor();
+  await page.getByRole('heading', { name: 'Photo gallery' }).waitFor();
+  assert.equal(await page.locator('main label.big.primary').count(), 1);                      // the big button is Add photos
+  assert.match(await page.locator('main label.big.primary').innerText(), /Add photos/);
   assert.equal(await page.locator('#photo-input').getAttribute('multiple'), '');
+  await page.getByRole('link', { name: /Edit or delete current photos/ }).waitFor();          // and a button for the photos already there
+  assert.equal(await page.locator('#savebar').isHidden(), true, 'nothing to save yet');
   const mk = async (w, c) => ({ name: `g${w}.jpg`, mimeType: 'image/jpeg', buffer: await makeJpeg(page, { w, h: 200, color: c }) });
-  await page.locator('#photo-input').setInputFiles([await mk(300, '#a33'), await mk(320, '#3a3'), await mk(340, '#33a')]);
-  await page.getByText('3 photos. Use the arrows to change the order.').waitFor();
-  assert.match(await page.locator('#photo-list li').first().innerText(), /shown first/i);
-  await page.getByRole('button', { name: 'Move photo 3 earlier' }).click(); await page.getByRole('button', { name: 'Move photo 2 earlier' }).click();    // 340, 300, 320
-  await page.getByRole('button', { name: 'Remove photo 3' }).click();                                                                                  // drop 320
-  assert.equal(await page.locator('#photo-list li').count(), 2);
+  await page.locator('#photo-input').setInputFiles([await mk(300, '#a33'), await mk(320, '#3a3'), await mk(340, '#33a')]);   // three in one go
+  await page.getByText(/Added 3 photos/).waitFor();
+  assert.equal(await page.locator('#fresh-list li').count(), 3); assert.equal(await page.locator('#savebar').isVisible(), true);
+  await page.getByLabel('Caption for new photo 1').fill('Packing the rice'); await page.getByLabel('Caption for new photo 3').fill('The van leaves');
+  await page.getByRole('button', { name: 'Remove new photo 2' }).click();                                            // changed my mind about the middle one
+  assert.equal(await page.locator('#fresh-list li').count(), 2);
   await page.getByRole('button', { name: 'Save', exact: true }).click(); await page.getByRole('heading', { name: 'Saved. Your changes are live.' }).waitFor();
-  assert.equal((await publicContent()).gallery.length, 2);
+  const g = (await publicContent()).gallery; assert.deepEqual(g.map((x) => x.caption), ['Packing the rice', 'The van leaves']);
 
   const visitor = await newPage({ width: 1280, height: 800 });
-  await visitor.goto(`${BASE}/#gallery`); await visitor.getByRole('button', { name: 'More photos', exact: true }).waitFor();
-  const grid = visitor.locator('div[style*="columns"] > div'); await visitor.waitForTimeout(400);
-  const widthsOf = () => grid.locator('img').evaluateAll(async (imgs) => { await Promise.all(imgs.map((i) => i.decode().catch(() => {}))); return imgs.map((i) => i.naturalWidth); });
-  assert.deepEqual((await widthsOf()).slice(0, 2), [340, 300], 'the gallery photos come first, in the saved order');
+  await visitor.goto(`${BASE}/#gallery`); await visitor.getByRole('button', { name: 'More photos', exact: true }).waitFor(); await visitor.waitForTimeout(400);
+  const grid = galleryGrid(visitor);
+  assert.deepEqual((await gridWidths(grid)).slice(0, 2), [300, 340], 'new photos come first, in order');
   await visitor.getByRole('button', { name: 'More photos', exact: true }).click(); await visitor.waitForTimeout(300);
-  assert.equal(await grid.count(), 2); assert.deepEqual(await widthsOf(), [340, 300]);
-  await grid.first().click(); await visitor.getByText(/^1 \/ \d+$/).waitFor(); await visitor.keyboard.press('Escape');       // the viewer steps through every photo, as before
+  assert.deepEqual((await grid.allTextContents()).map((t) => t.trim()), ['Packing the rice', 'The van leaves'], 'captions are shown under the photos');
+  await grid.first().click(); await visitor.getByText('Packing the rice').last().waitFor();                          // and in the full-screen viewer
   assert.deepEqual(visitor.errors, []);
-  // an old editor page that still holds the old list is told to reload instead of overwriting
+});
+
+test('the photo gallery: "Edit or delete current photos" lists every photo with its caption; edit a caption, reorder, or delete the whole thing', async () => {
+  const page = await newPage(); await signIn(page); await page.goto(`${BASE}/admin/#/gallery`); await page.getByRole('heading', { name: 'Photo gallery' }).waitFor();
+  assert.equal((await page.locator('.choice .count').innerText()).trim(), '2');
+  await page.getByRole('link', { name: /Edit or delete current photos/ }).click(); await page.getByRole('heading', { name: 'Edit or delete photos' }).waitFor();
+  assert.equal(await page.locator('#gal-list li').count(), 2);
+  assert.equal(await page.getByLabel('Caption for photo 1').inputValue(), 'Packing the rice');
+  assert.equal(await page.getByLabel('Caption for photo 2').inputValue(), 'The van leaves');
+  assert.match(await page.locator('#gal-list li').first().innerText(), /shown first/i);
+  assert.ok(await page.locator('#gal-list li img').first().evaluate((i) => i.complete || true));
+  await page.getByLabel('Caption for photo 1').fill('Packing the rice (corrected)');
+  await page.getByRole('button', { name: 'Move photo 2 earlier' }).click();                                           // van first now
+  assert.equal(await page.getByLabel('Caption for photo 1').inputValue(), 'The van leaves');
+  assert.equal(await page.getByLabel('Caption for photo 2').inputValue(), 'Packing the rice (corrected)', 'typed text travels with its photo');
+  await page.getByRole('button', { name: 'Save', exact: true }).click(); await page.getByRole('heading', { name: 'Saved. Your changes are live.' }).waitFor();
+  assert.deepEqual((await publicContent()).gallery.map((x) => x.caption), ['The van leaves', 'Packing the rice (corrected)']);
+
+  // delete: a plain confirmation first ("No" keeps it), then it is gone — photo and caption
+  await page.goto(`${BASE}/admin/#/gallery`); await page.getByRole('heading', { name: 'Photo gallery' }).waitFor(); await page.goto(`${BASE}/admin/#/gallery/photos`);
+  await page.getByRole('heading', { name: 'Edit or delete photos' }).waitFor(); await page.locator('#gal-list li').nth(1).waitFor();
+  await page.locator('#gal-list li').nth(1).getByRole('button', { name: 'Delete this photo' }).click();
+  await page.getByText('Delete this photo?').waitFor();
+  await page.getByRole('button', { name: 'No, keep it' }).click(); assert.equal(await page.locator('#gal-list li').count(), 2);
+  await page.locator('#gal-list li').nth(1).getByRole('button', { name: 'Delete this photo' }).click(); await page.getByRole('button', { name: 'Yes, delete it' }).click();
+  assert.equal(await page.locator('#gal-list li').count(), 1);
+  assert.equal((await publicContent()).gallery.length, 2, 'nothing changes on the website until Save');
+  await page.getByRole('button', { name: 'Save', exact: true }).click(); await page.getByRole('heading', { name: 'Saved. Your changes are live.' }).waitFor();
+  assert.deepEqual((await publicContent()).gallery.map((x) => x.caption), ['The van leaves']);
+  const visitor = await newPage({ width: 1280, height: 800 }); await visitor.goto(`${BASE}/#gallery`); await visitor.getByRole('button', { name: 'More photos', exact: true }).click(); await visitor.waitForTimeout(300);
+  assert.equal(await galleryGrid(visitor).count(), 1); assert.doesNotMatch(await visitor.locator('#dc-root').textContent(), /Packing the rice/);
+
+  // two people editing at once: the second is asked to reload instead of overwriting
   const a = await newPage(); await signIn(a); const b = await newPage(); await signIn(b, OTHER);
-  for (const q of [a, b]) { await q.goto(`${BASE}/admin/#/gallery`); await q.getByRole('heading', { name: 'Photo gallery' }).waitFor(); await q.locator('#photo-list li').nth(1).waitFor(); }
-  await a.getByRole('button', { name: 'Remove photo 2' }).click(); await a.getByRole('button', { name: 'Save', exact: true }).click(); await a.getByRole('heading', { name: 'Saved. Your changes are live.' }).waitFor();
-  await b.getByRole('button', { name: 'Remove photo 1' }).click(); await b.getByRole('button', { name: 'Save', exact: true }).click();
+  for (const q of [a, b]) { await q.goto(`${BASE}/admin/#/gallery/photos`); await q.getByRole('heading', { name: 'Edit or delete photos' }).waitFor(); await q.locator('#gal-list li').first().waitFor(); }
+  await a.getByLabel('Caption for photo 1').fill('A was here'); await a.getByRole('button', { name: 'Save', exact: true }).click(); await a.getByRole('heading', { name: 'Saved. Your changes are live.' }).waitFor();
+  await b.getByLabel('Caption for photo 1').fill('B was here'); await b.getByRole('button', { name: 'Save', exact: true }).click();
   await b.getByText('Someone else changed this after you opened it.').waitFor();
-  assert.equal((await publicContent()).gallery.length, 1);
+  assert.equal((await publicContent()).gallery[0].caption, 'A was here');
+
+  // deleting the last photo leaves an empty gallery; the "More photos" tab then disappears
+  await a.goto(`${BASE}/admin/#/`); await a.goto(`${BASE}/admin/#/gallery/photos`); await a.locator('#gal-list li').first().waitFor();
+  await a.getByRole('button', { name: 'Delete this photo' }).click(); await a.getByRole('button', { name: 'Yes, delete it' }).click();
+  await a.getByRole('button', { name: 'Save', exact: true }).click(); await a.getByRole('heading', { name: 'Saved. Your changes are live.' }).waitFor();
+  assert.deepEqual((await publicContent()).gallery, []);
+  await visitor.reload(); await visitor.getByRole('button', { name: 'All', exact: true }).waitFor(); assert.equal(await visitor.getByRole('button', { name: 'More photos', exact: true }).count(), 0);
+  await a.goto(`${BASE}/admin/#/`); await a.goto(`${BASE}/admin/#/gallery/photos`); await a.getByText('There are no photos in the gallery yet.').waitFor();
 });
 
 test('a programme date can be set and cleared; it shows on the programme card when set', async () => {
