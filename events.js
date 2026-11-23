@@ -28,7 +28,7 @@ window.KP_EVENTS = [
     location: "Next to Brampton-Caledon Airport",
     city: "Brampton, Ontario",
     note: "Message us to get verified. Cash or e-transfer at the door.",
-    fetlife: "",
+    fetlife: "https://fetlife.com/events/2026/12/26/king-penthouse-boxing-day-unwrapped-sj25gj",
     doublelist: "",
     ratio: "1039/1514",
     details: [
