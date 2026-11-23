@@ -6,3 +6,4 @@ dist/
 
 # build artifacts for manual deploys
 sbc-site-for-netlify.zip
+sbc-site-part-*.zip
